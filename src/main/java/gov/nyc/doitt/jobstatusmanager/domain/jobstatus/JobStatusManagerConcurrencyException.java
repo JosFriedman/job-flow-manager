@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.domain;
+package gov.nyc.doitt.jobstatusmanager.domain.jobstatus;
 
 public class JobStatusManagerConcurrencyException extends RuntimeException {
 

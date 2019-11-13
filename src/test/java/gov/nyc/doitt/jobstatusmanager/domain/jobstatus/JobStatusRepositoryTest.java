@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.domain;
+package gov.nyc.doitt.jobstatusmanager.domain.jobstatus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,9 +19,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.nyc.doitt.jobstatusmanager.TestBase;
-import gov.nyc.doitt.jobstatusmanager.domain.model.JobStatus;
-import gov.nyc.doitt.jobstatusmanager.domain.model.JobStatusMockerUpper;
-import gov.nyc.doitt.jobstatusmanager.domain.model.JobStatusType;
+import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.JobStatusRepository;
+import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatus;
+import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatusMockerUpper;
+import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatusType;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

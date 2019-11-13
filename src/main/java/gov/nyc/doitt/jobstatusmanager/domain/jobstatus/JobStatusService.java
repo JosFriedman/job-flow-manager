@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.domain;
+package gov.nyc.doitt.jobstatusmanager.domain.jobstatus;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -15,13 +15,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.nyc.doitt.jobstatusmanager.domain.model.JobStatus;
-import gov.nyc.doitt.jobstatusmanager.domain.model.JobStatusType;
+import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatus;
+import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatusType;
 
 @Component
-public class JobStatusManagerService {
+public class JobStatusService {
 
-	private Logger logger = LoggerFactory.getLogger(JobStatusManagerService.class);
+	private Logger logger = LoggerFactory.getLogger(JobStatusService.class);
 
 	@Autowired
 	private JobStatusRepository jobStatusRepository;

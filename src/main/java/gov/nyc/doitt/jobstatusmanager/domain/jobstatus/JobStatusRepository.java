@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.domain;
+package gov.nyc.doitt.jobstatusmanager.domain.jobstatus;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
 
-import gov.nyc.doitt.jobstatusmanager.domain.model.JobStatus;
-import gov.nyc.doitt.jobstatusmanager.domain.model.JobStatusType;
+import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatus;
+import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatusType;
 
 @Repository
 interface JobStatusRepository extends JpaRepository<JobStatus, Integer> {

@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.domain.model;
+package gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model;
 
 import java.sql.Timestamp;
 
