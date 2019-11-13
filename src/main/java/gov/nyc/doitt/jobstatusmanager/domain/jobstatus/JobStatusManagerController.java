@@ -14,11 +14,16 @@ import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatus;
 public class JobStatusManagerController {
 
 	@Autowired
-	private JobStatusRepository jobStatusRepository;
+	private JobStatusService jobStatusService;
 
 	@GetMapping("/jobStatuses")
 	public List<JobStatus> getJobStatuses() {
-		return jobStatusRepository.findAll();
+		return jobStatusService.getAll();
+	}
+
+	@GetMapping("/jobStatuses/batches")
+	public List<JobStatus> getNextBatch() {
+		return jobStatusService.getNextBatch();
 	}
 
 }

@@ -39,6 +39,11 @@ public class JobStatusService {
 		pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreated"));
 	}
 
+	@Transactional(transactionManager = "jobStatusManagerTransactionManager")
+	public List<JobStatus> getAll()  { 
+		return jobStatusRepository.findAll();
+	}
+
 	/**
 	 * Return next batch of submissions
 	 * 
@@ -48,19 +53,19 @@ public class JobStatusService {
 	public List<JobStatus> getNextBatch()  { 
 
 		try {
-			List<JobStatus> jobStatuss = jobStatusRepository
+			List<JobStatus> jobStatuses = jobStatusRepository
 					.findByStatusInAndErrorCountLessThan(
 							Arrays.asList(new JobStatusType[]{JobStatusType.NEW, JobStatusType.ERROR}),
 							maxRetriesForError + 1, pageRequest);
-			logger.info("getNextBatch: number of submissions found: {}", jobStatuss.size());
+			logger.info("getNextBatch: number of submissions found: {}", jobStatuses.size());
 
 			// mark each submission as picked up for processing
-			jobStatuss.forEach(p -> {
+			jobStatuses.forEach(p -> {
 				p.setStatus(JobStatusType.PROCESSING);
 				p.setStartTimestamp(new Timestamp(System.currentTimeMillis()));
 				updateJobStatus(p);
 			});
-			return jobStatuss;
+			return jobStatuses;
 
 		} catch (Exception e) {
 			throw new JobStatusManagerConcurrencyException(e);
