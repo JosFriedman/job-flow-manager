@@ -20,25 +20,25 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef = "jobStatusEntityManagerFactory",
-        transactionManagerRef = "jobStatusTransactionManager",
+        entityManagerFactoryRef = "jobStatusManagerEntityManagerFactory",
+        transactionManagerRef = "jobStatusManagerTransactionManager",
         basePackages = {"gov.nyc.doitt.jobstatusmanager"}
 )
 public class AppConfig {
 
     @Primary
-    @Bean(name = "jobStatusDataSource")
+    @Bean(name = "jobStatusManagerDataSource")
     @ConfigurationProperties(prefix = "jobstatus.datasource")
-    public DataSource jobStatusDataSource() {
+    public DataSource jobStatusManagerDataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Primary
-    @Bean(name = "jobStatusEntityManagerFactory")
+    @Bean(name = "jobStatusManagerEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean
     entityManagerFactory(
             EntityManagerFactoryBuilder builder,
-            @Qualifier("jobStatusDataSource") DataSource dataSource
+            @Qualifier("jobStatusManagerDataSource") DataSource dataSource
     ) {
         return builder
                 .dataSource(dataSource)
@@ -48,11 +48,11 @@ public class AppConfig {
     }
 
     @Primary
-    @Bean(name = "jobStatusTransactionManager")
-    public PlatformTransactionManager jobStatusTransactionManager(
-            @Qualifier("jobStatusEntityManagerFactory") EntityManagerFactory
-                    jobStatusEntityManagerFactory
+    @Bean(name = "jobStatusManagerTransactionManager")
+    public PlatformTransactionManager jobStatusManagerTransactionManager(
+            @Qualifier("jobStatusManagerEntityManagerFactory") EntityManagerFactory
+                    jobStatusManagerEntityManagerFactory
     ) {
-        return new JpaTransactionManager(jobStatusEntityManagerFactory);
+        return new JpaTransactionManager(jobStatusManagerEntityManagerFactory);
     }
 }

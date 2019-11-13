@@ -44,7 +44,7 @@ public class JobStatusService {
 	 * 
 	 * @return
 	 */
-	@Transactional(transactionManager = "jobStatusTransactionManager")
+	@Transactional(transactionManager = "jobStatusManagerTransactionManager")
 	public List<JobStatus> getNextBatch()  { 
 
 		try {
@@ -68,7 +68,7 @@ public class JobStatusService {
 
 	}
 
-	@Transactional("jobStatusTransactionManager")
+	@Transactional("jobStatusManagerTransactionManager")
 	public void updateJobStatus(JobStatus jobStatus) {
 
 		jobStatusRepository.save(jobStatus);

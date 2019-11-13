@@ -41,7 +41,7 @@ public class JobStatusRepositoryTest extends TestBase {
 	private int maxRetriesForError;
 
 	@Test
-	@Transactional("jobStatusTransactionManager")
+	@Transactional("jobStatusManagerTransactionManager")
 	public void testfindByStatusInAndErrorCountLessThan_NEW() throws Exception {
 
 		maxBatchSize = 1;
@@ -58,7 +58,7 @@ public class JobStatusRepositoryTest extends TestBase {
 	}
 
 	@Test
-	@Transactional("jobStatusTransactionManager")
+	@Transactional("jobStatusManagerTransactionManager")
 	public void testfindByStatusInAndErrorCountLessThan_LimitedByBatchSize() throws Exception {
 
 		int numberOfJobStatuss = maxBatchSize + 5; // create more that are returned in batch
@@ -80,7 +80,7 @@ public class JobStatusRepositoryTest extends TestBase {
 	}
 
 	@Test
-	@Transactional("jobStatusTransactionManager")
+	@Transactional("jobStatusManagerTransactionManager")
 	public void testfindByStatusInAndErrorCountLessThan_NEW_and_ERROR_only() throws Exception {
 
 		int numberOfJobStatuss = maxBatchSize + 20; // create more that are returned in batch
