@@ -46,10 +46,10 @@ public class JobStatusManagerServiceTest extends TestBase {
 	@InjectMocks
 	private JobStatusService cmiiSubmissionService = new JobStatusService();
 
-	@Value("${jobstatusmanager.domain.JobStatusManagerService.maxBatchSize}")
+	@Value("${jobstatusmanager.domain.jobstatus.JobStatusService.maxBatchSize}")
 	private int maxBatchSize;
 
-	@Value("${jobstatusmanager.domain.JobStatusManagerService.maxRetriesForError}")
+	@Value("${jobstatusmanager.domain.jobstatus.JobStatusService.maxRetriesForError}")
 	private int maxRetriesForError;
 
 	private Pageable pageable;

@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.application;
+package gov.nyc.doitt.jobstatusmanager;
 
 
 import javax.persistence.EntityManagerFactory;

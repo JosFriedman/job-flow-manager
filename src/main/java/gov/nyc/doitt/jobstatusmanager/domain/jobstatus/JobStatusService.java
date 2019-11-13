@@ -26,17 +26,17 @@ public class JobStatusService {
 	@Autowired
 	private JobStatusRepository jobStatusRepository;
 
-	@Value("${jobstatusmanager.domain.JobStatusManagerService.maxBatchSize}")
+	@Value("${jobstatusmanager.domain.jobstatus.JobStatusService.maxBatchSize}")
 	private int maxBatchSize;
 
-	@Value("${jobstatusmanager.domain.JobStatusManagerService.maxRetriesForError}")
+	@Value("${jobstatusmanager.domain.jobstatus.JobStatusService.maxRetriesForError}")
 	private int maxRetriesForError;
 
 	private PageRequest pageRequest;
 
 	@PostConstruct
 	private void postConstruct() {
-		pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "submitted"));
+		pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreated"));
 	}
 
 	/**

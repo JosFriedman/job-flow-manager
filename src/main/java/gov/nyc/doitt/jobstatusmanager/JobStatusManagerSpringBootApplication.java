@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.application;
+package gov.nyc.doitt.jobstatusmanager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
