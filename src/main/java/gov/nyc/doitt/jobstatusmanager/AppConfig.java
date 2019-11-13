@@ -28,7 +28,7 @@ public class AppConfig {
 
     @Primary
     @Bean(name = "jobStatusManagerDataSource")
-    @ConfigurationProperties(prefix = "jobstatus.datasource")
+    @ConfigurationProperties(prefix = "job-status.datasource")
     public DataSource jobStatusManagerDataSource() {
         return DataSourceBuilder.create().build();
     }
