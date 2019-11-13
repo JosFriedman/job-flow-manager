@@ -23,21 +23,17 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import gov.nyc.doitt.jobstatusmanager.TestBase;
-import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.JobStatusService;
-import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.JobStatusRepository;
 import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatus;
 import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatusMockerUpper;
 import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatusType;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
 public class JobStatusManagerServiceTest extends TestBase {
 
 	@Autowired

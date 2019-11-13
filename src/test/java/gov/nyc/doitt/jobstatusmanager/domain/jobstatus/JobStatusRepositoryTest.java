@@ -19,13 +19,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.nyc.doitt.jobstatusmanager.TestBase;
-import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.JobStatusRepository;
 import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatus;
 import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatusMockerUpper;
 import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatusType;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
 public class JobStatusRepositoryTest extends TestBase {
 
 	@Autowired

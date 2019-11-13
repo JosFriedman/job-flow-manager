@@ -8,8 +8,6 @@ import java.util.Random;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.stereotype.Component;
 
-import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatus;
-
 @Component
 public class JobStatusMockerUpper {
 
