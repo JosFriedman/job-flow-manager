@@ -33,8 +33,14 @@ public class JobStatusMockerUpper {
 		JobStatus jobStatus = new JobStatus();
 
 		FieldUtils.writeField(jobStatus, "id", id, true);
+	
+		FieldUtils.writeField(jobStatus, "appId", "appId_ABC", true);
+		FieldUtils.writeField(jobStatus, "jobId", "jobId" + id, true);
+		FieldUtils.writeField(jobStatus, "description", "description" + id, true);
+
 		// make very old so it is found first
 		FieldUtils.writeField(jobStatus, "jobCreated", new Timestamp(System.currentTimeMillis() - 900000000000L), true);
+
 		FieldUtils.writeField(jobStatus, "description", "description" + id, true);
 
 		return jobStatus;
