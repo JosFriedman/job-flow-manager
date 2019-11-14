@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobflowmanager.domain.jobflow;
+package gov.nyc.doitt.jobstatusmanager.infrastructure;
 
 import java.util.List;
 import java.util.stream.Collectors;

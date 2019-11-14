@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobStatus;
+import gov.nyc.doitt.jobstatusmanager.infrastructure.JobFlowManagerConcurrencyException;
+import gov.nyc.doitt.jobstatusmanager.infrastructure.JobFlowManagerException;
 
 @Component
 public class JobFlowService {
@@ -40,7 +42,7 @@ public class JobFlowService {
 	}
 
 	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
-	public List<JobFlow> getAll()  { 
+	public List<JobFlow> getAll() {
 		return jobFlowRepository.findAll();
 	}
 
@@ -50,13 +52,12 @@ public class JobFlowService {
 	 * @return
 	 */
 	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
-	public List<JobFlow> getNextBatch()  { 
+	public List<JobFlow> getNextBatch(String appId) {
 
 		try {
-			List<JobFlow> jobFlows = jobFlowRepository
-					.findByStatusInAndErrorCountLessThan(
-							Arrays.asList(new JobStatus[]{JobStatus.NEW, JobStatus.ERROR}),
-							maxRetriesForError + 1, pageRequest);
+			List<JobFlow> jobFlows = jobFlowRepository.findByAppIdAndStatusInAndErrorCountLessThan(appId,
+					Arrays.asList(new JobStatus[] { JobStatus.NEW, JobStatus.ERROR }), maxRetriesForError + 1,
+					pageRequest);
 			logger.info("getNextBatch: number of submissions found: {}", jobFlows.size());
 
 			// mark each submission as picked up for processing
@@ -67,6 +68,8 @@ public class JobFlowService {
 			});
 			return jobFlows;
 
+		} catch (JobFlowManagerException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new JobFlowManagerConcurrencyException(e);
 		}
@@ -82,9 +85,13 @@ public class JobFlowService {
 	}
 
 	@Transactional("jobFlowManagerTransactionManager")
-	public void updateJobFlow(JobFlow jobFlow) {
+	public JobFlow updateJobFlow(JobFlow jobFlow) {
 
+		if (!jobFlowRepository.existsByAppIdAndJobId(jobFlow.getAppId(), jobFlow.getJobId())) {
+			throw new JobFlowManagerException("Can't find JobFlow: " + jobFlow.getAppId() + ", " + jobFlow.getJobId());
+		}
 		jobFlowRepository.save(jobFlow);
+		return jobFlow;
 	}
 
 }

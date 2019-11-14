@@ -124,11 +124,20 @@ public class JobFlow {
 		this.multiInstanceCtrl = multiInstanceCtrl;
 	}
 
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((appId == null) ? 0 : appId.hashCode());
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((endTimestamp == null) ? 0 : endTimestamp.hashCode());
+		result = prime * result + errorCount;
+		result = prime * result + ((jobCreatedTimestamp == null) ? 0 : jobCreatedTimestamp.hashCode());
+		result = prime * result + ((jobId == null) ? 0 : jobId.hashCode());
+		result = prime * result + multiInstanceCtrl;
+		result = prime * result + ((startTimestamp == null) ? 0 : startTimestamp.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		return result;
 	}
 
@@ -141,10 +150,41 @@ public class JobFlow {
 		if (getClass() != obj.getClass())
 			return false;
 		JobFlow other = (JobFlow) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (appId == null) {
+			if (other.appId != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!appId.equals(other.appId))
+			return false;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (endTimestamp == null) {
+			if (other.endTimestamp != null)
+				return false;
+		} else if (!endTimestamp.equals(other.endTimestamp))
+			return false;
+		if (errorCount != other.errorCount)
+			return false;
+		if (jobCreatedTimestamp == null) {
+			if (other.jobCreatedTimestamp != null)
+				return false;
+		} else if (!jobCreatedTimestamp.equals(other.jobCreatedTimestamp))
+			return false;
+		if (jobId == null) {
+			if (other.jobId != null)
+				return false;
+		} else if (!jobId.equals(other.jobId))
+			return false;
+		if (multiInstanceCtrl != other.multiInstanceCtrl)
+			return false;
+		if (startTimestamp == null) {
+			if (other.startTimestamp != null)
+				return false;
+		} else if (!startTimestamp.equals(other.startTimestamp))
+			return false;
+		if (status != other.status)
 			return false;
 		return true;
 	}

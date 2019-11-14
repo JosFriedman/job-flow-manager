@@ -15,7 +15,11 @@ import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobStatus;
 @Repository
 interface JobFlowRepository extends JpaRepository<JobFlow, Integer> {
 
-	@Lock(LockModeType.PESSIMISTIC_READ)
+//	@Lock(LockModeType.PESSIMISTIC_READ)
 	List<JobFlow> findByStatusInAndErrorCountLessThan(List<JobStatus> statuses, int errorCount, Pageable pageable);
 
+	@Lock(LockModeType.PESSIMISTIC_READ)
+	List<JobFlow> findByAppIdAndStatusInAndErrorCountLessThan(String appId, List<JobStatus> statuses, int errorCount, Pageable pageable);
+
+	boolean existsByAppIdAndJobId(String appId, String jobId);
 }

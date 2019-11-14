@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobFlowMockerUpper {
 
+	private String appId = "myApp";
+	
 	public List<JobFlow> createList(int listSize) throws Exception {
 
 		int id = new Random().nextInt(100) * -1;
@@ -32,7 +34,7 @@ public class JobFlowMockerUpper {
 
 		JobFlow jobFlow = new JobFlow();
 
-		FieldUtils.writeField(jobFlow, "appId", "appId_ABC", true);
+		FieldUtils.writeField(jobFlow, "appId", appId, true);
 		FieldUtils.writeField(jobFlow, "jobId", "jobId" + idx, true);
 		FieldUtils.writeField(jobFlow, "description", "description" + idx, true);
 
