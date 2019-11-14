@@ -6,17 +6,21 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "JOB_FLOW")
 public class JobFlow {
 
 	@Id
-	@Column(name = "ID")
-	private long id;
+	@GenericGenerator(name = "db-uuid", strategy = "guid")
+	@GeneratedValue(generator = "db-uuid")	@Column(name = "ID")
+	private String id;
 
 	@Column(name = "APP_ID")
 	private String appId;
@@ -27,8 +31,8 @@ public class JobFlow {
 	@Column(name = "DESCRIPTION")
 	private String description;
 
-	@Column(name = "JOB_CREATED")
-	private Timestamp jobCreated;
+	@Column(name = "JOB_CREATED_TIMESTAMP")
+	private Timestamp jobCreatedTimestamp = new Timestamp(System.currentTimeMillis());
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "STATUS")
@@ -46,13 +50,10 @@ public class JobFlow {
 	@Version
 	@Column(name = "MULTI_INSTANCE_CTRL")
 	private int multiInstanceCtrl;
-
-	public long getId() {
+	
+	
+	public String getId() {
 		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public String getAppId() {
@@ -79,12 +80,8 @@ public class JobFlow {
 		this.description = description;
 	}
 
-	public Timestamp getJobCreated() {
-		return jobCreated;
-	}
-
-	public void setJobCreated(Timestamp jobCreated) {
-		this.jobCreated = jobCreated;
+	public Timestamp getJobCreatedTimestamp() {
+		return jobCreatedTimestamp;
 	}
 
 	public JobStatus getStatus() {
@@ -131,7 +128,7 @@ public class JobFlow {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
 
@@ -144,7 +141,10 @@ public class JobFlow {
 		if (getClass() != obj.getClass())
 			return false;
 		JobFlow other = (JobFlow) obj;
-		if (id != other.id)
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
 			return false;
 		return true;
 	}
@@ -152,8 +152,9 @@ public class JobFlow {
 	@Override
 	public String toString() {
 		return "JobFlow [id=" + id + ", appId=" + appId + ", jobId=" + jobId + ", description=" + description
-				+ ", status=" + status + ", startTimestamp=" + startTimestamp + ", endTimestamp=" + endTimestamp
-				+ ", errorCount=" + errorCount + ", multiInstanceCtrl=" + multiInstanceCtrl + "]";
+				+ ", jobCreatedTimestamp=" + jobCreatedTimestamp + ", status=" + status + ", startTimestamp=" + startTimestamp
+				+ ", endTimestamp=" + endTimestamp + ", errorCount=" + errorCount + ", multiInstanceCtrl="
+				+ multiInstanceCtrl + "]";
 	}
 
 }

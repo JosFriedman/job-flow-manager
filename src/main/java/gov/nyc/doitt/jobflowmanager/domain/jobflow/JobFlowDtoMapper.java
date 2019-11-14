@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.modelmapper.config.Configuration.AccessLevel;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -25,10 +26,13 @@ class JobFlowDtoMapper {
 
 		protected void configure() {
 			skip(destination.getId());
+			skip(destination.getJobCreatedTimestamp());
 		}
 	};
 
 	public JobFlowDtoMapper() {
+
+		modelMapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
 
 		modelMapper.addMappings(jobFlowDtoPropertyMap);
 //		TypeMap<JobFlowDto, JobFlow> jobFlowDtoTypeMap = modelMapper.createTypeMap(JobFlowDto.class,
@@ -48,7 +52,8 @@ class JobFlowDtoMapper {
 
 	public JobFlow fromDto(JobFlowDto jobFlowDto) {
 
-		JobFlow jobFlow = modelMapper.map(jobFlowDto, JobFlow.class);
+		JobFlow jobFlow = new JobFlow();
+		modelMapper.map(jobFlowDto, jobFlow);
 		return jobFlow;
 	}
 
