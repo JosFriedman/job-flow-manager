@@ -17,7 +17,7 @@ import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
  * 
  */
 @Component
-public class JobFlowDtoMapper {
+class JobFlowDtoMapper {
 
 	private ModelMapper modelMapper = new ModelMapper();
 
