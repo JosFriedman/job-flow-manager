@@ -74,6 +74,14 @@ public class JobStatusService {
 	}
 
 	@Transactional("jobStatusManagerTransactionManager")
+	public JobStatus createJobStatus(JobStatus jobStatus) {
+
+		jobStatus.setStatus(JobStatusType.NEW);
+		jobStatusRepository.save(jobStatus);
+		return jobStatus;
+	}
+
+	@Transactional("jobStatusManagerTransactionManager")
 	public void updateJobStatus(JobStatus jobStatus) {
 
 		jobStatusRepository.save(jobStatus);
