@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.infrastructure;
+package gov.nyc.doitt.jobflowmanager.infrastructure;
 
 public class JobFlowManagerConcurrencyException extends RuntimeException {
 

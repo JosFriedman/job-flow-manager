@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobStatus;
-import gov.nyc.doitt.jobstatusmanager.infrastructure.JobFlowManagerConcurrencyException;
-import gov.nyc.doitt.jobstatusmanager.infrastructure.JobFlowManagerException;
+import gov.nyc.doitt.jobflowmanager.infrastructure.JobFlowManagerConcurrencyException;
+import gov.nyc.doitt.jobflowmanager.infrastructure.JobFlowManagerException;
 
 @Component
 public class JobFlowService {

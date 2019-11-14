@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.dto.JobFlowDto;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
-import gov.nyc.doitt.jobstatusmanager.infrastructure.JobFlowManagerException;
+import gov.nyc.doitt.jobflowmanager.infrastructure.JobFlowManagerException;
 
 @RestController
 @RequestMapping("jobFlowManager")
