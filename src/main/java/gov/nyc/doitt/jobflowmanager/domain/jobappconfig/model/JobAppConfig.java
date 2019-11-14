@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.domain.jobappconfig.model;
+package gov.nyc.doitt.jobflowmanager.domain.jobappconfig.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

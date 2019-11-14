@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model;
+package gov.nyc.doitt.jobflowmanager.domain.jobflow.model;
 
 import java.sql.Timestamp;
 
@@ -11,8 +11,8 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
-@Table(name = "JOB_STATUS")
-public class JobStatus {
+@Table(name = "JOB_FLOW")
+public class JobFlow {
 
 	@Id
 	@Column(name = "ID")
@@ -32,7 +32,7 @@ public class JobStatus {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "STATUS")
-	private JobStatusType status;
+	private JobStatus status;
 
 	@Column(name = "START_TIMESTAMP")
 	private Timestamp startTimestamp;
@@ -87,11 +87,11 @@ public class JobStatus {
 		this.jobCreated = jobCreated;
 	}
 
-	public JobStatusType getStatus() {
+	public JobStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(JobStatusType status) {
+	public void setStatus(JobStatus status) {
 		this.status = status;
 	}
 
@@ -143,7 +143,7 @@ public class JobStatus {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		JobStatus other = (JobStatus) obj;
+		JobFlow other = (JobFlow) obj;
 		if (id != other.id)
 			return false;
 		return true;
@@ -151,7 +151,7 @@ public class JobStatus {
 
 	@Override
 	public String toString() {
-		return "JobStatus [id=" + id + ", appId=" + appId + ", jobId=" + jobId + ", description=" + description
+		return "JobFlow [id=" + id + ", appId=" + appId + ", jobId=" + jobId + ", description=" + description
 				+ ", status=" + status + ", startTimestamp=" + startTimestamp + ", endTimestamp=" + endTimestamp
 				+ ", errorCount=" + errorCount + ", multiInstanceCtrl=" + multiInstanceCtrl + "]";
 	}

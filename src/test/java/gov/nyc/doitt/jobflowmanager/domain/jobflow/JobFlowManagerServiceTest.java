@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.domain.jobstatus;
+package gov.nyc.doitt.jobflowmanager.domain.jobflow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,28 +28,28 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import gov.nyc.doitt.jobstatusmanager.TestBase;
-import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatus;
-import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatusMockerUpper;
-import gov.nyc.doitt.jobstatusmanager.domain.jobstatus.model.JobStatusType;
+import gov.nyc.doitt.jobflowmanager.TestBase;
+import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
+import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlowMockerUpper;
+import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobStatus;
 
 @RunWith(SpringRunner.class)
-public class JobStatusManagerServiceTest extends TestBase {
+public class JobFlowManagerServiceTest extends TestBase {
 
 	@Autowired
-	private JobStatusMockerUpper cmiiSubmissionMockerUpper;
+	private JobFlowMockerUpper cmiiSubmissionMockerUpper;
 
 	@Mock
-	private JobStatusRepository cmiiSubmissionRepository;
+	private JobFlowRepository cmiiSubmissionRepository;
 
 	@Spy
 	@InjectMocks
-	private JobStatusService cmiiSubmissionService = new JobStatusService();
+	private JobFlowService cmiiSubmissionService = new JobFlowService();
 
-	@Value("${jobstatusmanager.domain.jobstatus.JobStatusService.maxBatchSize}")
+	@Value("${jobflowmanager.domain.jobflow.JobFlowService.maxBatchSize}")
 	private int maxBatchSize;
 
-	@Value("${jobstatusmanager.domain.jobstatus.JobStatusService.maxRetriesForError}")
+	@Value("${jobflowmanager.domain.jobflow.JobFlowService.maxRetriesForError}")
 	private int maxRetriesForError;
 
 	private Pageable pageable;
@@ -65,35 +65,35 @@ public class JobStatusManagerServiceTest extends TestBase {
 	@Test
 	public void testSubmitterServiceNoSubmissions() {
 
-		List<JobStatus> cmiiSubmissions = Collections.emptyList();
-		when(cmiiSubmissionRepository.findByStatusInAndErrorCountLessThan(ArgumentMatchers.<JobStatusType>anyList(),
+		List<JobFlow> cmiiSubmissions = Collections.emptyList();
+		when(cmiiSubmissionRepository.findByStatusInAndErrorCountLessThan(ArgumentMatchers.<JobStatus>anyList(),
 				eq(maxRetriesForError), eq(pageable))).thenReturn(cmiiSubmissions);
 
-		List<JobStatus> batchOfJobStatuss = cmiiSubmissionService.getNextBatch();
+		List<JobFlow> batchOfJobFlows = cmiiSubmissionService.getNextBatch();
 
 		verify(cmiiSubmissionRepository, times(1)).findByStatusInAndErrorCountLessThan(
-				ArgumentMatchers.<JobStatusType>anyList(), anyInt(), any(Pageable.class));
-		assertTrue(batchOfJobStatuss.isEmpty());
+				ArgumentMatchers.<JobStatus>anyList(), anyInt(), any(Pageable.class));
+		assertTrue(batchOfJobFlows.isEmpty());
 	}
 
 	@Test
 	public void testSubmitterServiceWithSubmissions() throws Exception {
 
 		int listSize = 5;
-		List<JobStatus> cmiiSubmissions = cmiiSubmissionMockerUpper.createList(listSize);
-		when(cmiiSubmissionRepository.findByStatusInAndErrorCountLessThan(ArgumentMatchers.<JobStatusType>anyList(),
+		List<JobFlow> cmiiSubmissions = cmiiSubmissionMockerUpper.createList(listSize);
+		when(cmiiSubmissionRepository.findByStatusInAndErrorCountLessThan(ArgumentMatchers.<JobStatus>anyList(),
 				eq(maxRetriesForError), eq(pageable))).thenReturn(cmiiSubmissions);
 
-		List<JobStatus> batchOfJobStatuss = cmiiSubmissionService.getNextBatch();
+		List<JobFlow> batchOfJobFlows = cmiiSubmissionService.getNextBatch();
 
 		verify(cmiiSubmissionRepository, times(1)).findByStatusInAndErrorCountLessThan(
-				ArgumentMatchers.<JobStatusType>anyList(), anyInt(), any(Pageable.class));
-		assertTrue(batchOfJobStatuss.isEmpty());
+				ArgumentMatchers.<JobStatus>anyList(), anyInt(), any(Pageable.class));
+		assertTrue(batchOfJobFlows.isEmpty());
 
-		batchOfJobStatuss.forEach(p -> {
-			assertEquals(JobStatusType.PROCESSING, p.getStatus());
+		batchOfJobFlows.forEach(p -> {
+			assertEquals(JobStatus.PROCESSING, p.getStatus());
 			assertNotNull(p.getStartTimestamp());
-			verify(cmiiSubmissionService).updateJobStatus(p);
+			verify(cmiiSubmissionService).updateJobFlow(p);
 		});
 	}
 

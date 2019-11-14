@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager;
+package gov.nyc.doitt.jobflowmanager;
 
 
 import javax.persistence.EntityManagerFactory;
@@ -20,39 +20,39 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef = "jobStatusManagerEntityManagerFactory",
-        transactionManagerRef = "jobStatusManagerTransactionManager",
-        basePackages = {"gov.nyc.doitt.jobstatusmanager"}
+        entityManagerFactoryRef = "jobFlowManagerEntityManagerFactory",
+        transactionManagerRef = "jobFlowManagerTransactionManager",
+        basePackages = {"gov.nyc.doitt.jobflowmanager"}
 )
 public class AppConfig {
 
     @Primary
-    @Bean(name = "jobStatusManagerDataSource")
-    @ConfigurationProperties(prefix = "job-status.datasource")
-    public DataSource jobStatusManagerDataSource() {
+    @Bean(name = "jobFlowManagerDataSource")
+    @ConfigurationProperties(prefix = "jobflow.datasource")
+    public DataSource jobFlowManagerDataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Primary
-    @Bean(name = "jobStatusManagerEntityManagerFactory")
+    @Bean(name = "jobFlowManagerEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean
     entityManagerFactory(
             EntityManagerFactoryBuilder builder,
-            @Qualifier("jobStatusManagerDataSource") DataSource dataSource
+            @Qualifier("jobFlowManagerDataSource") DataSource dataSource
     ) {
         return builder
                 .dataSource(dataSource)
-                .packages("gov.nyc.doitt.jobstatusmanager")
+                .packages("gov.nyc.doitt.jobflowmanager")
                 .persistenceUnit("josfriedman")
                 .build();
     }
 
     @Primary
-    @Bean(name = "jobStatusManagerTransactionManager")
-    public PlatformTransactionManager jobStatusManagerTransactionManager(
-            @Qualifier("jobStatusManagerEntityManagerFactory") EntityManagerFactory
-                    jobStatusManagerEntityManagerFactory
+    @Bean(name = "jobFlowManagerTransactionManager")
+    public PlatformTransactionManager jobFlowManagerTransactionManager(
+            @Qualifier("jobFlowManagerEntityManagerFactory") EntityManagerFactory
+                    jobFlowManagerEntityManagerFactory
     ) {
-        return new JpaTransactionManager(jobStatusManagerEntityManagerFactory);
+        return new JpaTransactionManager(jobFlowManagerEntityManagerFactory);
     }
 }

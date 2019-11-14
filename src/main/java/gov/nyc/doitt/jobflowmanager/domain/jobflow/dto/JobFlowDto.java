@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatusmanager.domain.jobstatus.dto;
+package gov.nyc.doitt.jobflowmanager.domain.jobflow.dto;
 
 import java.sql.Timestamp;
 
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class JobStatusDto {
+public class JobFlowDto {
 
 	private String appId;
 	private String jobId;
@@ -83,7 +83,7 @@ public class JobStatusDto {
 
 	@Override
 	public String toString() {
-		return "JobStatusDto [appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", jobCreated="
+		return "JobFlowDto [appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", jobCreated="
 				+ jobCreated + ", status=" + status + ", startTimestamp=" + startTimestamp + ", endTimestamp="
 				+ endTimestamp + ", errorCount=" + errorCount + "]";
 	}

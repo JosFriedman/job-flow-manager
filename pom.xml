@@ -9,7 +9,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Job Status Manager</name>
+	<name>Job Flow Manager</name>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
