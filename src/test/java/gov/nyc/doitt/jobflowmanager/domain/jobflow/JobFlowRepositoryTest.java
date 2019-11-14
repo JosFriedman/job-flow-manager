@@ -46,7 +46,7 @@ public class JobFlowRepositoryTest extends TestBase {
 		jobFlow.setStatus(JobStatus.NEW);
 		jobFlowRepository.save(jobFlow);
 
-		PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreated"));
+		PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreatedTimestamp"));
 		List<JobFlow> jobFlows = jobFlowRepository.findByStatusInAndErrorCountLessThan(
 				Arrays.asList(new JobStatus[] { JobStatus.NEW }), maxRetriesForError, pageRequest);
 		assertNotNull(jobFlows);
@@ -67,7 +67,7 @@ public class JobFlowRepositoryTest extends TestBase {
 			jobFlowRepository.save(jobFlow);
 		}
 
-		PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreated"));
+		PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreatedTimestamp"));
 		List<JobFlow> batchOfJobFlows = jobFlowRepository.findByStatusInAndErrorCountLessThan(
 				Arrays.asList(new JobStatus[] { JobStatus.NEW, JobStatus.ERROR }), maxRetriesForError,
 				pageRequest);
@@ -104,7 +104,7 @@ public class JobFlowRepositoryTest extends TestBase {
 		}
 		assertTrue(couldBeInBatchJobFlows.size() >= maxBatchSize); // make sure our test data is valid
 
-		PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreated"));
+		PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreatedTimestamp"));
 		List<JobFlow> batchOfJobFlows = jobFlowRepository.findByStatusInAndErrorCountLessThan(
 				Arrays.asList(new JobStatus[] { JobStatus.NEW, JobStatus.ERROR }), maxRetriesForError,
 				pageRequest);

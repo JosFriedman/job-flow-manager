@@ -17,31 +17,29 @@ public class JobFlowMockerUpper {
 
 		List<JobFlow> jobFlows = new ArrayList<>();
 		for (int i = 0; i < listSize; i++) {
-			jobFlows.add(create(id - i));
+			jobFlows.add(create(i));
 		}
 		return jobFlows;
 	}
 
 	public JobFlow create() throws Exception {
 
-		int id = new Random().nextInt(100) * -1;
-		return create(id);
+		int i = new Random().nextInt(100) * -1;
+		return create(i);
 	}
 
-	private JobFlow create(int id) throws Exception {
+	private JobFlow create(int idx) throws Exception {
 
 		JobFlow jobFlow = new JobFlow();
 
-		FieldUtils.writeField(jobFlow, "id", id, true);
-	
 		FieldUtils.writeField(jobFlow, "appId", "appId_ABC", true);
-		FieldUtils.writeField(jobFlow, "jobId", "jobId" + id, true);
-		FieldUtils.writeField(jobFlow, "description", "description" + id, true);
+		FieldUtils.writeField(jobFlow, "jobId", "jobId" + idx, true);
+		FieldUtils.writeField(jobFlow, "description", "description" + idx, true);
 
 		// make very old so it is found first
-		FieldUtils.writeField(jobFlow, "jobCreated", new Timestamp(System.currentTimeMillis() - 900000000000L), true);
+		FieldUtils.writeField(jobFlow, "jobCreatedTimestamp", new Timestamp(System.currentTimeMillis() - 900000000000L), true);
 
-		FieldUtils.writeField(jobFlow, "description", "description" + id, true);
+		FieldUtils.writeField(jobFlow, "description", "description" + idx, true);
 
 		return jobFlow;
 	}

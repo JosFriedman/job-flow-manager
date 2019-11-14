@@ -30,8 +30,8 @@ public class JobFlowController {
 	private JobFlowDtoMapper jobFlowDtoMapper;
 
 	@GetMapping("/jobFlows")
-	public List<JobFlow> getJobFlows() {
-		return jobFlowService.getAll();
+	public List<JobFlowDto> getJobFlows() {
+		return jobFlowDtoMapper.toDto(jobFlowService.getAll());
 	}
 
 	@GetMapping("/jobFlows/batches")
