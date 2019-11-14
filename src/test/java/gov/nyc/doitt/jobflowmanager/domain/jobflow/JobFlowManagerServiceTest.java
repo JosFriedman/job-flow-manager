@@ -57,7 +57,7 @@ public class JobFlowManagerServiceTest extends TestBase {
 	@Before
 	public void init() throws Exception {
 
-		pageable = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreatedTimestampp"));
+		pageable = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreatedTimestamp"));
 		FieldUtils.writeField(jobFlowService, "pageRequest", pageable, true);
 		FieldUtils.writeField(jobFlowService, "maxRetriesForError", maxRetriesForError, true);
 	}
