@@ -38,7 +38,7 @@ public class JobFlowService {
 
 	@PostConstruct
 	private void postConstruct() {
-		pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreated"));
+		pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreatedTimestamp"));
 	}
 
 	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
@@ -64,7 +64,7 @@ public class JobFlowService {
 			jobFlows.forEach(p -> {
 				p.setStatus(JobStatus.PROCESSING);
 				p.setStartTimestamp(new Timestamp(System.currentTimeMillis()));
-				updateJobFlow(p);
+				updateJobFlow(appId, p);
 			});
 			return jobFlows;
 
@@ -85,10 +85,10 @@ public class JobFlowService {
 	}
 
 	@Transactional("jobFlowManagerTransactionManager")
-	public JobFlow updateJobFlow(JobFlow jobFlow) {
+	public JobFlow updateJobFlow(String appId, JobFlow jobFlow) {
 
-		if (!jobFlowRepository.existsByAppIdAndJobId(jobFlow.getAppId(), jobFlow.getJobId())) {
-			throw new JobFlowManagerException("Can't find JobFlow: " + jobFlow.getAppId() + ", " + jobFlow.getJobId());
+		if (!jobFlowRepository.existsByAppIdAndJobId(appId, jobFlow.getJobId())) {
+			throw new JobFlowManagerException("Can't find JobFlow: " + appId + ", " + jobFlow.getJobId());
 		}
 		jobFlowRepository.save(jobFlow);
 		return jobFlow;

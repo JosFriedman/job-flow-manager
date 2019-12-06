@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,8 +37,8 @@ public class JobFlowController {
 		return jobFlowDtoMapper.toDto(jobFlowService.getAll());
 	}
 
-	@GetMapping("/jobFlows/batches")
-	public List<JobFlowDto> getNextBatch(String appId) {
+	@GetMapping("/jobFlows/batches/{appId}")
+	public List<JobFlowDto> getNextBatch(@PathVariable String appId) {
 		return jobFlowDtoMapper.toDto(jobFlowService.getNextBatch(appId));
 	}
 
@@ -56,8 +57,8 @@ public class JobFlowController {
 		return responseJobFlowDto;
 	}
 
-	@PutMapping("/jobFlows")
-	public JobFlowDto updateJobFlow(@Valid @RequestBody JobFlowDto jobFlowDto, BindingResult result)
+	@PutMapping("/jobFlows/{appId}")
+	public JobFlowDto updateJobFlow(@PathVariable String appId, @Valid @RequestBody JobFlowDto jobFlowDto, BindingResult result)
 			throws JobFlowManagerException {
 
 		logger.debug("updateJobFlow: entering: ", jobFlowDto);
@@ -66,7 +67,7 @@ public class JobFlowController {
 			throw new JobFlowManagerException(result.getFieldErrors());
 		}
 
-		JobFlow jobFlow = jobFlowService.updateJobFlow(jobFlowDtoMapper.fromDto(jobFlowDto));
+		JobFlow jobFlow = jobFlowService.updateJobFlow(appId, jobFlowDtoMapper.fromDto(jobFlowDto));
 		JobFlowDto responseJobFlowDto = jobFlowDtoMapper.toDto(jobFlow);
 		return responseJobFlowDto;
 	}

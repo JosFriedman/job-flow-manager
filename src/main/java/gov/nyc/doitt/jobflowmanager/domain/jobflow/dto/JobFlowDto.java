@@ -11,7 +11,7 @@ public class JobFlowDto {
 	private String appId;
 	private String jobId;
 	private String description;
-	private Timestamp jobCreated;
+	private Timestamp jobCreatedTimestamp;
 	private String status;
 	private Timestamp startTimestamp;
 	private Timestamp endTimestamp;
@@ -41,12 +41,12 @@ public class JobFlowDto {
 		this.description = description;
 	}
 
-	public Timestamp getJobCreated() {
-		return jobCreated;
+	public Timestamp getJobCreatedTimestamp() {
+		return jobCreatedTimestamp;
 	}
 
-	public void setJobCreated(Timestamp jobCreated) {
-		this.jobCreated = jobCreated;
+	public void setJobCreatedTimestamp(Timestamp jobCreatedTimestamp) {
+		this.jobCreatedTimestamp = jobCreatedTimestamp;
 	}
 
 	public String getStatus() {
@@ -84,7 +84,7 @@ public class JobFlowDto {
 	@Override
 	public String toString() {
 		return "JobFlowDto [appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", jobCreated="
-				+ jobCreated + ", status=" + status + ", startTimestamp=" + startTimestamp + ", endTimestamp="
+				+ jobCreatedTimestamp + ", status=" + status + ", startTimestamp=" + startTimestamp + ", endTimestamp="
 				+ endTimestamp + ", errorCount=" + errorCount + "]";
 	}
 

@@ -102,7 +102,7 @@ public class JobFlowManagerServiceTest extends TestBase {
 		batchOfJobFlows.forEach(p -> {
 			assertEquals(JobStatus.PROCESSING, p.getStatus());
 			assertNotNull(p.getStartTimestamp());
-			verify(jobFlowService).updateJobFlow(eq(p));
+			verify(jobFlowService).updateJobFlow(eq(appId), eq(p));
 		});
 	}
 
