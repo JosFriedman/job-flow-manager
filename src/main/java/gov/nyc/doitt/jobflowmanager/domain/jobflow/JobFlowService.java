@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +47,20 @@ public class JobFlowService {
 	}
 
 	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
-	public List<JobFlow> getJobFlows() {
-		return jobFlowRepository.findAll();
+	public List<JobFlowDto> getJobFlows() {
+
+		return jobFlowDtoMapper.toDto(jobFlowRepository.findAll());
 	}
 
 	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
-	public JobFlow getJobFlow(String appId, String jobId) {
-		return jobFlowRepository.findByAppIdAndJobId(appId, jobId);
+	public JobFlowDto getJobFlow(String appId, String jobId) {
+		
+		JobFlow jobFlow = jobFlowRepository.findByAppIdAndJobId(appId, jobId);
+		if (jobFlow == null) {
+			throw new EntityNotFoundException(String.format("Can't find JobFlow for appId=%s, jobId=%s", appId, jobId));
+		}
+		return jobFlowDtoMapper.toDto(jobFlow);
+		
 	}
 
 	/**
@@ -61,7 +69,7 @@ public class JobFlowService {
 	 * @return
 	 */
 	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
-	public List<JobFlow> getNextBatch(String appId) {
+	public List<JobFlowDto> getNextBatch(String appId) {
 
 		try {
 			List<JobFlow> jobFlows = jobFlowRepository.findByAppIdAndStatusInAndErrorCountLessThan(appId,
@@ -74,7 +82,7 @@ public class JobFlowService {
 				p.setStartTimestamp(new Timestamp(System.currentTimeMillis()));
 				jobFlowRepository.save(p);
 			});
-			return jobFlows;
+			return jobFlowDtoMapper.toDto(jobFlows);
 
 		} catch (JobFlowManagerException e) {
 			throw e;
@@ -85,29 +93,36 @@ public class JobFlowService {
 	}
 
 	@Transactional("jobFlowManagerTransactionManager")
-	public JobFlow createJobFlow(JobFlow jobFlow) {
+	public JobFlowDto createJobFlow(JobFlowDto jobFlowDto) {
 
+		JobFlow jobFlow = jobFlowDtoMapper.fromDto(jobFlowDto);
 		jobFlow.setStatus(JobStatus.NEW);
 		jobFlowRepository.save(jobFlow);
-		return jobFlow;
+		return jobFlowDtoMapper.toDto(jobFlow);
 	}
 
 	@Transactional("jobFlowManagerTransactionManager")
-	public JobFlow updateJobFlow(String appId, String jobId, JobFlowDto jobFlowDto) {
+	public JobFlowDto updateJobFlow(String appId, String jobId, JobFlowDto jobFlowDto) {
 
 		if (!jobFlowRepository.existsByAppIdAndJobId(appId, jobId)) {
-			throw new JobFlowManagerException("Can't find JobFlow: " + appId + ", " + jobId);
+			throw new EntityNotFoundException("Can't find JobFlow: " + appId + ", " + jobId);
 		}
 
 		JobFlow jobFlow = jobFlowRepository.getByAppIdAndJobId(appId, jobId);
 		jobFlowDtoMapper.fromDto(jobFlowDto, jobFlow);
 
 		jobFlowRepository.save(jobFlow);
-		return jobFlow;
+		return jobFlowDtoMapper.toDto(jobFlow);
 	}
 
 	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
 	public String deleteJobFlow(String appId, String jobId) {
+
+		JobFlow jobFlow = jobFlowRepository.findByAppIdAndJobId(appId, jobId);
+		if (jobFlow == null) {
+			throw new EntityNotFoundException(String.format("Can't find JobFlow for appId=%s, jobId=%s", appId, jobId));
+		}
+
 		return jobFlowRepository.deleteByAppIdAndJobId(appId, jobId);
 	}
 

@@ -4,7 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,6 +44,9 @@ public class JobFlowServiceTest extends TestBase {
 	@Mock
 	private JobFlowRepository jobFlowRepository;
 
+	@Autowired
+	private JobFlowDtoMapper jobFlowDtoMapper;
+
 	@Spy
 	@InjectMocks
 	private JobFlowService jobFlowService = new JobFlowService();
@@ -61,6 +65,7 @@ public class JobFlowServiceTest extends TestBase {
 		pageable = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreatedTimestamp"));
 		FieldUtils.writeField(jobFlowService, "pageRequest", pageable, true);
 		FieldUtils.writeField(jobFlowService, "maxRetriesForError", maxRetriesForError, true);
+		FieldUtils.writeField(jobFlowService, "jobFlowDtoMapper", jobFlowDtoMapper, true);
 	}
 
 	@Test
@@ -69,15 +74,14 @@ public class JobFlowServiceTest extends TestBase {
 		String appId = "myApp";
 
 		List<JobFlow> jobFlows = Collections.emptyList();
-		when(jobFlowRepository.findByAppIdAndStatusInAndErrorCountLessThan(eq(appId),
-				ArgumentMatchers.<JobStatus>anyList(), eq(maxRetriesForError), eq(pageable)))
-						.thenReturn(jobFlows);
+		when(jobFlowRepository.findByAppIdAndStatusInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobStatus>anyList(),
+				eq(maxRetriesForError), eq(pageable))).thenReturn(jobFlows);
 
-		List<JobFlow> batchOfJobFlows = jobFlowService.getNextBatch(appId);
+		List<JobFlowDto> batchOfJobFlowDtos = jobFlowService.getNextBatch(appId);
 
 		verify(jobFlowRepository, times(1)).findByAppIdAndStatusInAndErrorCountLessThan(eq(appId),
 				ArgumentMatchers.<JobStatus>anyList(), anyInt(), any(Pageable.class));
-		assertTrue(batchOfJobFlows.isEmpty());
+		assertTrue(batchOfJobFlowDtos.isEmpty());
 	}
 
 	@Test
@@ -87,24 +91,22 @@ public class JobFlowServiceTest extends TestBase {
 
 		int listSize = 5;
 		List<JobFlow> jobFlows = JobFlowMockerUpper.createList(listSize);
-		when(jobFlowRepository.findByAppIdAndStatusInAndErrorCountLessThan(eq(appId),
-				ArgumentMatchers.<JobStatus>anyList(), anyInt(), any(Pageable.class)))
-						.thenReturn(jobFlows);
+		when(jobFlowRepository.findByAppIdAndStatusInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobStatus>anyList(),
+				anyInt(), any(Pageable.class))).thenReturn(jobFlows);
 
-		when(jobFlowRepository.existsByAppIdAndJobId(eq(appId), anyString()))
-						.thenReturn(true);
+		when(jobFlowRepository.existsByAppIdAndJobId(eq(appId), anyString())).thenReturn(true);
 
-		List<JobFlow> batchOfJobFlows = jobFlowService.getNextBatch(appId);
+		List<JobFlowDto> batchOfJobFlowDtos = jobFlowService.getNextBatch(appId);
 
 		verify(jobFlowRepository, times(1)).findByAppIdAndStatusInAndErrorCountLessThan(eq(appId),
 				ArgumentMatchers.<JobStatus>anyList(), anyInt(), any(Pageable.class));
-		assertEquals(listSize, batchOfJobFlows.size());
+		assertEquals(listSize, batchOfJobFlowDtos.size());
 
-		batchOfJobFlows.forEach(p -> {
-			assertEquals(JobStatus.PROCESSING, p.getStatus());
+		batchOfJobFlowDtos.forEach(p -> {
+			assertEquals(JobStatus.PROCESSING.toString(), p.getStatus());
 			assertNotNull(p.getStartTimestamp());
-			verify(jobFlowRepository).save(eq(p));
 		});
+		verify(jobFlowRepository, times(listSize)).save(any(JobFlow.class));
 	}
 
 }

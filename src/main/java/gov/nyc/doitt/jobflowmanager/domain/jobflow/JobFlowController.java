@@ -30,22 +30,19 @@ public class JobFlowController {
 	@Autowired
 	private JobFlowService jobFlowService;
 
-	@Autowired
-	private JobFlowDtoMapper jobFlowDtoMapper;
-
 	@GetMapping("/jobFlows")
 	public List<JobFlowDto> getJobFlows() {
-		return jobFlowDtoMapper.toDto(jobFlowService.getJobFlows());
+		return jobFlowService.getJobFlows();
 	}
 
 	@GetMapping("/jobFlows/{appId}/job/{jobId}")
 	public JobFlowDto getJobFlow(@PathVariable String appId, @PathVariable String jobId) {
-		return jobFlowDtoMapper.toDto(jobFlowService.getJobFlow(appId, jobId));
+		return jobFlowService.getJobFlow(appId, jobId);
 	}
 
 	@GetMapping("/jobFlows/batches/{appId}")
 	public List<JobFlowDto> getNextBatch(@PathVariable String appId) {
-		return jobFlowDtoMapper.toDto(jobFlowService.getNextBatch(appId));
+		return jobFlowService.getNextBatch(appId);
 	}
 
 	@PostMapping("/jobFlows")
@@ -58,9 +55,7 @@ public class JobFlowController {
 			throw new JobFlowManagerException(result.getFieldErrors());
 		}
 
-		JobFlow jobFlow = jobFlowService.createJobFlow(jobFlowDtoMapper.fromDto(jobFlowDto));
-		JobFlowDto responseJobFlowDto = jobFlowDtoMapper.toDto(jobFlow);
-		return responseJobFlowDto;
+		return jobFlowService.createJobFlow(jobFlowDto);
 	}
 
 	@PutMapping("/jobFlows/{appId}/job/{jobId}")
@@ -73,9 +68,7 @@ public class JobFlowController {
 			throw new JobFlowManagerException(result.getFieldErrors());
 		}
 
-		JobFlow jobFlow = jobFlowService.updateJobFlow(appId, jobId, jobFlowDto);
-		JobFlowDto responseJobFlowDto = jobFlowDtoMapper.toDto(jobFlow);
-		return responseJobFlowDto;
+		return jobFlowService.updateJobFlow(appId, jobId, jobFlowDto);
 	}
 
 	@DeleteMapping("/jobFlows/{appId}/job/{jobId}")
