@@ -11,11 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobFlowMockerUpper {
 
-	private String appId = "myApp";
-	
-	public List<JobFlow> createList(int listSize) throws Exception {
+	private String appId = "myApp1";
 
-		int id = new Random().nextInt(100) * -1;
+	public List<JobFlow> createList(int listSize) throws Exception {
 
 		List<JobFlow> jobFlows = new ArrayList<>();
 		for (int i = 0; i < listSize; i++) {

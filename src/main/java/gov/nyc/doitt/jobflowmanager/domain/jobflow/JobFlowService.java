@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.nyc.doitt.jobflowmanager.domain.jobflow.dto.JobFlowDto;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobStatus;
 import gov.nyc.doitt.jobflowmanager.infrastructure.JobFlowManagerConcurrencyException;
@@ -27,6 +28,9 @@ public class JobFlowService {
 
 	@Autowired
 	private JobFlowRepository jobFlowRepository;
+
+	@Autowired
+	private JobFlowDtoMapper jobFlowDtoMapper;
 
 	@Value("${jobflowmanager.domain.jobflow.JobFlowService.maxBatchSize}")
 	private int maxBatchSize;
@@ -42,12 +46,17 @@ public class JobFlowService {
 	}
 
 	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
-	public List<JobFlow> getAll() {
+	public List<JobFlow> getJobFlows() {
 		return jobFlowRepository.findAll();
 	}
 
+	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+	public JobFlow getJobFlow(String appId, String jobId) {
+		return jobFlowRepository.findByAppIdAndJobId(appId, jobId);
+	}
+
 	/**
-	 * Return next batch of submissions
+	 * Return next batch of jobs
 	 * 
 	 * @return
 	 */
@@ -56,15 +65,14 @@ public class JobFlowService {
 
 		try {
 			List<JobFlow> jobFlows = jobFlowRepository.findByAppIdAndStatusInAndErrorCountLessThan(appId,
-					Arrays.asList(new JobStatus[] { JobStatus.NEW, JobStatus.ERROR }), maxRetriesForError + 1,
-					pageRequest);
+					Arrays.asList(new JobStatus[] { JobStatus.NEW, JobStatus.ERROR }), maxRetriesForError + 1, pageRequest);
 			logger.info("getNextBatch: number of submissions found: {}", jobFlows.size());
 
 			// mark each submission as picked up for processing
 			jobFlows.forEach(p -> {
 				p.setStatus(JobStatus.PROCESSING);
 				p.setStartTimestamp(new Timestamp(System.currentTimeMillis()));
-				updateJobFlow(appId, p);
+				jobFlowRepository.save(p);
 			});
 			return jobFlows;
 
@@ -85,13 +93,22 @@ public class JobFlowService {
 	}
 
 	@Transactional("jobFlowManagerTransactionManager")
-	public JobFlow updateJobFlow(String appId, JobFlow jobFlow) {
+	public JobFlow updateJobFlow(String appId, String jobId, JobFlowDto jobFlowDto) {
 
-		if (!jobFlowRepository.existsByAppIdAndJobId(appId, jobFlow.getJobId())) {
-			throw new JobFlowManagerException("Can't find JobFlow: " + appId + ", " + jobFlow.getJobId());
+		if (!jobFlowRepository.existsByAppIdAndJobId(appId, jobId)) {
+			throw new JobFlowManagerException("Can't find JobFlow: " + appId + ", " + jobId);
 		}
+
+		JobFlow jobFlow = jobFlowRepository.getByAppIdAndJobId(appId, jobId);
+		jobFlowDtoMapper.fromDto(jobFlowDto, jobFlow);
+
 		jobFlowRepository.save(jobFlow);
 		return jobFlow;
+	}
+
+	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+	public String deleteJobFlow(String appId, String jobId) {
+		return jobFlowRepository.deleteByAppIdAndJobId(appId, jobId);
 	}
 
 }

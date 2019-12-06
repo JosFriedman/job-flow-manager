@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,12 @@ public class JobFlowController {
 
 	@GetMapping("/jobFlows")
 	public List<JobFlowDto> getJobFlows() {
-		return jobFlowDtoMapper.toDto(jobFlowService.getAll());
+		return jobFlowDtoMapper.toDto(jobFlowService.getJobFlows());
+	}
+
+	@GetMapping("/jobFlows/{appId}/job/{jobId}")
+	public JobFlowDto getJobFlow(@PathVariable String appId, @PathVariable String jobId) {
+		return jobFlowDtoMapper.toDto(jobFlowService.getJobFlow(appId, jobId));
 	}
 
 	@GetMapping("/jobFlows/batches/{appId}")
@@ -57,8 +63,8 @@ public class JobFlowController {
 		return responseJobFlowDto;
 	}
 
-	@PutMapping("/jobFlows/{appId}")
-	public JobFlowDto updateJobFlow(@PathVariable String appId, @Valid @RequestBody JobFlowDto jobFlowDto, BindingResult result)
+	@PutMapping("/jobFlows/{appId}/job/{jobId}")
+	public JobFlowDto updateJobFlow(@PathVariable String appId, @PathVariable String jobId, @Valid @RequestBody JobFlowDto jobFlowDto, BindingResult result)
 			throws JobFlowManagerException {
 
 		logger.debug("updateJobFlow: entering: ", jobFlowDto);
@@ -67,9 +73,15 @@ public class JobFlowController {
 			throw new JobFlowManagerException(result.getFieldErrors());
 		}
 
-		JobFlow jobFlow = jobFlowService.updateJobFlow(appId, jobFlowDtoMapper.fromDto(jobFlowDto));
+		JobFlow jobFlow = jobFlowService.updateJobFlow(appId, jobId, jobFlowDto);
 		JobFlowDto responseJobFlowDto = jobFlowDtoMapper.toDto(jobFlow);
 		return responseJobFlowDto;
 	}
+
+	@DeleteMapping("/jobFlows/{appId}/job/{jobId}")
+	public String deleteJobFlow(@PathVariable String appId, @PathVariable String jobId) {
+		return jobFlowService.deleteJobFlow(appId, jobId);
+	}
+
 
 }

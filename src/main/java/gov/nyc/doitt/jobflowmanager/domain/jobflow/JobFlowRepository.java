@@ -19,7 +19,15 @@ interface JobFlowRepository extends JpaRepository<JobFlow, Integer> {
 	List<JobFlow> findByStatusInAndErrorCountLessThan(List<JobStatus> statuses, int errorCount, Pageable pageable);
 
 	@Lock(LockModeType.PESSIMISTIC_READ)
-	List<JobFlow> findByAppIdAndStatusInAndErrorCountLessThan(String appId, List<JobStatus> statuses, int errorCount, Pageable pageable);
+	List<JobFlow> findByAppIdAndStatusInAndErrorCountLessThan(String appId, List<JobStatus> statuses, int errorCount,
+			Pageable pageable);
 
 	boolean existsByAppIdAndJobId(String appId, String jobId);
+
+
+	String deleteByAppIdAndJobId(String appId, String jobId);
+
+	JobFlow findByAppIdAndJobId(String appId, String jobId);
+
+	JobFlow getByAppIdAndJobId(String appId, String jobId);
 }

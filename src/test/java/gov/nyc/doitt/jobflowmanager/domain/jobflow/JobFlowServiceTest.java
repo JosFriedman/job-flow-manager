@@ -29,12 +29,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import gov.nyc.doitt.jobflowmanager.TestBase;
+import gov.nyc.doitt.jobflowmanager.domain.jobflow.dto.JobFlowDto;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlowMockerUpper;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobStatus;
 
 @RunWith(SpringRunner.class)
-public class JobFlowManagerServiceTest extends TestBase {
+public class JobFlowServiceTest extends TestBase {
 
 	@Autowired
 	private JobFlowMockerUpper JobFlowMockerUpper;
@@ -102,7 +103,7 @@ public class JobFlowManagerServiceTest extends TestBase {
 		batchOfJobFlows.forEach(p -> {
 			assertEquals(JobStatus.PROCESSING, p.getStatus());
 			assertNotNull(p.getStartTimestamp());
-			verify(jobFlowService).updateJobFlow(eq(appId), eq(p));
+			verify(jobFlowRepository).save(eq(p));
 		});
 	}
 
