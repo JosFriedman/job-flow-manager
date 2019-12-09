@@ -54,7 +54,7 @@ class JobFlowDtoMapper {
 	public JobFlow fromDtoPatch(JobFlowDto jobFlowDto, JobFlow jobFlow) {
 
 		// Note: only field supported by patching
-		jobFlow.setResultStatus(JobStatus.valueOf(jobFlowDto.getStatus()));
+		jobFlow.setStatusSmartly(JobStatus.valueOf(jobFlowDto.getStatus()));
 		return jobFlow;
 	}
 

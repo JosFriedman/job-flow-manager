@@ -92,8 +92,9 @@ public class JobFlow {
 		this.status = status;
 	}
 
-	public void setResultStatus(JobStatus status) {
+	public void setStatusSmartly(JobStatus status) {
 		this.status = status;
+		endTimestamp = new Timestamp(System.currentTimeMillis());
 		if (this.status == JobStatus.ERROR) {
 			errorCount++;
 		}
