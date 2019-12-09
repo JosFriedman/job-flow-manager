@@ -10,16 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.dto.JobFlowDto;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
+import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobStatus;
 import gov.nyc.doitt.jobflowmanager.infrastructure.JobFlowManagerException;
+import javafx.util.Pair;
 
 @RestController
 @RequestMapping("jobFlowManager")
@@ -74,6 +78,17 @@ public class JobFlowController {
 	@DeleteMapping("/jobFlows/{appId}/job/{jobId}")
 	public String deleteJobFlow(@PathVariable String appId, @PathVariable String jobId) {
 		return jobFlowService.deleteJobFlow(appId, jobId);
+	}
+
+
+	@GetMapping("/jobFlowIds/{appId}")
+	public List<String> getJobFlowIds(@PathVariable String appId, @RequestParam(defaultValue = "true") boolean nextBatch) {
+		return jobFlowService.getJobIds(appId, nextBatch);
+	}
+
+	@PatchMapping("/jobFlows/{appId}")
+	public List<JobFlowDto> updateJobFlows(@PathVariable String appId,  @RequestBody List<JobFlowDto> jobFlowDtos) {
+		return jobFlowService.patchJobFlows(appId, jobFlowDtos);
 	}
 
 

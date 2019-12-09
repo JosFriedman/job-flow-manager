@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.dto.JobFlowDto;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
+import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobStatus;
 
 /**
  * Map JobFlow to and from JobFlowDto
@@ -47,6 +48,13 @@ class JobFlowDtoMapper {
 	public JobFlow fromDto(JobFlowDto jobFlowDto, JobFlow jobFlow) {
 
 		modelMapper.map(jobFlowDto, jobFlow);
+		return jobFlow;
+	}
+
+	public JobFlow fromDtoPatch(JobFlowDto jobFlowDto, JobFlow jobFlow) {
+
+		// Note: only field supported by patching
+		jobFlow.setResultStatus(JobStatus.valueOf(jobFlowDto.getStatus()));
 		return jobFlow;
 	}
 

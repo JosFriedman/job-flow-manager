@@ -19,7 +19,8 @@ public class JobFlow {
 
 	@Id
 	@GenericGenerator(name = "db-uuid", strategy = "guid")
-	@GeneratedValue(generator = "db-uuid")	@Column(name = "ID")
+	@GeneratedValue(generator = "db-uuid")
+	@Column(name = "ID")
 	private String id;
 
 	@Column(name = "APP_ID")
@@ -50,8 +51,7 @@ public class JobFlow {
 	@Version
 	@Column(name = "MULTI_INSTANCE_CTRL")
 	private int multiInstanceCtrl;
-	
-	
+
 	public String getId() {
 		return id;
 	}
@@ -92,6 +92,13 @@ public class JobFlow {
 		this.status = status;
 	}
 
+	public void setResultStatus(JobStatus status) {
+		this.status = status;
+		if (this.status == JobStatus.ERROR) {
+			errorCount++;
+		}
+	}
+
 	public Timestamp getStartTimestamp() {
 		return startTimestamp;
 	}
@@ -116,6 +123,10 @@ public class JobFlow {
 		this.errorCount = errorCount;
 	}
 
+	public int incrementErrorCount() {
+		return errorCount++;
+	}
+
 	public int getMultiInstanceCtrl() {
 		return multiInstanceCtrl;
 	}
@@ -123,7 +134,6 @@ public class JobFlow {
 	public void setMultiInstanceCtrl(int multiInstanceCtrl) {
 		this.multiInstanceCtrl = multiInstanceCtrl;
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -193,8 +203,8 @@ public class JobFlow {
 	public String toString() {
 		return "JobFlow [id=" + id + ", appId=" + appId + ", jobId=" + jobId + ", description=" + description
 				+ ", jobCreatedTimestamp=" + jobCreatedTimestamp + ", status=" + status + ", startTimestamp=" + startTimestamp
-				+ ", endTimestamp=" + endTimestamp + ", errorCount=" + errorCount + ", multiInstanceCtrl="
-				+ multiInstanceCtrl + "]";
+				+ ", endTimestamp=" + endTimestamp + ", errorCount=" + errorCount + ", multiInstanceCtrl=" + multiInstanceCtrl
+				+ "]";
 	}
 
 }

@@ -30,4 +30,10 @@ interface JobFlowRepository extends JpaRepository<JobFlow, Integer> {
 	JobFlow findByAppIdAndJobId(String appId, String jobId);
 
 	JobFlow getByAppIdAndJobId(String appId, String jobId);
+
+	List<JobFlow> findByAppId(String appId);
+
+	List<JobFlow> getByAppId(String appId);
+
+	List<JobFlow> getByAppIdAndJobIdIn(String appId, List<String> jobIds);
 }

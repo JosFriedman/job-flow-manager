@@ -1,8 +1,12 @@
 package gov.nyc.doitt.jobflowmanager.domain.jobflow;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
@@ -53,14 +57,20 @@ public class JobFlowService {
 	}
 
 	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+	public List<JobFlowDto> getJobFlows(String appId) {
+
+		return jobFlowDtoMapper.toDto(jobFlowRepository.findByAppId(appId));
+	}
+
+	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
 	public JobFlowDto getJobFlow(String appId, String jobId) {
-		
+
 		JobFlow jobFlow = jobFlowRepository.findByAppIdAndJobId(appId, jobId);
 		if (jobFlow == null) {
 			throw new EntityNotFoundException(String.format("Can't find JobFlow for appId=%s, jobId=%s", appId, jobId));
 		}
 		return jobFlowDtoMapper.toDto(jobFlow);
-		
+
 	}
 
 	/**
@@ -92,6 +102,19 @@ public class JobFlowService {
 
 	}
 
+	/**
+	 * Return job ids for appId
+	 * 
+	 * @return
+	 */
+	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+	public List<String> getJobIds(String appId, boolean nextBatch) {
+
+		List<JobFlowDto> jobFlowDtos = nextBatch ? getNextBatch(appId) : getJobFlows(appId);
+		return jobFlowDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
+
+	}
+
 	@Transactional("jobFlowManagerTransactionManager")
 	public JobFlowDto createJobFlow(JobFlowDto jobFlowDto) {
 
@@ -113,6 +136,28 @@ public class JobFlowService {
 
 		jobFlowRepository.save(jobFlow);
 		return jobFlowDtoMapper.toDto(jobFlow);
+	}
+
+	@Transactional("jobFlowManagerTransactionManager")
+	public List<JobFlowDto> patchJobFlows(String appId, List<JobFlowDto> jobFlowDtos) {
+
+		List<JobFlowDto> returnJobFlowDtos = new ArrayList<>();
+		List<String> jobIds = jobFlowDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
+		List<JobFlow> jobFlows = jobFlowRepository.getByAppIdAndJobIdIn(appId, jobIds);
+
+//		Map<String, String> jobIdStatusMap = jobFlowDtos.stream()
+//				.collect(Collectors.toMap(JobFlowDto::getJobId, JobFlowDto::getStatus));
+		Map<String, JobFlow> jobIdJobFlowMap = jobFlows.stream().collect(Collectors.toMap(JobFlow::getJobId, Function.identity()));
+
+		jobFlowDtos.forEach(p -> {
+			JobFlow jobFlow = jobIdJobFlowMap.get(p.getJobId());
+			jobFlowDtoMapper.fromDtoPatch(p, jobFlow);
+			jobFlowRepository.save(jobFlow);
+			JobFlowDto jobFlowDto = jobFlowDtoMapper.toDto(jobFlow);
+			returnJobFlowDtos.add(jobFlowDto);
+		});
+
+		return returnJobFlowDtos;
 	}
 
 	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
