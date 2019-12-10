@@ -115,6 +115,18 @@ public class JobFlowService {
 
 	}
 
+	/**
+	 * Return job flows for appId
+	 * 
+	 * @return
+	 */
+	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+	public List<JobFlowDto> getJobFlows(String appId, boolean nextBatch) {
+
+		return nextBatch ? getNextBatch(appId) : getJobFlows(appId);
+	}
+
+	
 	@Transactional("jobFlowManagerTransactionManager")
 	public JobFlowDto createJobFlow(JobFlowDto jobFlowDto) {
 

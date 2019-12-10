@@ -20,10 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.dto.JobFlowDto;
-import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
-import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobStatus;
 import gov.nyc.doitt.jobflowmanager.infrastructure.JobFlowManagerException;
-import javafx.util.Pair;
 
 @RestController
 @RequestMapping("jobFlowManager")
@@ -49,6 +46,17 @@ public class JobFlowController {
 		return jobFlowService.getNextBatch(appId);
 	}
 
+	@GetMapping("/jobFlowIds/{appId}")
+	public List<String> getJobFlowIds(@PathVariable String appId, @RequestParam(defaultValue = "true") boolean nextBatch) {
+		return jobFlowService.getJobIds(appId, nextBatch);
+	}
+
+	@GetMapping("/jobFlows/{appId}")
+	public List<JobFlowDto> getJobFlows(@PathVariable String appId, @RequestParam(defaultValue = "true") boolean nextBatch) {
+		return jobFlowService.getJobFlows(appId, nextBatch);
+	}
+
+
 	@PostMapping("/jobFlows")
 	public JobFlowDto createJobFlow(@Valid @RequestBody JobFlowDto jobFlowDto, BindingResult result)
 			throws JobFlowManagerException {
@@ -63,8 +71,8 @@ public class JobFlowController {
 	}
 
 	@PutMapping("/jobFlows/{appId}/job/{jobId}")
-	public JobFlowDto updateJobFlow(@PathVariable String appId, @PathVariable String jobId, @Valid @RequestBody JobFlowDto jobFlowDto, BindingResult result)
-			throws JobFlowManagerException {
+	public JobFlowDto updateJobFlow(@PathVariable String appId, @PathVariable String jobId,
+			@Valid @RequestBody JobFlowDto jobFlowDto, BindingResult result) throws JobFlowManagerException {
 
 		logger.debug("updateJobFlow: entering: ", jobFlowDto);
 
@@ -75,21 +83,14 @@ public class JobFlowController {
 		return jobFlowService.updateJobFlow(appId, jobId, jobFlowDto);
 	}
 
+	@PatchMapping("/jobFlows/{appId}")
+	public List<JobFlowDto> updateJobFlows(@PathVariable String appId, @RequestBody List<JobFlowDto> jobFlowDtos) {
+		return jobFlowService.patchJobFlows(appId, jobFlowDtos);
+	}
+
 	@DeleteMapping("/jobFlows/{appId}/job/{jobId}")
 	public String deleteJobFlow(@PathVariable String appId, @PathVariable String jobId) {
 		return jobFlowService.deleteJobFlow(appId, jobId);
 	}
-
-
-	@GetMapping("/jobFlowIds/{appId}")
-	public List<String> getJobFlowIds(@PathVariable String appId, @RequestParam(defaultValue = "true") boolean nextBatch) {
-		return jobFlowService.getJobIds(appId, nextBatch);
-	}
-
-	@PatchMapping("/jobFlows/{appId}")
-	public List<JobFlowDto> updateJobFlows(@PathVariable String appId,  @RequestBody List<JobFlowDto> jobFlowDtos) {
-		return jobFlowService.patchJobFlows(appId, jobFlowDtos);
-	}
-
 
 }
