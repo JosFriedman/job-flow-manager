@@ -26,7 +26,7 @@ class JobFlowDtoMapper {
 	private PropertyMap<JobFlowDto, JobFlow> jobFlowDtoPropertyMap = new PropertyMap<JobFlowDto, JobFlow>() {
 
 		protected void configure() {
-			skip(destination.getId());
+			skip(destination.get_id());
 			skip(destination.getJobCreatedTimestamp());
 		}
 	};

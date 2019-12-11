@@ -5,15 +5,15 @@ import java.util.List;
 import javax.persistence.LockModeType;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobStatus;
 
 @Repository
-interface JobFlowRepository extends JpaRepository<JobFlow, Integer> {
+interface JobFlowRepository extends MongoRepository<JobFlow, String> {
 
 //	@Lock(LockModeType.PESSIMISTIC_READ)
 	List<JobFlow> findByStatusInAndErrorCountLessThan(List<JobStatus> statuses, int errorCount, Pageable pageable);
@@ -23,7 +23,6 @@ interface JobFlowRepository extends JpaRepository<JobFlow, Integer> {
 			Pageable pageable);
 
 	boolean existsByAppIdAndJobId(String appId, String jobId);
-
 
 	String deleteByAppIdAndJobId(String appId, String jobId);
 

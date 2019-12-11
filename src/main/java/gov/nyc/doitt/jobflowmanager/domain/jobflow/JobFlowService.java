@@ -50,19 +50,28 @@ public class JobFlowService {
 		pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "jobCreatedTimestamp"));
 	}
 
-	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+//	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
 	public List<JobFlowDto> getJobFlows() {
 
+//		try {
+//		jobFlowRepository.findAll();
 		return jobFlowDtoMapper.toDto(jobFlowRepository.findAll());
+//		} catch (Throwable e) {
+//			return null;
+//		}
 	}
 
-	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+//	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
 	public List<JobFlowDto> getJobFlows(String appId) {
 
+		try {
 		return jobFlowDtoMapper.toDto(jobFlowRepository.findByAppId(appId));
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
-	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+//	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
 	public JobFlowDto getJobFlow(String appId, String jobId) {
 
 		JobFlow jobFlow = jobFlowRepository.findByAppIdAndJobId(appId, jobId);
@@ -78,7 +87,7 @@ public class JobFlowService {
 	 * 
 	 * @return
 	 */
-	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+//	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
 	public List<JobFlowDto> getNextBatch(String appId) {
 
 		try {
@@ -107,7 +116,7 @@ public class JobFlowService {
 	 * 
 	 * @return
 	 */
-	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+//	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
 	public List<String> getJobIds(String appId, boolean nextBatch) {
 
 		List<JobFlowDto> jobFlowDtos = nextBatch ? getNextBatch(appId) : getJobFlows(appId);
@@ -120,14 +129,14 @@ public class JobFlowService {
 	 * 
 	 * @return
 	 */
-	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+//	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
 	public List<JobFlowDto> getJobFlows(String appId, boolean nextBatch) {
 
 		return nextBatch ? getNextBatch(appId) : getJobFlows(appId);
 	}
 
 	
-	@Transactional("jobFlowManagerTransactionManager")
+//	@Transactional("jobFlowManagerTransactionManager")
 	public JobFlowDto createJobFlow(JobFlowDto jobFlowDto) {
 
 		JobFlow jobFlow = jobFlowDtoMapper.fromDto(jobFlowDto);
@@ -136,7 +145,7 @@ public class JobFlowService {
 		return jobFlowDtoMapper.toDto(jobFlow);
 	}
 
-	@Transactional("jobFlowManagerTransactionManager")
+//	@Transactional("jobFlowManagerTransactionManager")
 	public JobFlowDto updateJobFlow(String appId, String jobId, JobFlowDto jobFlowDto) {
 
 		if (!jobFlowRepository.existsByAppIdAndJobId(appId, jobId)) {
@@ -150,7 +159,7 @@ public class JobFlowService {
 		return jobFlowDtoMapper.toDto(jobFlow);
 	}
 
-	@Transactional("jobFlowManagerTransactionManager")
+//	@Transactional("jobFlowManagerTransactionManager")
 	public List<JobFlowDto> patchJobFlows(String appId, List<JobFlowDto> jobFlowDtos) {
 
 		List<JobFlowDto> returnJobFlowDtos = new ArrayList<>();
@@ -172,7 +181,7 @@ public class JobFlowService {
 		return returnJobFlowDtos;
 	}
 
-	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
+//	@Transactional(transactionManager = "jobFlowManagerTransactionManager")
 	public String deleteJobFlow(String appId, String jobId) {
 
 		JobFlow jobFlow = jobFlowRepository.findByAppIdAndJobId(appId, jobId);

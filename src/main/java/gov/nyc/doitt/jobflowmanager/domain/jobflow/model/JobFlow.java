@@ -3,25 +3,25 @@ package gov.nyc.doitt.jobflowmanager.domain.jobflow.model;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "JOB_FLOW")
+//@Entity
+//@Table(name = "JOB_FLOW")
+@Document
 public class JobFlow {
 
 	@Id
 	@GenericGenerator(name = "db-uuid", strategy = "guid")
 	@GeneratedValue(generator = "db-uuid")
 	@Column(name = "ID")
-	private String id;
+	private String _id;
 
 	@Column(name = "APP_ID")
 	private String appId;
@@ -52,8 +52,12 @@ public class JobFlow {
 	@Column(name = "MULTI_INSTANCE_CTRL")
 	private int multiInstanceCtrl;
 
-	public String getId() {
-		return id;
+//	public String getId() {
+//		return _id;
+//	}
+
+	public String get_id() {
+		return _id;
 	}
 
 	public String getAppId() {
@@ -202,7 +206,7 @@ public class JobFlow {
 
 	@Override
 	public String toString() {
-		return "JobFlow [id=" + id + ", appId=" + appId + ", jobId=" + jobId + ", description=" + description
+		return "JobFlow [id=" + _id + ", appId=" + appId + ", jobId=" + jobId + ", description=" + description
 				+ ", jobCreatedTimestamp=" + jobCreatedTimestamp + ", status=" + status + ", startTimestamp=" + startTimestamp
 				+ ", endTimestamp=" + endTimestamp + ", errorCount=" + errorCount + ", multiInstanceCtrl=" + multiInstanceCtrl
 				+ "]";
