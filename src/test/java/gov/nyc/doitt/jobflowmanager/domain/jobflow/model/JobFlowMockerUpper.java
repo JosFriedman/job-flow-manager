@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobFlowMockerUpper {
 
-	private String appId = "myApp1";
+	public String appId = "myApp1";
 
 	public List<JobFlow> createList(int listSize) throws Exception {
 
@@ -37,7 +37,7 @@ public class JobFlowMockerUpper {
 		FieldUtils.writeField(jobFlow, "description", "description" + idx, true);
 
 		// make very old so it is found first
-		FieldUtils.writeField(jobFlow, "jobCreatedTimestamp", new Timestamp(System.currentTimeMillis() - 900000000000L), true);
+		FieldUtils.writeField(jobFlow, "jobCreatedTimestamp", new Timestamp(System.currentTimeMillis() - 9000000000000L), true);
 
 		FieldUtils.writeField(jobFlow, "description", "description" + idx, true);
 
