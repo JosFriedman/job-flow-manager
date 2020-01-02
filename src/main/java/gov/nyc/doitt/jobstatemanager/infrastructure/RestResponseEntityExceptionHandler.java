@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobflowmanager.infrastructure;
+package gov.nyc.doitt.jobstatemanager.infrastructure;
 
 import javax.persistence.EntityNotFoundException;
 

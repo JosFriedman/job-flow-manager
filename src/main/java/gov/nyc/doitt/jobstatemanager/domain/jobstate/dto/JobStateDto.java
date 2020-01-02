@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobflowmanager.domain.jobflow.dto;
+package gov.nyc.doitt.jobstatemanager.domain.jobstate.dto;
 
 import java.sql.Timestamp;
 
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class JobFlowDto {
+public class JobStateDto {
 
 	private String appId;
 	private String jobId;

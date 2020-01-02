@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobflowmanager.domain.jobflow.model;
+package gov.nyc.doitt.jobstatemanager.domain.jobstate.model;
 
 public enum JobStatus {
 

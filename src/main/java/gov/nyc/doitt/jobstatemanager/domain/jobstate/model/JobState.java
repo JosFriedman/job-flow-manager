@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobflowmanager.domain.jobflow.model;
+package gov.nyc.doitt.jobstatemanager.domain.jobstate.model;
 
 import java.sql.Timestamp;
 
@@ -13,7 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-public class JobFlow {
+public class JobState {
 
 	@Id
 	@GenericGenerator(name = "db-uuid", strategy = "guid")
@@ -155,7 +155,7 @@ public class JobFlow {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		JobFlow other = (JobFlow) obj;
+		JobState other = (JobState) obj;
 		if (appId == null) {
 			if (other.appId != null)
 				return false;

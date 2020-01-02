@@ -7,7 +7,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="gov.nyc.doitt.jobflowmanager" level="DEBUG" />
+	<logger name="gov.nyc.doitt.jobstatemanager" level="DEBUG" />
 	<logger name="org.mongodb.driver.protocol" level="DEBUG" />
 	
 	<root level="ERROR">

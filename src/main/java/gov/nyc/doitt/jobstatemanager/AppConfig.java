@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobflowmanager;
+package gov.nyc.doitt.jobstatemanager;
 
 import java.util.Collections;
 import java.util.Date;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAutoConfiguration
 @ComponentScan
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = { "gov.nyc.doitt.jobflowmanager" })
+@EnableJpaRepositories(basePackages = { "gov.nyc.doitt.jobstatemanager" })
 public class AppConfig {
 
 	@Autowired
