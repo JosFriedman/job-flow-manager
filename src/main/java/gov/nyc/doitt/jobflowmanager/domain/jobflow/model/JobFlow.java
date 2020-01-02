@@ -12,8 +12,6 @@ import javax.persistence.Version;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-//@Entity
-//@Table(name = "JOB_FLOW")
 @Document
 public class JobFlow {
 

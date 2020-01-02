@@ -36,13 +36,6 @@ class JobFlowDtoMapper {
 		modelMapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
 
 		modelMapper.addMappings(jobFlowDtoPropertyMap);
-//		TypeMap<JobFlowDto, JobFlow> jobFlowDtoTypeMap = modelMapper.createTypeMap(JobFlowDto.class,
-//				JobFlow.class);
-//		jobFlowDtoTypeMap.addMappings(p -> p.skip(JobFlow::setId));
-//
-//		TypeMap<JobFlow, JobFlowDto> jobFlowTypeMap = modelMapper.createTypeMap(JobFlow.class,
-//				JobFlowDto.class);
-
 	}
 
 	public JobFlow fromDto(JobFlowDto jobFlowDto, JobFlow jobFlow) {

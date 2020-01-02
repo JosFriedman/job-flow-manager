@@ -30,6 +30,39 @@ public class JobFlowController {
 
 	@Autowired
 	private JobFlowService jobFlowService;
+	
+	// TODO: validator 
+
+	@PostMapping("/jobFlows")
+	public JobFlowDto createJobFlow(@Valid @RequestBody JobFlowDto jobFlowDto, BindingResult result)
+			throws JobFlowManagerException {
+
+		logger.debug("createJobFlow: entering: ", jobFlowDto);
+
+		if (result.hasErrors()) {
+			throw new JobFlowManagerException(result.getFieldErrors());
+		}
+
+		return jobFlowService.createJobFlow(jobFlowDto);
+	}
+
+	@GetMapping("/jobFlows/{appId}")
+	public List<JobFlowDto> getJobFlows(@PathVariable String appId, @RequestParam(defaultValue = "true") boolean nextBatch) {
+		return jobFlowService.getJobFlows(appId, nextBatch);
+	}
+
+	@PatchMapping("/jobFlows/{appId}")
+	public List<JobFlowDto> updateJobFlows(@PathVariable String appId, @RequestBody List<JobFlowDto> jobFlowDtos) {
+		return jobFlowService.patchJobFlows(appId, jobFlowDtos);
+	}
+
+	@DeleteMapping("/jobFlows/{appId}/job/{jobId}")
+	public String deleteJobFlow(@PathVariable String appId, @PathVariable String jobId) {
+		return jobFlowService.deleteJobFlow(appId, jobId);
+	}
+
+	//////////////////////////////////////////////////////
+	// other endpoints
 
 	@GetMapping("/jobFlows")
 	public List<JobFlowDto> getJobFlows() {
@@ -51,25 +84,6 @@ public class JobFlowController {
 		return jobFlowService.getJobIds(appId, nextBatch);
 	}
 
-	@GetMapping("/jobFlows/{appId}")
-	public List<JobFlowDto> getJobFlows(@PathVariable String appId, @RequestParam(defaultValue = "true") boolean nextBatch) {
-		return jobFlowService.getJobFlows(appId, nextBatch);
-	}
-
-
-	@PostMapping("/jobFlows")
-	public JobFlowDto createJobFlow(@Valid @RequestBody JobFlowDto jobFlowDto, BindingResult result)
-			throws JobFlowManagerException {
-
-		logger.debug("createJobFlow: entering: ", jobFlowDto);
-
-		if (result.hasErrors()) {
-			throw new JobFlowManagerException(result.getFieldErrors());
-		}
-
-		return jobFlowService.createJobFlow(jobFlowDto);
-	}
-
 	@PutMapping("/jobFlows/{appId}/job/{jobId}")
 	public JobFlowDto updateJobFlow(@PathVariable String appId, @PathVariable String jobId,
 			@Valid @RequestBody JobFlowDto jobFlowDto, BindingResult result) throws JobFlowManagerException {
@@ -81,16 +95,6 @@ public class JobFlowController {
 		}
 
 		return jobFlowService.updateJobFlow(appId, jobId, jobFlowDto);
-	}
-
-	@PatchMapping("/jobFlows/{appId}")
-	public List<JobFlowDto> updateJobFlows(@PathVariable String appId, @RequestBody List<JobFlowDto> jobFlowDtos) {
-		return jobFlowService.patchJobFlows(appId, jobFlowDtos);
-	}
-
-	@DeleteMapping("/jobFlows/{appId}/job/{jobId}")
-	public String deleteJobFlow(@PathVariable String appId, @PathVariable String jobId) {
-		return jobFlowService.deleteJobFlow(appId, jobId);
 	}
 
 }

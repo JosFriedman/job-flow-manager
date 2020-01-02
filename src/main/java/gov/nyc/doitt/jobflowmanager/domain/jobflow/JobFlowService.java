@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.dto.JobFlowDto;
 import gov.nyc.doitt.jobflowmanager.domain.jobflow.model.JobFlow;
@@ -65,7 +64,7 @@ public class JobFlowService {
 	public List<JobFlowDto> getJobFlows(String appId) {
 
 		try {
-		return jobFlowDtoMapper.toDto(jobFlowRepository.findByAppId(appId));
+			return jobFlowDtoMapper.toDto(jobFlowRepository.findByAppId(appId));
 		} catch (Exception e) {
 			return null;
 		}
@@ -135,7 +134,6 @@ public class JobFlowService {
 		return nextBatch ? getNextBatch(appId) : getJobFlows(appId);
 	}
 
-	
 //	@Transactional("jobFlowManagerTransactionManager")
 	public JobFlowDto createJobFlow(JobFlowDto jobFlowDto) {
 
