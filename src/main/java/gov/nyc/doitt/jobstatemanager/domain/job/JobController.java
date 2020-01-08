@@ -43,22 +43,22 @@ public class JobController {
 			throw new JobStateManagerException(result.getFieldErrors());
 		}
 
-		return jobService.createJobState(jobDto);
+		return jobService.createJob(jobDto);
 	}
 
 	@GetMapping("/jobs/{appId}")
 	public List<JobDto> getJobs(@PathVariable String appId, @RequestParam(defaultValue = "true") boolean nextBatch) {
-		return jobService.getJobStates(appId, nextBatch);
+		return jobService.getJobs(appId, nextBatch);
 	}
 
 	@PatchMapping("/jobs/{appId}")
-	public List<JobDto> updateJobs(@PathVariable String appId, @RequestBody List<JobDto> jobDtos) {
-		return jobService.patchJobStates(appId, jobDtos);
+	public List<JobDto> patchJobs(@PathVariable String appId, @RequestBody List<JobDto> jobDtos) {
+		return jobService.updateJobsWithResults(appId, jobDtos);
 	}
 
 	@DeleteMapping("/jobs/{appId}/job/{jobId}")
 	public String deleteJob(@PathVariable String appId, @PathVariable String jobId) {
-		return jobService.deleteJobState(appId, jobId);
+		return jobService.deleteJob(appId, jobId);
 	}
 
 	//////////////////////////////////////////////////////
@@ -66,17 +66,12 @@ public class JobController {
 
 	@GetMapping("/jobs")
 	public List<JobDto> getJobs() {
-		return jobService.getJobStates();
+		return jobService.getJobs();
 	}
 
 	@GetMapping("/jobs/{appId}/job/{jobId}")
 	public JobDto getJob(@PathVariable String appId, @PathVariable String jobId) {
-		return jobService.getJobState(appId, jobId);
-	}
-
-	@GetMapping("/jobs/batches/{appId}")
-	public List<JobDto> getNextBatch(@PathVariable String appId) {
-		return jobService.getNextBatch(appId);
+		return jobService.getJob(appId, jobId);
 	}
 
 	@GetMapping("/jobIds/{appId}")
@@ -94,7 +89,7 @@ public class JobController {
 			throw new JobStateManagerException(result.getFieldErrors());
 		}
 
-		return jobService.updateJobState(appId, jobId, jobDto);
+		return jobService.updateJob(appId, jobId, jobDto);
 	}
 
 }

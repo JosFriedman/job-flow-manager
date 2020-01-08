@@ -12,7 +12,6 @@ import org.springframework.util.CollectionUtils;
 
 import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
 import gov.nyc.doitt.jobstatemanager.domain.job.model.Job;
-import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
 
 /**
  * Map Job to and from JobDto
@@ -28,6 +27,7 @@ class JobDtoMapper {
 		protected void configure() {
 			skip(destination.get_id());
 			skip(destination.getCreatedTimestamp());
+			skip(destination.getState());
 		}
 	};
 
@@ -38,6 +38,11 @@ class JobDtoMapper {
 		modelMapper.addMappings(jobDtoPropertyMap);
 	}
 
+	public Job fromDto(JobDto jobDto) {
+
+		return modelMapper.map(jobDto, Job.class);
+	}
+
 	public Job fromDto(JobDto jobDto, Job job) {
 
 		modelMapper.map(jobDto, job);
@@ -46,15 +51,7 @@ class JobDtoMapper {
 
 	public Job fromDtoPatch(JobDto jobDto, Job job) {
 
-		// Note: only field supported by patching
-		job.setStatusSmartly(JobState.valueOf(jobDto.getState()));
-		return job;
-	}
-
-	public Job fromDto(JobDto jobDto) {
-
-		Job job = new Job();
-		modelMapper.map(jobDto, job);
+		job.endProcessing(jobDto);
 		return job;
 	}
 
@@ -67,8 +64,7 @@ class JobDtoMapper {
 
 	public JobDto toDto(Job job) {
 
-		JobDto jobDto = modelMapper.map(job, JobDto.class);
-		return jobDto;
+		return modelMapper.map(job, JobDto.class);
 	}
 
 }

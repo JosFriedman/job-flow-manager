@@ -2,10 +2,7 @@ package gov.nyc.doitt.jobstatemanager.domain.job;
 
 import java.util.List;
 
-import javax.persistence.LockModeType;
-
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,9 +12,7 @@ import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
 @Repository
 interface JobRepository extends MongoRepository<Job, String> {
 
-	@Lock(LockModeType.PESSIMISTIC_READ)
-	List<Job> findByAppIdAndStateInAndErrorCountLessThan(String appId, List<JobState> states, int errorCount,
-			Pageable pageable);
+	List<Job> findByAppIdAndStateInAndErrorCountLessThan(String appId, List<JobState> states, int errorCount, Pageable pageable);
 
 	boolean existsByAppIdAndJobId(String appId, String jobId);
 
