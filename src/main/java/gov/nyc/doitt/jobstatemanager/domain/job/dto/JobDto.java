@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.jobstate.dto;
+package gov.nyc.doitt.jobstatemanager.domain.job.dto;
 
 import java.sql.Timestamp;
 
@@ -6,16 +6,25 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class JobStateDto {
+public class JobDto {
 
 	private String appId;
 	private String jobId;
 	private String description;
-	private Timestamp jobCreatedTimestamp;
-	private String status;
+	private Timestamp createdTimestamp;
+	private String state;
 	private Timestamp startTimestamp;
 	private Timestamp endTimestamp;
 	private int errorCount;
+	private String errorReason;
+
+	public String getErrorReason() {
+		return errorReason;
+	}
+
+	public void setErrorReason(String errorReason) {
+		this.errorReason = errorReason;
+	}
 
 	public String getAppId() {
 		return appId;
@@ -41,20 +50,20 @@ public class JobStateDto {
 		this.description = description;
 	}
 
-	public Timestamp getJobCreatedTimestamp() {
-		return jobCreatedTimestamp;
+	public Timestamp getCreatedTimestamp() {
+		return createdTimestamp;
 	}
 
-	public void setJobCreatedTimestamp(Timestamp jobCreatedTimestamp) {
-		this.jobCreatedTimestamp = jobCreatedTimestamp;
+	public void setCreatedTimestamp(Timestamp createdTimestamp) {
+		this.createdTimestamp = createdTimestamp;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getState() {
+		return state;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setState(String state) {
+		this.state = state;
 	}
 
 	public Timestamp getStartTimestamp() {
@@ -83,9 +92,9 @@ public class JobStateDto {
 
 	@Override
 	public String toString() {
-		return "JobFlowDto [appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", jobCreated="
-				+ jobCreatedTimestamp + ", status=" + status + ", startTimestamp=" + startTimestamp + ", endTimestamp="
-				+ endTimestamp + ", errorCount=" + errorCount + "]";
+		return "JobDto [appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
+				+ createdTimestamp + ", state=" + state + ", startTimestamp=" + startTimestamp + ", endTimestamp=" + endTimestamp
+				+ ", errorCount=" + errorCount + ", errorReason=" + errorReason + "]";
 	}
 
 }

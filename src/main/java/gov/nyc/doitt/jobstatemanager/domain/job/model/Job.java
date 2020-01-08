@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.jobstate.model;
+package gov.nyc.doitt.jobstatemanager.domain.job.model;
 
 import java.sql.Timestamp;
 
@@ -13,7 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-public class JobState {
+public class Job {
 
 	@Id
 	@GenericGenerator(name = "db-uuid", strategy = "guid")
@@ -31,11 +31,11 @@ public class JobState {
 	private String description;
 
 	@Column(name = "JOB_CREATED_TIMESTAMP")
-	private Timestamp jobCreatedTimestamp = new Timestamp(System.currentTimeMillis());
+	private Timestamp createdTimestamp = new Timestamp(System.currentTimeMillis());
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "STATUS")
-	private JobStatus status;
+	private JobState state;
 
 	@Column(name = "START_TIMESTAMP")
 	private Timestamp startTimestamp;
@@ -45,14 +45,6 @@ public class JobState {
 
 	@Column(name = "ERROR_COUNT")
 	private int errorCount;
-
-	@Version
-	@Column(name = "MULTI_INSTANCE_CTRL")
-	private int multiInstanceCtrl;
-
-//	public String getId() {
-//		return _id;
-//	}
 
 	public String get_id() {
 		return _id;
@@ -82,22 +74,22 @@ public class JobState {
 		this.description = description;
 	}
 
-	public Timestamp getJobCreatedTimestamp() {
-		return jobCreatedTimestamp;
+	public Timestamp getCreatedTimestamp() {
+		return createdTimestamp;
 	}
 
-	public JobStatus getStatus() {
-		return status;
+	public JobState getState() {
+		return state;
 	}
 
-	public void setStatus(JobStatus status) {
-		this.status = status;
+	public void setState(JobState state) {
+		this.state = state;
 	}
 
-	public void setStatusSmartly(JobStatus status) {
-		this.status = status;
+	public void setStatusSmartly(JobState state) {
+		this.state = state;
 		endTimestamp = new Timestamp(System.currentTimeMillis());
-		if (this.status == JobStatus.ERROR) {
+		if (this.state == JobState.ERROR) {
 			errorCount++;
 		}
 	}
@@ -130,14 +122,6 @@ public class JobState {
 		return errorCount++;
 	}
 
-	public int getMultiInstanceCtrl() {
-		return multiInstanceCtrl;
-	}
-
-	public void setMultiInstanceCtrl(int multiInstanceCtrl) {
-		this.multiInstanceCtrl = multiInstanceCtrl;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -155,7 +139,7 @@ public class JobState {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		JobState other = (JobState) obj;
+		Job other = (Job) obj;
 		if (appId == null) {
 			if (other.appId != null)
 				return false;
@@ -171,10 +155,9 @@ public class JobState {
 
 	@Override
 	public String toString() {
-		return "JobFlow [id=" + _id + ", appId=" + appId + ", jobId=" + jobId + ", description=" + description
-				+ ", jobCreatedTimestamp=" + jobCreatedTimestamp + ", status=" + status + ", startTimestamp=" + startTimestamp
-				+ ", endTimestamp=" + endTimestamp + ", errorCount=" + errorCount + ", multiInstanceCtrl=" + multiInstanceCtrl
-				+ "]";
+		return "Job [id=" + _id + ", appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
+				+ createdTimestamp + ", state=" + state + ", startTimestamp=" + startTimestamp + ", endTimestamp=" + endTimestamp
+				+ ", errorCount=" + errorCount + "]";
 	}
 
 }
