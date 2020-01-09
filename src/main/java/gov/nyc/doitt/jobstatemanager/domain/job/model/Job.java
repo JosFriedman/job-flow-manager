@@ -10,8 +10,6 @@ import javax.persistence.Id;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
-
 @Document
 public class Job {
 
@@ -90,19 +88,22 @@ public class Job {
 		return errorReason;
 	}
 
-	public void startProcessing() {
+	public void start() {
 		state = JobState.PROCESSING;
 		startTimestamp = new Timestamp(System.currentTimeMillis());
 	}
 
-	public void endProcessing(JobDto jobDto) {
+	public void endWithSuccess() {
+		endTimestamp = new Timestamp(System.currentTimeMillis());
+		this.state = JobState.COMPLETED;
+	}
+
+	public void endWithError(String errorReason) {
 
 		endTimestamp = new Timestamp(System.currentTimeMillis());
-		this.state = JobState.valueOf(jobDto.getState());
-		if (this.state == JobState.ERROR) {
-			errorCount++;
-			this.errorReason = jobDto.getErrorReason();
-		}
+		this.state = JobState.ERROR;
+		this.errorReason = errorReason;
+		errorCount++;
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
 import gov.nyc.doitt.jobstatemanager.domain.job.model.Job;
+import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
 
 /**
  * Map Job to and from JobDto
@@ -49,9 +50,14 @@ class JobDtoMapper {
 		return job;
 	}
 
-	public Job fromDtoPatch(JobDto jobDto, Job job) {
-
-		job.endProcessing(jobDto);
+	public Job fromDtoResult(JobDto jobDto, Job job) {
+		
+		JobState state = JobState.valueOf(jobDto.getState());
+		if (state == JobState.ERROR) {
+			job.endWithError(jobDto.getErrorReason());
+		} else {
+			job.endWithSuccess();
+		}
 		return job;
 	}
 

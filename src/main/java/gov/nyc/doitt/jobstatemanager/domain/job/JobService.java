@@ -87,7 +87,7 @@ public class JobService {
 
 			// mark each submission as picked up for processing
 			jobs.forEach(p -> {
-				p.startProcessing();
+				p.start();
 				jobRepository.save(p);
 			});
 			return jobDtoMapper.toDto(jobs);
@@ -116,7 +116,7 @@ public class JobService {
 	}
 
 	/**
-	 * Update processing results in jobDto for job specified by appId
+	 * Update processing results in jobDtos for jobs specified by appId
 	 * 
 	 * @param appId
 	 * @param jobDto
@@ -124,17 +124,16 @@ public class JobService {
 	 */
 	public List<JobDto> updateJobsWithResults(String appId, List<JobDto> jobDtos) {
 
-		List<JobDto> returnJobDtos = new ArrayList<>();
+		// get jobs from DB
 		List<String> jobIds = jobDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
 		List<Job> jobs = jobRepository.getByAppIdAndJobIdIn(appId, jobIds);
-
 		Map<String, Job> jobIdJobMap = jobs.stream().collect(Collectors.toMap(Job::getJobId, Function.identity()));
 
+		// update results
+		List<JobDto> returnJobDtos = new ArrayList<>();
 		jobDtos.forEach(p -> {
 			Job job = jobIdJobMap.get(p.getJobId());
-			jobDtoMapper.fromDtoPatch(p, job);
-			jobRepository.save(job);
-			JobDto jobDto = jobDtoMapper.toDto(job);
+			JobDto jobDto = updateJobWithResult(job, p);
 			returnJobDtos.add(jobDto);
 		});
 
@@ -211,6 +210,14 @@ public class JobService {
 		Job job = jobRepository.getByAppIdAndJobId(appId, jobId);
 		jobDtoMapper.fromDto(jobDto, job);
 
+		jobRepository.save(job);
+		return jobDtoMapper.toDto(job);
+	}
+
+	// Update processing result in job from jobDto
+	private JobDto updateJobWithResult(Job job, JobDto jobDto) {
+
+		jobDtoMapper.fromDtoResult(jobDto, job);
 		jobRepository.save(job);
 		return jobDtoMapper.toDto(job);
 	}
