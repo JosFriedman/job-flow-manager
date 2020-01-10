@@ -7,13 +7,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -21,31 +19,23 @@ import org.springframework.stereotype.Component;
 import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
 import gov.nyc.doitt.jobstatemanager.domain.job.model.Job;
 import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
+import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.JobAppConfigService;
+import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.model.JobAppConfig;
 import gov.nyc.doitt.jobstatemanager.infrastructure.JobStateManagerException;
 
 @Component
-public class JobService {
+class JobService {
 
 	private Logger logger = LoggerFactory.getLogger(JobService.class);
+
+	@Autowired
+	private JobAppConfigService jobAppConfigService;
 
 	@Autowired
 	private JobRepository jobRepository;
 
 	@Autowired
 	private JobDtoMapper jobDtoMapper;
-
-	@Value("${jobstatemanager.domain.job.JobService.maxBatchSize}")
-	private int maxBatchSize;
-
-	@Value("${jobstatemanager.domain.job.JobService.maxRetriesForError}")
-	private int maxRetriesForError;
-
-	private PageRequest pageRequest;
-
-	@PostConstruct
-	private void postConstruct() {
-		pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "createdTimestamp"));
-	}
 
 	/**
 	 * Create job from jobDto
@@ -54,6 +44,11 @@ public class JobService {
 	 * @return
 	 */
 	public JobDto createJob(JobDto jobDto) {
+
+		String appId = jobDto.getAppId();
+		if (!jobAppConfigService.existsJobAppConfig(appId)) {
+			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
+		}
 
 		Job job = jobDtoMapper.fromDto(jobDto);
 		jobRepository.save(job);
@@ -81,8 +76,14 @@ public class JobService {
 	List<JobDto> getNextBatch(String appId) {
 
 		try {
+			JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appId);
+
+			PageRequest pageRequest = PageRequest.of(0, jobAppConfig.getMaxBatchSize(),
+					Sort.by(Sort.Direction.ASC, "createdTimestamp"));
+
 			List<Job> jobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(appId,
-					Arrays.asList(new JobState[] { JobState.NEW, JobState.ERROR }), maxRetriesForError + 1, pageRequest);
+					Arrays.asList(new JobState[] { JobState.NEW, JobState.ERROR }), jobAppConfig.getMaxRetriesForError() + 1,
+					pageRequest);
 			logger.info("getNextBatch: number of submissions found: {}", jobs.size());
 
 			// mark each submission as picked up for processing

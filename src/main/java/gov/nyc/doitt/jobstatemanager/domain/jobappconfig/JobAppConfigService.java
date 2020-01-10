@@ -42,13 +42,23 @@ public class JobAppConfigService {
 	 * @param appId
 	 * @return
 	 */
-	JobAppConfigDto getJobAppConfig(String appId) {
+	public JobAppConfigDto getJobAppConfig(String appId) {
 
-		try {
-			return jobAppConfigDtoMapper.toDto(jobAppConfigRepository.findByAppId(appId));
-		} catch (Exception e) {
-			return null;
+		if (!jobAppConfigRepository.existsByAppId(appId)) {
+			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
 		}
+		return jobAppConfigDtoMapper.toDto(jobAppConfigRepository.findByAppId(appId));
+	}
+
+	public JobAppConfig getJobAppConfigDomain(String appId) {
+		if (!jobAppConfigRepository.existsByAppId(appId)) {
+			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
+		}
+		return jobAppConfigRepository.findByAppId(appId);
+	}
+
+	public boolean existsJobAppConfig(String appId) {
+		return jobAppConfigRepository.existsByAppId(appId);
 	}
 
 	/**
