@@ -2,12 +2,15 @@ package gov.nyc.doitt.jobstatemanager.domain.jobappconfig.dto;
 
 import java.sql.Timestamp;
 
+import javax.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 public class JobAppConfigDto {
 
+	@NotBlank(message = "appId may not be empty")
 	private String appId;
 	private String description;
 	private Timestamp createdTimestamp;

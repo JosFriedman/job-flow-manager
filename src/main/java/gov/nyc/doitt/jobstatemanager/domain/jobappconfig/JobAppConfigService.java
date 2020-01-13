@@ -70,7 +70,7 @@ public class JobAppConfigService {
 	 */
 	public List<JobAppConfigDto> getJobAppConfigs() {
 
-		return jobAppConfigDtoMapper.toDto(jobAppConfigRepository.findAll());
+		return jobAppConfigDtoMapper.toDto(jobAppConfigRepository.findAllByOrderByAppIdAsc());
 	}
 
 	/**

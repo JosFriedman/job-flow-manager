@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
 import gov.nyc.doitt.jobstatemanager.domain.job.model.Job;
 import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
+import gov.nyc.doitt.jobstatemanager.infrastructure.JobStateManagerException;
 
 /**
  * Map Job to and from JobDto
@@ -51,12 +52,18 @@ class JobDtoMapper {
 	}
 
 	public Job fromDtoResult(JobDto jobDto, Job job) {
-		
+
 		JobState state = JobState.valueOf(jobDto.getState());
 		if (state == JobState.ERROR) {
-			job.endWithError(jobDto.getErrorReason());
-		} else {
+			if (jobDto.isReset()) {
+				job.resetWithError();
+			} else {
+				job.endWithError(jobDto.getErrorReason());
+			}
+		} else if (state == JobState.ERROR) {
 			job.endWithSuccess();
+		} else {
+			throw new JobStateManagerException("Unsupported state for result: " +  state);
 		}
 		return job;
 	}

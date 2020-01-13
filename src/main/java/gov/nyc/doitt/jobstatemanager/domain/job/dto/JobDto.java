@@ -2,7 +2,7 @@ package gov.nyc.doitt.jobstatemanager.domain.job.dto;
 
 import java.sql.Timestamp;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class JobDto {
 
-	@NotEmpty(message = "appId may not be empty")
+	@NotBlank(message = "appId may not be empty")
 	private String appId;
-	@NotEmpty(message = "jobId may not be empty")
+	@NotBlank(message = "jobId may not be empty")
 	private String jobId;
 	private String description;
 	private Timestamp createdTimestamp;
@@ -21,6 +21,7 @@ public class JobDto {
 	private Timestamp endTimestamp;
 	private int errorCount;
 	private String errorReason;
+	private Boolean reset;
 
 	public String getAppId() {
 		return appId;
@@ -94,11 +95,19 @@ public class JobDto {
 		this.errorReason = errorReason;
 	}
 
+	public Boolean isReset() {
+		return reset;
+	}
+
+	public void setReset(Boolean reset) {
+		this.reset = reset;
+	}
+
 	@Override
 	public String toString() {
 		return "JobDto [appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
 				+ createdTimestamp + ", state=" + state + ", startTimestamp=" + startTimestamp + ", endTimestamp=" + endTimestamp
-				+ ", errorCount=" + errorCount + ", errorReason=" + errorReason + "]";
+				+ ", errorCount=" + errorCount + ", errorReason=" + errorReason + ", reset=" + reset + "]";
 	}
 
 }

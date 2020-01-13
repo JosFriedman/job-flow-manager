@@ -106,6 +106,14 @@ public class Job {
 		errorCount++;
 	}
 
+	public void resetWithError() {
+
+		endTimestamp = new Timestamp(System.currentTimeMillis());
+		this.state = JobState.ERROR;
+		this.errorReason = "Reset";
+		errorCount = 1;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

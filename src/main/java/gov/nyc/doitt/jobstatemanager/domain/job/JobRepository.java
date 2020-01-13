@@ -27,4 +27,6 @@ interface JobRepository extends MongoRepository<Job, String> {
 	List<Job> getByAppId(String appId);
 
 	List<Job> getByAppIdAndJobIdIn(String appId, List<String> jobIds);
+
+	List<Job> findAllByOrderByAppIdAsc();
 }

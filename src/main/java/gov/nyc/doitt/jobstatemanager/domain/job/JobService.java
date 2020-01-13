@@ -169,7 +169,7 @@ class JobService {
 	 */
 	public List<JobDto> getJobs() {
 
-		return jobDtoMapper.toDto(jobRepository.findAll());
+		return jobDtoMapper.toDto(jobRepository.findAllByOrderByAppIdAsc());
 	}
 
 	/**
