@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.dto.JobAppConfigDto;
 import gov.nyc.doitt.jobstatemanager.infrastructure.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.infrastructure.ValidationException;
 
 @RestController
 @RequestMapping("jobStateManager")
@@ -38,7 +39,7 @@ public class JobAppConfigController {
 		logger.debug("createJobAppConfig: entering: ", jobAppConfigDto);
 
 		if (result.hasErrors()) {
-			throw new JobStateManagerException(result.getFieldErrors());
+			throw new ValidationException(result.getFieldErrors());
 		}
 
 		return jobAppConfigService.createJobAppConfig(jobAppConfigDto);

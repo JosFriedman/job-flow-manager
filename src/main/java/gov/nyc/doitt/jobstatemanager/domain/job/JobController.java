@@ -8,8 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
 import gov.nyc.doitt.jobstatemanager.infrastructure.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.infrastructure.ValidationException;
 
 @RestController
 @RequestMapping("jobStateManager")
@@ -30,18 +33,25 @@ public class JobController {
 
 	@Autowired
 	private JobService jobService;
-	
-	// TODO: validator 
+
+//	@Autowired
+//	private JobDtoValidator jobDtoValidator;
+//
+//	@InitBinder
+//	private void initBinder(WebDataBinder binder) {
+////		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+////		JobDtoValidator jobDtoValidator = context.getBean(JobDtoValidator.class);
+//		binder.setValidator(jobDtoValidator);
+//	}
 
 	@PostMapping("/jobs")
-	public JobDto createJob(@Valid @RequestBody JobDto jobDto, BindingResult result)
-			throws JobStateManagerException {
+	public JobDto createJob(@Valid @RequestBody JobDto jobDto /*, BindingResult result */) throws JobStateManagerException {
 
 		logger.debug("createJob: entering: ", jobDto);
 
-		if (result.hasErrors()) {
-			throw new JobStateManagerException(result.getFieldErrors());
-		}
+//		if (result.hasErrors()) {
+//			throw new ValidationException(result.getFieldErrors());
+//		}
 
 		return jobService.createJob(jobDto);
 	}
@@ -80,13 +90,13 @@ public class JobController {
 	}
 
 	@PutMapping("/jobs/{appId}/job/{jobId}")
-	public JobDto updateJob(@PathVariable String appId, @PathVariable String jobId,
-			@Valid @RequestBody JobDto jobDto, BindingResult result) throws JobStateManagerException {
+	public JobDto updateJob(@PathVariable String appId, @PathVariable String jobId, @Valid @RequestBody JobDto jobDto,
+			BindingResult result) throws JobStateManagerException {
 
 		logger.debug("updateJob: entering: ", jobDto);
 
 		if (result.hasErrors()) {
-			throw new JobStateManagerException(result.getFieldErrors());
+			throw new ValidationException(result.getFieldErrors());
 		}
 
 		return jobService.updateJob(appId, jobId, jobDto);

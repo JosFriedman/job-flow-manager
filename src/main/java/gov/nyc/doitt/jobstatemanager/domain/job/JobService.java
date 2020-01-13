@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,8 @@ import gov.nyc.doitt.jobstatemanager.domain.job.model.Job;
 import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
 import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.JobAppConfigService;
 import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.model.JobAppConfig;
+import gov.nyc.doitt.jobstatemanager.infrastructure.ConflictException;
+import gov.nyc.doitt.jobstatemanager.infrastructure.EntityNotFoundException;
 import gov.nyc.doitt.jobstatemanager.infrastructure.JobStateManagerException;
 
 @Component
@@ -50,6 +50,11 @@ class JobService {
 			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
 		}
 
+		String jobId = jobDto.getJobId();
+		if (jobRepository.existsByAppIdAndJobId(appId, jobId)) {
+			throw new ConflictException(String.format("Job for appId=%s, jobId=%s already exists", appId, jobId));
+		}
+		
 		Job job = jobDtoMapper.fromDto(jobDto);
 		jobRepository.save(job);
 		return jobDtoMapper.toDto(job);

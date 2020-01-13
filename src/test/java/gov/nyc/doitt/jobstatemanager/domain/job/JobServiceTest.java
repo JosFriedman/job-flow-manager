@@ -30,9 +30,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import gov.nyc.doitt.jobstatemanager.TestBase;
-import gov.nyc.doitt.jobstatemanager.domain.job.JobDtoMapper;
-import gov.nyc.doitt.jobstatemanager.domain.job.JobRepository;
-import gov.nyc.doitt.jobstatemanager.domain.job.JobService;
 import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
 import gov.nyc.doitt.jobstatemanager.domain.job.model.Job;
 import gov.nyc.doitt.jobstatemanager.domain.job.model.JobMockerUpper;

@@ -2,8 +2,6 @@ package gov.nyc.doitt.jobstatemanager.domain.jobappconfig;
 
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.dto.JobAppConfigDto;
 import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.model.JobAppConfig;
+import gov.nyc.doitt.jobstatemanager.infrastructure.ConflictException;
+import gov.nyc.doitt.jobstatemanager.infrastructure.EntityNotFoundException;
 
 @Component
 public class JobAppConfigService {
@@ -31,6 +31,11 @@ public class JobAppConfigService {
 	 */
 	public JobAppConfigDto createJobAppConfig(JobAppConfigDto jobAppConfigDto) {
 
+		String appId = jobAppConfigDto.getAppId();
+		if (jobAppConfigRepository.existsByAppId(appId)) {
+			throw new ConflictException(String.format("JobAppConfig for appId=%s already exists", appId));
+		}
+
 		JobAppConfig jobAppConfig = jobAppConfigDtoMapper.fromDto(jobAppConfigDto);
 		jobAppConfigRepository.save(jobAppConfig);
 		return jobAppConfigDtoMapper.toDto(jobAppConfig);
@@ -44,10 +49,7 @@ public class JobAppConfigService {
 	 */
 	public JobAppConfigDto getJobAppConfig(String appId) {
 
-		if (!jobAppConfigRepository.existsByAppId(appId)) {
-			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
-		}
-		return jobAppConfigDtoMapper.toDto(jobAppConfigRepository.findByAppId(appId));
+		return jobAppConfigDtoMapper.toDto(getJobAppConfigDomain(appId));
 	}
 
 	public JobAppConfig getJobAppConfigDomain(String appId) {
@@ -81,7 +83,7 @@ public class JobAppConfigService {
 	public JobAppConfigDto updateJobAppConfig(String appId, JobAppConfigDto jobAppConfigDto) {
 
 		if (!jobAppConfigRepository.existsByAppId(appId)) {
-			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s, jobId=%s", appId));
+			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
 		}
 
 		JobAppConfig jobAppConfig = jobAppConfigRepository.findByAppId(appId);

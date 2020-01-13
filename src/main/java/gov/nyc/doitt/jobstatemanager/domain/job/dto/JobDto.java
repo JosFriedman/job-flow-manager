@@ -2,13 +2,17 @@ package gov.nyc.doitt.jobstatemanager.domain.job.dto;
 
 import java.sql.Timestamp;
 
+import javax.validation.constraints.NotEmpty;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 public class JobDto {
 
+	@NotEmpty(message = "appId may not be empty")
 	private String appId;
+	@NotEmpty(message = "jobId may not be empty")
 	private String jobId;
 	private String description;
 	private Timestamp createdTimestamp;
@@ -17,14 +21,6 @@ public class JobDto {
 	private Timestamp endTimestamp;
 	private int errorCount;
 	private String errorReason;
-
-	public String getErrorReason() {
-		return errorReason;
-	}
-
-	public void setErrorReason(String errorReason) {
-		this.errorReason = errorReason;
-	}
 
 	public String getAppId() {
 		return appId;
@@ -88,6 +84,14 @@ public class JobDto {
 
 	public void setErrorCount(int errorCount) {
 		this.errorCount = errorCount;
+	}
+
+	public String getErrorReason() {
+		return errorReason;
+	}
+
+	public void setErrorReason(String errorReason) {
+		this.errorReason = errorReason;
 	}
 
 	@Override
