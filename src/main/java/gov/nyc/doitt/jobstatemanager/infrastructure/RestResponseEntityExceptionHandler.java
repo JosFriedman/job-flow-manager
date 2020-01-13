@@ -1,6 +1,5 @@
 package gov.nyc.doitt.jobstatemanager.infrastructure;
 
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), ex.getHttpStatus(), request);
 	}
 
-	// error handle for @Valid
+	// error handler for @Valid
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
 			HttpStatus status, WebRequest request) {
@@ -31,11 +30,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		Map<String, Object> body = new LinkedHashMap<>();
 
 		// Get all errors
-		List<String> errors = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
+		List<String> errors = ex.getBindingResult().getFieldErrors().stream().map(p -> p.getDefaultMessage())
 				.collect(Collectors.toList());
 
 		body.put("errors", errors);
-
 		return new ResponseEntity<>(body, headers, status);
 
 	}
