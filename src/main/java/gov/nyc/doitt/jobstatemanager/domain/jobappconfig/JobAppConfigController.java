@@ -31,13 +31,16 @@ public class JobAppConfigController {
 	@PostMapping("/jobAppConfigs")
 	public JobAppConfigDto createJobAppConfig(@Valid @RequestBody JobAppConfigDto jobAppConfigDto) throws JobStateManagerException {
 
-		logger.debug("createJobAppConfig: entering: ", jobAppConfigDto);
+		logger.debug("createJobAppConfig: entering: {}", jobAppConfigDto);
 
 		return jobAppConfigService.createJobAppConfig(jobAppConfigDto);
 	}
 
 	@GetMapping("/jobAppConfigs/{appId}")
 	public JobAppConfigDto getJobAppConfig(@PathVariable String appId) {
+
+		logger.debug("getJobAppConfig: entering: appId={}", appId);
+
 		return jobAppConfigService.getJobAppConfig(appId);
 	}
 
@@ -48,11 +51,17 @@ public class JobAppConfigController {
 
 	@PutMapping("/jobAppConfigs/{appId}")
 	public JobAppConfigDto updateJobAppConfig(@PathVariable String appId, @Valid @RequestBody JobAppConfigDto jobAppConfigDto) {
+
+		logger.debug("updateJob: updateJobAppConfig: appId={}, jobAppConfigDto={}", appId, jobAppConfigDto);
+
 		return jobAppConfigService.updateJobAppConfig(appId, jobAppConfigDto);
 	}
 
 	@DeleteMapping("/jobAppConfigs/{appId}")
 	public String deleteJobAppConfig(@PathVariable String appId) {
+
+		logger.debug("deleteJobAppConfig: entering: appId={}, jobId={}", appId);
+
 		return jobAppConfigService.deleteJobAppConfig(appId);
 	}
 }

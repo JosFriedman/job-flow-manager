@@ -36,14 +36,17 @@ public class JobController {
 	@PostMapping("/jobs")
 	public JobDto createJob(@Valid @RequestBody JobDto jobDto) throws JobStateManagerException {
 
-		logger.debug("createJob: entering: ", jobDto);
+		logger.debug("createJob: entering: {}", jobDto);
 
 		return jobService.createJob(jobDto);
 	}
 
 	@GetMapping("/jobs/{appId}")
-	public List<JobDto> getJobs(@PathVariable String appId, @RequestParam(defaultValue = "false") boolean nextBatch, @RequestParam(required = false)  String state) {
-		
+	public List<JobDto> getJobs(@PathVariable String appId, @RequestParam(defaultValue = "false") boolean nextBatch,
+			@RequestParam(required = false) String state) {
+
+		logger.debug("getJob: entering: appId={}, nextBatch={}, state={}", appId, nextBatch, state);
+
 		if (nextBatch && !StringUtils.isBlank(state)) {
 			throw new ValidationException("nextBatch and state cannot be both specified");
 		}
@@ -51,23 +54,10 @@ public class JobController {
 			return jobService.getNextBatch(appId);
 		}
 		if (!StringUtils.isBlank(state)) {
-			return jobService.getJobs(appId, JobState.valueOf(state));			
+			return jobService.getJobs(appId, JobState.valueOf(state));
 		}
 		return jobService.getJobs(appId);
 	}
-
-	@PatchMapping("/jobs/{appId}")
-	public List<JobDto> patchJobs(@PathVariable String appId, @RequestBody List<JobDto> jobDtos) {
-		return jobService.updateJobsWithResults(appId, jobDtos);
-	}
-
-	@DeleteMapping("/jobs/{appId}/job/{jobId}")
-	public String deleteJob(@PathVariable String appId, @PathVariable String jobId) {
-		return jobService.deleteJob(appId, jobId);
-	}
-
-	//////////////////////////////////////////////////////
-	// other endpoints
 
 	@GetMapping("/jobs")
 	public List<JobDto> getJobs() {
@@ -76,21 +66,40 @@ public class JobController {
 
 	@GetMapping("/jobs/{appId}/job/{jobId}")
 	public JobDto getJob(@PathVariable String appId, @PathVariable String jobId) {
-		return jobService.getJob(appId, jobId);
-	}
 
-	@GetMapping("/jobIds/{appId}")
-	public List<String> getJobIds(@PathVariable String appId, @RequestParam(defaultValue = "true") boolean nextBatch) {
-		return jobService.getJobIds(appId, nextBatch);
+		logger.debug("getJob: entering: appId={}, jobId={}", appId, jobId);
+
+		return jobService.getJob(appId, jobId);
 	}
 
 	@PutMapping("/jobs/{appId}/job/{jobId}")
 	public JobDto updateJob(@PathVariable String appId, @PathVariable String jobId, @Valid @RequestBody JobDto jobDto)
 			throws JobStateManagerException {
 
-		logger.debug("updateJob: entering: ", jobDto);
+		logger.debug("updateJob: entering: appId={}, jobId={}, jobDto={}", appId, jobId, jobDto);
 
 		return jobService.updateJob(appId, jobId, jobDto);
+	}
+
+	@PatchMapping("/jobs/{appId}")
+	public List<JobDto> patchJobs(@PathVariable String appId, @RequestBody List<JobDto> jobDtos) {
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("patchJobs: entering: appId={}", appId);
+			if (logger.isDebugEnabled()) {
+				jobDtos.forEach(p -> logger.debug("job: {}", p));
+			}
+		}
+
+		return jobService.updateJobsWithResults(appId, jobDtos);
+	}
+
+	@DeleteMapping("/jobs/{appId}/job/{jobId}")
+	public String deleteJob(@PathVariable String appId, @PathVariable String jobId) {
+
+		logger.debug("deleteJob: entering: appId={}, jobId={}", appId, jobId);
+
+		return jobService.deleteJob(appId, jobId);
 	}
 
 }

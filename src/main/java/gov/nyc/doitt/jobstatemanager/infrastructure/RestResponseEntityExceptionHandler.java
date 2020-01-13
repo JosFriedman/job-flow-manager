@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +19,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
+	private Logger logger = LoggerFactory.getLogger(RestResponseEntityExceptionHandler.class);
+
 	@ExceptionHandler(value = { JobStateManagerException.class })
 	protected ResponseEntity<Object> handleJobStateManagerException(JobStateManagerException ex, WebRequest request) {
+
+		logger.error(ex.getMessage(), ex);
 		return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), ex.getHttpStatus(), request);
 	}
 
@@ -27,8 +33,9 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
 			HttpStatus status, WebRequest request) {
 
-		Map<String, Object> body = new LinkedHashMap<>();
+		logger.error(ex.getMessage(), ex);
 
+		Map<String, Object> body = new LinkedHashMap<>();
 		// Get all errors
 		List<String> errors = ex.getBindingResult().getFieldErrors().stream().map(p -> p.getDefaultMessage())
 				.collect(Collectors.toList());
