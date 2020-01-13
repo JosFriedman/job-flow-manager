@@ -89,7 +89,10 @@ class JobService {
 			List<Job> jobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(appId,
 					Arrays.asList(new JobState[] { JobState.NEW, JobState.ERROR }), jobAppConfig.getMaxRetriesForError() + 1,
 					pageRequest);
-			logger.info("getNextBatch: number of submissions found: {}", jobs.size());
+			logger.info("getNextBatch: number of jobs found: {}", jobs.size());
+			if (logger.isDebugEnabled()) {
+				jobs.forEach(p -> logger.debug("job: {}", p.toString()));
+			}
 
 			// mark each submission as picked up for processing
 			jobs.forEach(p -> {

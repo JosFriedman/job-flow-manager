@@ -55,12 +55,12 @@ class JobDtoMapper {
 
 		JobState state = JobState.valueOf(jobDto.getState());
 		if (state == JobState.ERROR) {
-			if (jobDto.isReset()) {
+			if (Boolean.TRUE == jobDto.isReset()) {
 				job.resetWithError();
 			} else {
 				job.endWithError(jobDto.getErrorReason());
 			}
-		} else if (state == JobState.ERROR) {
+		} else if (state == JobState.COMPLETED) {
 			job.endWithSuccess();
 		} else {
 			throw new JobStateManagerException("Unsupported state for result: " +  state);
