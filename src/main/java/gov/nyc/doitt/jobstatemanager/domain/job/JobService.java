@@ -54,22 +54,10 @@ class JobService {
 		if (jobRepository.existsByAppIdAndJobId(appId, jobId)) {
 			throw new ConflictException(String.format("Job for appId=%s, jobId=%s already exists", appId, jobId));
 		}
-		
+
 		Job job = jobDtoMapper.fromDto(jobDto);
 		jobRepository.save(job);
 		return jobDtoMapper.toDto(job);
-	}
-
-	/**
-	 * Return jobs for appId; if nextBatch = true, return only batch-size number of jobs
-	 * 
-	 * @param appId
-	 * @param nextBatch
-	 * @return
-	 */
-	public List<JobDto> getJobs(String appId, boolean nextBatch) {
-
-		return nextBatch ? getNextBatch(appId) : getJobs(appId);
 	}
 
 	/**
@@ -117,11 +105,18 @@ class JobService {
 	 */
 	List<JobDto> getJobs(String appId) {
 
-		try {
-			return jobDtoMapper.toDto(jobRepository.findByAppId(appId));
-		} catch (Exception e) {
-			return null;
-		}
+		return jobDtoMapper.toDto(jobRepository.findByAppId(appId));
+	}
+
+	/**
+	 * Get jobs for appId and state
+	 * 
+	 * @param appId
+	 * @return
+	 */
+	List<JobDto> getJobs(String appId, JobState state) {
+
+		return jobDtoMapper.toDto(jobRepository.findByAppIdAndState(appId, state.name()));
 	}
 
 	/**
@@ -135,7 +130,7 @@ class JobService {
 
 		// get jobs from DB
 		List<String> jobIds = jobDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
-		List<Job> jobs = jobRepository.getByAppIdAndJobIdIn(appId, jobIds);
+		List<Job> jobs = jobRepository.findByAppIdAndJobIdIn(appId, jobIds);
 		Map<String, Job> jobIdJobMap = jobs.stream().collect(Collectors.toMap(Job::getJobId, Function.identity()));
 
 		// update results

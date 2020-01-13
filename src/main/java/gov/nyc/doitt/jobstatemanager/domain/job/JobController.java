@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
+import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
 import gov.nyc.doitt.jobstatemanager.infrastructure.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.infrastructure.ValidationException;
 
 @RestController
 @RequestMapping("jobStateManager")
@@ -39,8 +42,18 @@ public class JobController {
 	}
 
 	@GetMapping("/jobs/{appId}")
-	public List<JobDto> getJobs(@PathVariable String appId, @RequestParam(defaultValue = "false") boolean nextBatch) {
-		return jobService.getJobs(appId, nextBatch);
+	public List<JobDto> getJobs(@PathVariable String appId, @RequestParam(defaultValue = "false") boolean nextBatch, @RequestParam(required = false)  String state) {
+		
+		if (nextBatch && !StringUtils.isBlank(state)) {
+			throw new ValidationException("nextBatch and state cannot be both specified");
+		}
+		if (nextBatch) {
+			return jobService.getNextBatch(appId);
+		}
+		if (!StringUtils.isBlank(state)) {
+			return jobService.getJobs(appId, JobState.valueOf(state));			
+		}
+		return jobService.getJobs(appId);
 	}
 
 	@PatchMapping("/jobs/{appId}")
