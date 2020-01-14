@@ -10,9 +10,6 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.dto.JobAppConfigDto;
-import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.model.JobAppConfig;
-
 /**
  * Map JobAppConfig to and from JobAppConfigDto
  * 

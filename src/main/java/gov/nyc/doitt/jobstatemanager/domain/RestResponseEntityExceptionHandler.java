@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.infrastructure;
+package gov.nyc.doitt.jobstatemanager.domain;
 
 import java.util.LinkedHashMap;
 import java.util.List;

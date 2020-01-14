@@ -7,10 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.dto.JobAppConfigDto;
-import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.model.JobAppConfig;
-import gov.nyc.doitt.jobstatemanager.infrastructure.ConflictException;
-import gov.nyc.doitt.jobstatemanager.infrastructure.EntityNotFoundException;
+import gov.nyc.doitt.jobstatemanager.domain.ConflictException;
+import gov.nyc.doitt.jobstatemanager.domain.EntityNotFoundException;
 
 @Component
 public class JobAppConfigService {

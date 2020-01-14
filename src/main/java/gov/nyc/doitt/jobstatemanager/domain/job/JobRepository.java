@@ -3,11 +3,9 @@ package gov.nyc.doitt.jobstatemanager.domain.job;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-
-import gov.nyc.doitt.jobstatemanager.domain.job.model.Job;
-import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
 
 @Repository
 interface JobRepository extends MongoRepository<Job, String> {
@@ -22,11 +20,12 @@ interface JobRepository extends MongoRepository<Job, String> {
 
 	Job getByAppIdAndJobId(String appId, String jobId);
 
-	List<Job> findByAppId(String appId);
+	List<Job> findByAppId(String appId, Sort sort);
 
-	List<Job> findByAppIdAndState(String appId, String state);
+	List<Job> findByAppIdAndState(String appId, String state, Sort sort);
 
 	List<Job> findByAppIdAndJobIdIn(String appId, List<String> jobIds);
+	
+	List<Job> findAll(Sort sort);
 
-	List<Job> findAllByOrderByAppIdAsc();
 }

@@ -14,14 +14,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
-import gov.nyc.doitt.jobstatemanager.domain.job.model.Job;
-import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
+import gov.nyc.doitt.jobstatemanager.domain.ConflictException;
+import gov.nyc.doitt.jobstatemanager.domain.EntityNotFoundException;
+import gov.nyc.doitt.jobstatemanager.domain.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.JobAppConfig;
 import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.JobAppConfigService;
-import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.model.JobAppConfig;
-import gov.nyc.doitt.jobstatemanager.infrastructure.ConflictException;
-import gov.nyc.doitt.jobstatemanager.infrastructure.EntityNotFoundException;
-import gov.nyc.doitt.jobstatemanager.infrastructure.JobStateManagerException;
 
 @Component
 class JobService {
@@ -103,9 +100,9 @@ class JobService {
 	 * @param appId
 	 * @return
 	 */
-	List<JobDto> getJobs(String appId) {
+	List<JobDto> getJobs(String appId, Sort sort) {
 
-		return jobDtoMapper.toDto(jobRepository.findByAppId(appId));
+		return jobDtoMapper.toDto(jobRepository.findByAppId(appId, sort));
 	}
 
 	/**
@@ -114,9 +111,9 @@ class JobService {
 	 * @param appId
 	 * @return
 	 */
-	List<JobDto> getJobs(String appId, JobState state) {
+	List<JobDto> getJobs(String appId, JobState state, Sort sort) {
 
-		return jobDtoMapper.toDto(jobRepository.findByAppIdAndState(appId, state.name()));
+		return jobDtoMapper.toDto(jobRepository.findByAppIdAndState(appId, state.name(), sort));
 	}
 
 	/**
@@ -165,9 +162,9 @@ class JobService {
 	 * 
 	 * @return
 	 */
-	public List<JobDto> getJobs() {
+	public List<JobDto> getJobs(Sort sort) {
 
-		return jobDtoMapper.toDto(jobRepository.findAllByOrderByAppIdAsc());
+		return jobDtoMapper.toDto(jobRepository.findAll(sort));
 	}
 
 	/**
@@ -184,16 +181,6 @@ class JobService {
 			throw new EntityNotFoundException(String.format("Can't find Job for appId=%s, jobId=%s", appId, jobId));
 		}
 		return jobDtoMapper.toDto(job);
-
-	}
-
-	/**
-	 * Return job ids for appId
-	 */
-	public List<String> getJobIds(String appId, boolean nextBatch) {
-
-		List<JobDto> jobDtos = nextBatch ? getNextBatch(appId) : getJobs(appId);
-		return jobDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
 
 	}
 

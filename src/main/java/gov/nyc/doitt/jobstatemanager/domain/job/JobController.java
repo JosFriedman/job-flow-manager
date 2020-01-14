@@ -4,10 +4,12 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,10 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
-import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
-import gov.nyc.doitt.jobstatemanager.infrastructure.JobStateManagerException;
-import gov.nyc.doitt.jobstatemanager.infrastructure.ValidationException;
+import gov.nyc.doitt.jobstatemanager.domain.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.domain.SortParamMapper;
+import gov.nyc.doitt.jobstatemanager.domain.ValidationException;
 
 @RestController
 @RequestMapping("jobStateManager")
@@ -43,25 +44,30 @@ public class JobController {
 
 	@GetMapping("/jobs/{appId}")
 	public List<JobDto> getJobs(@PathVariable String appId, @RequestParam(defaultValue = "false") boolean nextBatch,
-			@RequestParam(required = false) String state) {
+			@RequestParam(required = false) String state, @RequestParam(name = "sort", required = false) String[] sortParams) {
 
-		logger.debug("getJob: entering: appId={}, nextBatch={}, state={}", appId, nextBatch, state);
+		logger.debug("getJob: entering: appId={}, nextBatch={}, state={}, sortParams={}", appId, nextBatch, state, sortParams);
 
-		if (nextBatch && !StringUtils.isBlank(state)) {
-			throw new ValidationException("nextBatch and state cannot be both specified");
+		if (nextBatch && (!StringUtils.isBlank(state) || !ArrayUtils.isEmpty(sortParams))) {
+			throw new ValidationException("nextBatch and (state or sortParams) cannot be both specified");
 		}
 		if (nextBatch) {
 			return jobService.getNextBatch(appId);
 		}
+		
+		Sort sort = SortParamMapper.getSort(sortParams, "createdTimeStamp", Sort.Direction.DESC);
 		if (!StringUtils.isBlank(state)) {
-			return jobService.getJobs(appId, JobState.valueOf(state));
+			return jobService.getJobs(appId, JobState.valueOf(state), sort);
 		}
-		return jobService.getJobs(appId);
+		return jobService.getJobs(appId, sort);
 	}
 
 	@GetMapping("/jobs")
-	public List<JobDto> getJobs() {
-		return jobService.getJobs();
+	public List<JobDto> getJobs(@RequestParam(name = "sort", required = false) String[] sortParams) {
+
+		Sort sort = SortParamMapper.getSort(sortParams, "createdTimeStamp", Sort.Direction.DESC);
+
+		return jobService.getJobs(sort);
 	}
 
 	@GetMapping("/jobs/{appId}/job/{jobId}")

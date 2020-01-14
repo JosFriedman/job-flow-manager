@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.dto.JobAppConfigDto;
-import gov.nyc.doitt.jobstatemanager.infrastructure.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.domain.JobStateManagerException;
 
 @RestController
 @RequestMapping("jobStateManager")

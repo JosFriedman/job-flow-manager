@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.infrastructure;
+package gov.nyc.doitt.jobstatemanager.domain;
 
 import org.springframework.http.HttpStatus;
 

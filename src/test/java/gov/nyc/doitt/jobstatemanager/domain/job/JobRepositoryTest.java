@@ -17,9 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import gov.nyc.doitt.jobstatemanager.TestBase;
-import gov.nyc.doitt.jobstatemanager.domain.job.model.Job;
-import gov.nyc.doitt.jobstatemanager.domain.job.model.JobMockerUpper;
-import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
 
 @RunWith(SpringRunner.class)
 public class JobRepositoryTest extends TestBase {

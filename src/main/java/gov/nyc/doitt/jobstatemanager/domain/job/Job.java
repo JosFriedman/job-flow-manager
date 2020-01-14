@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.job.model;
+package gov.nyc.doitt.jobstatemanager.domain.job;
 
 import java.sql.Timestamp;
 
@@ -11,7 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-public class Job {
+class Job {
 
 	@Id
 	@GenericGenerator(name = "db-uuid", strategy = "guid")

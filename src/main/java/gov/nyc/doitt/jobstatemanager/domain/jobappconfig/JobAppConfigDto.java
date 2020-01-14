@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.jobappconfig.dto;
+package gov.nyc.doitt.jobstatemanager.domain.jobappconfig;
 
 import java.sql.Timestamp;
 

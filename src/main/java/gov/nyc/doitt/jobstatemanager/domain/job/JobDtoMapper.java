@@ -10,10 +10,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import gov.nyc.doitt.jobstatemanager.domain.job.dto.JobDto;
-import gov.nyc.doitt.jobstatemanager.domain.job.model.Job;
-import gov.nyc.doitt.jobstatemanager.domain.job.model.JobState;
-import gov.nyc.doitt.jobstatemanager.infrastructure.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.domain.JobStateManagerException;
 
 /**
  * Map Job to and from JobDto

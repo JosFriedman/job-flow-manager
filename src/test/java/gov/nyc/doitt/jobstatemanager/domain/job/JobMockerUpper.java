@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.job.model;
+package gov.nyc.doitt.jobstatemanager.domain.job;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -7,6 +7,8 @@ import java.util.Random;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.stereotype.Component;
+
+import gov.nyc.doitt.jobstatemanager.domain.job.Job;
 
 @Component
 public class JobMockerUpper {
