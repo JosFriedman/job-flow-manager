@@ -22,10 +22,9 @@ public class Job {
 	private String jobId;
 	private String description;
 	private Timestamp createdTimestamp;
-
+	private String payload;
 	@Enumerated(EnumType.STRING)
 	private JobState state;
-
 	private Timestamp startTimestamp;
 	private Timestamp endTimestamp;
 	private int errorCount;
@@ -70,6 +69,10 @@ public class Job {
 
 	public JobState getState() {
 		return state;
+	}
+
+	public String getPayload() {
+		return payload;
 	}
 
 	public Timestamp getStartTimestamp() {

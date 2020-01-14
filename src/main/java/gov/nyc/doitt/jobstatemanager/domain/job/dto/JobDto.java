@@ -17,6 +17,7 @@ public class JobDto {
 	private String description;
 	private Timestamp createdTimestamp;
 	private String state;
+	private String payload;
 	private Timestamp startTimestamp;
 	private Timestamp endTimestamp;
 	private int errorCount;
@@ -63,6 +64,14 @@ public class JobDto {
 		this.state = state;
 	}
 
+	public String getPayload() {
+		return payload;
+	}
+
+	public void setPayload(String payload) {
+		this.payload = payload;
+	}
+
 	public Timestamp getStartTimestamp() {
 		return startTimestamp;
 	}
@@ -106,8 +115,9 @@ public class JobDto {
 	@Override
 	public String toString() {
 		return "JobDto [appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
-				+ createdTimestamp + ", state=" + state + ", startTimestamp=" + startTimestamp + ", endTimestamp=" + endTimestamp
-				+ ", errorCount=" + errorCount + ", errorReason=" + errorReason + ", reset=" + reset + "]";
+				+ createdTimestamp + ", state=" + state + ", payload=" + payload + ", startTimestamp=" + startTimestamp
+				+ ", endTimestamp=" + endTimestamp + ", errorCount=" + errorCount + ", errorReason=" + errorReason + ", reset="
+				+ reset + "]";
 	}
 
 }
