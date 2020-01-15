@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain;
+package gov.nyc.doitt.jobstatemanager.common;
 
 import org.springframework.http.HttpStatus;
 
@@ -19,7 +19,7 @@ public class JobStateManagerException extends RuntimeException {
 	}
 
 	protected HttpStatus getHttpStatus() {
-		return HttpStatus.UNPROCESSABLE_ENTITY;
+		return HttpStatus.INTERNAL_SERVER_ERROR;
 	}
 
 }

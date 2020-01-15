@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.job;
+package gov.nyc.doitt.jobstatemanager.job;
 
 enum JobState {
 

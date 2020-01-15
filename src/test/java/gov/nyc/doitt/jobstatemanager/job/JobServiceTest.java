@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.job;
+package gov.nyc.doitt.jobstatemanager.job;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -23,13 +23,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import gov.nyc.doitt.jobstatemanager.TestBase;
+import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfig;
+import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigMockerUpper;
+import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigService;
 
 @RunWith(SpringRunner.class)
 public class JobServiceTest extends TestBase {
@@ -40,6 +40,12 @@ public class JobServiceTest extends TestBase {
 	@Mock
 	private JobRepository jobRepository;
 
+	@Mock
+	private JobAppConfigService jobAppConfigService;
+
+	@Autowired
+	private JobAppConfigMockerUpper jobAppConfigMockerUpper;
+
 	@Autowired
 	private JobDtoMapper jobDtoMapper;
 
@@ -47,36 +53,30 @@ public class JobServiceTest extends TestBase {
 	@InjectMocks
 	private JobService jobService = new JobService();
 
-	@Value("${jobstatemanager.domain.job.JobService.maxBatchSize}")
-	private int maxBatchSize;
-
-	@Value("${jobstatemanager.domain.job.JobService.maxRetriesForError}")
-	private int maxRetriesForError;
-
 	private Pageable pageable;
 
 	@Before
 	public void init() throws Exception {
 
-		pageable = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "createdTimestamp"));
-		FieldUtils.writeField(jobService, "pageRequest", pageable, true);
-		FieldUtils.writeField(jobService, "maxRetriesForError", maxRetriesForError, true);
 		FieldUtils.writeField(jobService, "jobDtoMapper", jobDtoMapper, true);
 	}
 
 	@Test
-	public void testJobServiceNoJobs() {
+	public void testJobServiceNoJobs() throws Exception {
 
 		String appId = "myApp";
+		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appId);
+		when(jobAppConfigService.existsJobAppConfig(eq(appId))).thenReturn(true);
+		when(jobAppConfigService.getJobAppConfigDomain(eq(appId))).thenReturn(jobAppConfig);
 
 		List<Job> jobs = Collections.emptyList();
-		when(jobRepository.findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobState>anyList(),
-				eq(maxRetriesForError), eq(pageable))).thenReturn(jobs);
+		when(jobRepository.findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobState>anyList(), anyInt(),
+				eq(pageable))).thenReturn(jobs);
 
 		List<JobDto> batchOfJobDtos = jobService.getNextBatch(appId);
 
-		verify(jobRepository, times(1)).findByAppIdAndStateInAndErrorCountLessThan(eq(appId),
-				ArgumentMatchers.<JobState>anyList(), anyInt(), any(Pageable.class));
+		verify(jobRepository, times(1)).findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobState>anyList(),
+				anyInt(), any(Pageable.class));
 		assertTrue(batchOfJobDtos.isEmpty());
 	}
 
@@ -84,18 +84,22 @@ public class JobServiceTest extends TestBase {
 	public void testJobServiceWithJobs() throws Exception {
 
 		String appId = "myApp";
+		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appId);
+		when(jobAppConfigService.existsJobAppConfig(eq(appId))).thenReturn(true);
+		when(jobAppConfigService.getJobAppConfigDomain(eq(appId))).thenReturn(jobAppConfig);
 
 		int listSize = 5;
 		List<Job> jobs = JobMockerUpper.createList(listSize);
-		when(jobRepository.findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobState>anyList(),
-				anyInt(), any(Pageable.class))).thenReturn(jobs);
+
+		when(jobRepository.findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobState>anyList(), anyInt(),
+				any(Pageable.class))).thenReturn(jobs);
 
 		when(jobRepository.existsByAppIdAndJobId(eq(appId), anyString())).thenReturn(true);
 
 		List<JobDto> batchOfJobDtos = jobService.getNextBatch(appId);
 
-		verify(jobRepository, times(1)).findByAppIdAndStateInAndErrorCountLessThan(eq(appId),
-				ArgumentMatchers.<JobState>anyList(), anyInt(), any(Pageable.class));
+		verify(jobRepository, times(1)).findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobState>anyList(),
+				anyInt(), any(Pageable.class));
 		assertEquals(listSize, batchOfJobDtos.size());
 
 		batchOfJobDtos.forEach(p -> {

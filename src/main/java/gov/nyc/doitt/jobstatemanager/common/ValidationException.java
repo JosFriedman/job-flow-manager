@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain;
+package gov.nyc.doitt.jobstatemanager.common;
 
 import java.util.List;
 import java.util.stream.Collectors;

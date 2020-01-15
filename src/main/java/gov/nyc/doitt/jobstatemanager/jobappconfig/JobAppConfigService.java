@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.jobappconfig;
+package gov.nyc.doitt.jobstatemanager.jobappconfig;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.nyc.doitt.jobstatemanager.domain.ConflictException;
-import gov.nyc.doitt.jobstatemanager.domain.EntityNotFoundException;
+import gov.nyc.doitt.jobstatemanager.common.ConflictException;
+import gov.nyc.doitt.jobstatemanager.common.EntityNotFoundException;
 
 @Component
 public class JobAppConfigService {

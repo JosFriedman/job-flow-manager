@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.job;
+package gov.nyc.doitt.jobstatemanager.job;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,11 +14,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import gov.nyc.doitt.jobstatemanager.domain.ConflictException;
-import gov.nyc.doitt.jobstatemanager.domain.EntityNotFoundException;
-import gov.nyc.doitt.jobstatemanager.domain.JobStateManagerException;
-import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.JobAppConfig;
-import gov.nyc.doitt.jobstatemanager.domain.jobappconfig.JobAppConfigService;
+import gov.nyc.doitt.jobstatemanager.common.ConflictException;
+import gov.nyc.doitt.jobstatemanager.common.EntityNotFoundException;
+import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfig;
+import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigService;
 
 @Component
 class JobService {
@@ -66,6 +66,10 @@ class JobService {
 	List<JobDto> getNextBatch(String appId) {
 
 		try {
+			if (!jobAppConfigService.existsJobAppConfig(appId)) {
+				throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
+			}
+
 			JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appId);
 
 			PageRequest pageRequest = PageRequest.of(0, jobAppConfig.getMaxBatchSize(),
@@ -150,8 +154,7 @@ class JobService {
 	 */
 	public String deleteJob(String appId, String jobId) {
 
-		Job job = jobRepository.findByAppIdAndJobId(appId, jobId);
-		if (job == null) {
+		if (!jobRepository.existsByAppIdAndJobId(appId, jobId)) {
 			throw new EntityNotFoundException(String.format("Can't find Job for appId=%s, jobId=%s", appId, jobId));
 		}
 		return jobRepository.deleteByAppIdAndJobId(appId, jobId);
@@ -197,8 +200,7 @@ class JobService {
 		if (!jobRepository.existsByAppIdAndJobId(appId, jobId)) {
 			throw new EntityNotFoundException(String.format("Can't find Job for appId=%s, jobId=%s", appId, jobId));
 		}
-
-		Job job = jobRepository.getByAppIdAndJobId(appId, jobId);
+		Job job = jobRepository.findByAppIdAndJobId(appId, jobId);
 		jobDtoMapper.fromDto(jobDto, job);
 
 		jobRepository.save(job);

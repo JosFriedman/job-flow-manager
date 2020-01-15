@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.jobappconfig;
+package gov.nyc.doitt.jobstatemanager.jobappconfig;
 
 import java.util.ArrayList;
 import java.util.List;

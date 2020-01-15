@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.job;
+package gov.nyc.doitt.jobstatemanager.job;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import gov.nyc.doitt.jobstatemanager.domain.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
 
 /**
  * Map Job to and from JobDto

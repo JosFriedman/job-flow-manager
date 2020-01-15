@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.job;
+package gov.nyc.doitt.jobstatemanager.job;
 
 import java.util.List;
 
@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.nyc.doitt.jobstatemanager.domain.JobStateManagerException;
-import gov.nyc.doitt.jobstatemanager.domain.SortParamMapper;
-import gov.nyc.doitt.jobstatemanager.domain.ValidationException;
+import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.common.SortParamMapper;
+import gov.nyc.doitt.jobstatemanager.common.ValidationException;
 
 @RestController
 @RequestMapping("jobStateManager")

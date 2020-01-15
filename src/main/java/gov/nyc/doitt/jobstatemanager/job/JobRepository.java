@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.job;
+package gov.nyc.doitt.jobstatemanager.job;
 
 import java.util.List;
 
@@ -17,8 +17,6 @@ interface JobRepository extends MongoRepository<Job, String> {
 	String deleteByAppIdAndJobId(String appId, String jobId);
 
 	Job findByAppIdAndJobId(String appId, String jobId);
-
-	Job getByAppIdAndJobId(String appId, String jobId);
 
 	List<Job> findByAppId(String appId, Sort sort);
 

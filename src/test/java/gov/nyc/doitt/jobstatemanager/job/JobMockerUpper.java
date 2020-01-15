@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.job;
+package gov.nyc.doitt.jobstatemanager.job;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Random;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.stereotype.Component;
 
-import gov.nyc.doitt.jobstatemanager.domain.job.Job;
+import gov.nyc.doitt.jobstatemanager.job.Job;
 
 @Component
 public class JobMockerUpper {
@@ -39,7 +39,7 @@ public class JobMockerUpper {
 		FieldUtils.writeField(job, "description", "description" + idx, true);
 
 		// make very old so it is found first
-		FieldUtils.writeField(job, "createdTimestamp", new Timestamp(System.currentTimeMillis() - 9000000000000L), true);
+		FieldUtils.writeField(job, "createdTimestamp", new Timestamp(System.currentTimeMillis() - 9000000000000L + idx), true);
 
 		FieldUtils.writeField(job, "description", "description" + idx, true);
 

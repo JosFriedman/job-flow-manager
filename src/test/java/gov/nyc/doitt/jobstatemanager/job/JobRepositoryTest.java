@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.domain.job;
+package gov.nyc.doitt.jobstatemanager.job;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,14 +27,11 @@ public class JobRepositoryTest extends TestBase {
 	@Autowired
 	private JobMockerUpper jobMockerUpper;
 
-	@Value("${jobstatemanager.domain.job.JobService.maxBatchSize}")
-	private int maxBatchSize;
+	private int maxBatchSize = 3;
 
-	@Value("${jobstatemanager.domain.job.JobService.maxRetriesForError}")
-	private int maxRetriesForError;
+	private int maxRetriesForError = 2;
 
 	@Test
-//	@Transactional("jobManagerTransactionManager")
 	public void testfindByStatusInAndErrorCountLessThan_NEW() throws Exception {
 
 		maxBatchSize = 1;
@@ -55,7 +52,6 @@ public class JobRepositoryTest extends TestBase {
 	}
 
 	@Test
-//	@Transactional("jobManagerTransactionManager")
 	public void testfindByStatusInAndErrorCountLessThan_LimitedByBatchSize() throws Exception {
 
 		int numberOfJobs = maxBatchSize + 5; // create more that are returned in batch
@@ -90,9 +86,7 @@ public class JobRepositoryTest extends TestBase {
 			List<Job> couldBeInBatchJobs = new ArrayList<>();
 			for (int i = 0; i < jobs.size(); i++) {
 				Job job = jobs.get(i);
-				if (i % 11 == 0) {
-					job.setState(null);
-				} else if (i % 9 == 0) {
+				if (i % 9 == 0) {
 					job.setState(JobState.PROCESSING);
 				} else if (i % 7 == 0) {
 					job.setState(JobState.ERROR);
@@ -103,6 +97,8 @@ public class JobRepositoryTest extends TestBase {
 				} else if (i % 2 == 0) {
 					job.setState(JobState.NEW);
 					couldBeInBatchJobs.add(job);
+				} else {
+					job.setState(JobState.PROCESSING);
 				}
 				jobRepository.save(job);
 			}
@@ -110,7 +106,7 @@ public class JobRepositoryTest extends TestBase {
 
 			PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "createdTimestamp"));
 			List<Job> batchOfJobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(jobMockerUpper.appId,
-					Arrays.asList(new JobState[] { JobState.NEW, JobState.ERROR }), maxRetriesForError, pageRequest);
+					Arrays.asList(new JobState[] { JobState.NEW, JobState.ERROR }), maxRetriesForError + 1, pageRequest);
 			assertNotNull(batchOfJobs);
 			assertEquals(maxBatchSize, batchOfJobs.size());
 			assertTrue(couldBeInBatchJobs.containsAll(batchOfJobs));
