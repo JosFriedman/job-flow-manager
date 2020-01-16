@@ -76,7 +76,6 @@ public class JobRepositoryTest extends TestBase {
 	}
 
 	@Test
-//	@Transactional("jobManagerTransactionManager")
 	public void testfindByStatusInAndErrorCountLessThan_NEW_and_ERROR_only() throws Exception {
 
 		int numberOfJobs = maxBatchSize + 20; // create more that are returned in batch
