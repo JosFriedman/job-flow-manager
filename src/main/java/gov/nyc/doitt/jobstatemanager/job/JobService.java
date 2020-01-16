@@ -157,7 +157,8 @@ class JobService {
 		if (!jobRepository.existsByAppIdAndJobId(appId, jobId)) {
 			throw new EntityNotFoundException(String.format("Can't find Job for appId=%s, jobId=%s", appId, jobId));
 		}
-		return jobRepository.deleteByAppIdAndJobId(appId, jobId);
+		jobRepository.deleteByAppIdAndJobId(appId, jobId);
+		return appId + "/" + jobId;
 	}
 
 	/**

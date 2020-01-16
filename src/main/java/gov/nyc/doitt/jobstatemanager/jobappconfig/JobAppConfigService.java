@@ -101,7 +101,8 @@ public class JobAppConfigService {
 		if (!jobAppConfigRepository.existsByAppId(appId)) {
 			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
 		}
-		return jobAppConfigRepository.deleteByAppId(appId);
+		jobAppConfigRepository.deleteByAppId(appId);
+		return appId;
 	}
 
 }
