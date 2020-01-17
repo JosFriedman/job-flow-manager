@@ -73,7 +73,7 @@ public class JobServiceTest extends TestBase {
 		when(jobRepository.findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobState>anyList(), anyInt(),
 				eq(pageable))).thenReturn(jobs);
 
-		List<JobDto> batchOfJobDtos = jobService.getNextBatch(appId);
+		List<JobDto> batchOfJobDtos = jobService.startNextBatch(appId);
 
 		verify(jobRepository, times(1)).findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobState>anyList(),
 				anyInt(), any(Pageable.class));
@@ -96,7 +96,7 @@ public class JobServiceTest extends TestBase {
 
 		when(jobRepository.existsByAppIdAndJobId(eq(appId), anyString())).thenReturn(true);
 
-		List<JobDto> batchOfJobDtos = jobService.getNextBatch(appId);
+		List<JobDto> batchOfJobDtos = jobService.startNextBatch(appId);
 
 		verify(jobRepository, times(1)).findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<JobState>anyList(),
 				anyInt(), any(Pageable.class));

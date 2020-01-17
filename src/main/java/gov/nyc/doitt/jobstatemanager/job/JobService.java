@@ -58,12 +58,12 @@ class JobService {
 	}
 
 	/**
-	 * Return next batch of jobs for appId
+	 * Start and return next batch of jobs for appId
 	 * 
 	 * @param appId
 	 * @return
 	 */
-	List<JobDto> getNextBatch(String appId) {
+	List<JobDto> startNextBatch(String appId) {
 
 		try {
 			if (!jobAppConfigService.existsJobAppConfig(appId)) {

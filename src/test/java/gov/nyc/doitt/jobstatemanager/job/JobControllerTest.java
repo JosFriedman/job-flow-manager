@@ -137,7 +137,7 @@ public class JobControllerTest {
 	}
 
 	@Test
-	public void testGetNextBatch() throws Exception {
+	public void testStartNextBatch() throws Exception {
 
 		List<Job> jobs = jobMockerUpper.createList(5);
 		Job job0 = jobs.get(0);
@@ -152,7 +152,7 @@ public class JobControllerTest {
 		when(jobRepository.findByAppIdAndStateInAndErrorCountLessThan(eq(appId), anyList(), eq(jobAppConfig.getMaxRetriesForError() + 1), any(Pageable.class)))
 				.thenReturn(jobs.subList(0, jobAppConfig.getMaxBatchSize()));
 
-		ResultActions resultActions = mockMvc.perform(get("/jobStateManager/jobs/" + appId + "?nextBatch=true")).andDo(print())
+		ResultActions resultActions = mockMvc.perform(post("/jobStateManager/jobs/" + appId + "/startNextBatch")).andDo(print())
 				.andExpect(status().isOk());
 
 		String content = resultActions.andReturn().getResponse().getContentAsString();
