@@ -1,28 +1,41 @@
 package gov.nyc.doitt.jobstatemanager.job;
 
-import java.util.List;
-
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+import org.springframework.validation.SmartValidator;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
 /**
  * Validates the JobDto payload in REST calls
  */
+@SuppressWarnings("unused")
 @Component
-class JobDtoValidator implements Validator {
+class JobDtoValidator implements SmartValidator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return JobDto.class.isAssignableFrom(clazz) /*|| List.class.isAssignableFrom(clazz) */;
+		return JobDto.class.isAssignableFrom(clazz);
 	}
 
 	@Override
 	public void validate(Object target, Errors errors) {
 
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "appId", "appId must be specified");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "jobId", "jobId must be specified");
+		validate(target, errors, (Object[]) null);
 	}
 
+	@Override
+	public void validate(Object target, Errors errors, Object... validationHints) {
+
+		JobDto jobDto = (JobDto) target;
+		String prefix = getErrorMessagePrefix(validationHints);
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "appId", prefix + "appId must be specified");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "jobId", prefix + "jobId must be specified");
+	}
+
+	private String getErrorMessagePrefix(Object[] validationHints) {
+
+		return ArrayUtils.isEmpty(validationHints) || validationHints[0] == null ? "" : "jobDto[" + validationHints[0] + "].";
+
+	}
 }

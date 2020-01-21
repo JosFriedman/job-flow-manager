@@ -24,8 +24,15 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	@ExceptionHandler(value = { JobStateManagerException.class })
 	protected ResponseEntity<Object> handleJobStateManagerException(JobStateManagerException ex, WebRequest request) {
 
+		Map<String, Object> body = new LinkedHashMap<>();
+		List<String> errors = ex.getErrors();
+		if (errors != null) {
+			body.put("errors", errors);
+		} else {
+			body.put("errors", ex.getMessage());			
+		}
 		logger.error(ex.getMessage(), ex);
-		return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), ex.getHttpStatus(), request);
+		return handleExceptionInternal(ex, body, new HttpHeaders(), ex.getHttpStatus(), request);
 	}
 
 	// error handler for @Valid
@@ -41,7 +48,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 				.collect(Collectors.toList());
 
 		body.put("errors", errors);
-		return new ResponseEntity<>(body, headers, status);
+		return handleExceptionInternal(ex, body, headers, status, request);
 
 	}
 

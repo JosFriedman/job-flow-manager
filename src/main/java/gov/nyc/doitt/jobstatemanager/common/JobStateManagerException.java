@@ -1,10 +1,20 @@
 package gov.nyc.doitt.jobstatemanager.common;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 
 public class JobStateManagerException extends RuntimeException {
 
-	static final long serialVersionUID = -1L;
+	private static final long serialVersionUID = -1L;
+
+	private List<String> errors;
+
+	public JobStateManagerException(List<String> errors) {
+		this(errors.stream().collect(Collectors.joining(", ")));
+		this.errors = errors;
+	}
 
 	public JobStateManagerException(String message) {
 		super(message);
@@ -20,6 +30,10 @@ public class JobStateManagerException extends RuntimeException {
 
 	protected HttpStatus getHttpStatus() {
 		return HttpStatus.INTERNAL_SERVER_ERROR;
+	}
+
+	public List<String> getErrors() {
+		return errors;
 	}
 
 }

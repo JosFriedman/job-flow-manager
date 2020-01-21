@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class JobDto {
 
-	@NotBlank(message = "appId may not be empty")
+//	@NotBlank(message = "appId may not be empty")
 	private String appId;
 	@NotBlank(message = "jobId may not be empty")
 	private String jobId;

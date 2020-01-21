@@ -1,10 +1,16 @@
 package gov.nyc.doitt.jobstatemanager.common;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 
 public class EntityNotFoundException extends JobStateManagerException {
 
-	static final long serialVersionUID = -1L;
+	private static final long serialVersionUID = 1L;
+
+	public EntityNotFoundException(List<String> errors) {
+		super(errors);
+	}
 
 	public EntityNotFoundException(String message, Throwable cause) {
 		super(message, cause);

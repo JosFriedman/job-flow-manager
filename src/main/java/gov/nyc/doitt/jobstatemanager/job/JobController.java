@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
 import gov.nyc.doitt.jobstatemanager.common.SortParamMapper;
+import gov.nyc.doitt.jobstatemanager.common.ValidationException;
 
 @RestController
 @RequestMapping("jobStateManager")
@@ -37,15 +39,27 @@ public class JobController {
 	@Autowired
 	private JobDtoValidator jobDtoValidator;
 
-	@InitBinder
-	private void initBinder(WebDataBinder binder) {
-		// binder.setValidator(jobDtoValidator);
+	@Autowired
+	private JobDtoListValidator jobDtoListValidator;
+
+	@InitBinder("jobDto")
+	private void initBinder_jobDto(WebDataBinder binder) {
+		binder.addValidators(jobDtoValidator);
+	}
+
+	@InitBinder("jobDtoList")
+	private void initBinder_jobDtoList(WebDataBinder binder) {
+		binder.addValidators(jobDtoListValidator);
 	}
 
 	@PostMapping("/jobs")
-	public JobDto createJob(@Valid @RequestBody JobDto jobDto) throws JobStateManagerException {
+	public JobDto createJob(@Valid @RequestBody JobDto jobDto, BindingResult result) throws JobStateManagerException {
 
 		logger.debug("createJob: entering: {}", jobDto);
+
+		if (result.hasErrors()) {
+			throw new ValidationException(result.getFieldErrors());
+		}
 
 		return jobService.createJob(jobDto);
 	}
@@ -87,21 +101,20 @@ public class JobController {
 	}
 
 	@PutMapping("/jobs/{appId}/job/{jobId}")
-	public JobDto updateJob(@PathVariable String appId, @PathVariable String jobId, /* @Valid */ @RequestBody JobDto jobDto
-			/*, BindingResult result */) throws JobStateManagerException {
+	public JobDto updateJob(@PathVariable String appId, @PathVariable String jobId, @Valid @RequestBody JobDto jobDto,
+			BindingResult result) throws JobStateManagerException {
 
 		logger.debug("updateJob: entering: appId={}, jobId={}, jobDto={}", appId, jobId, jobDto);
 
-/*		if (result.hasErrors()) {
+		if (result.hasErrors()) {
 			throw new ValidationException(result.getFieldErrors());
 		}
-*/
+
 		return jobService.updateJob(appId, jobId, jobDto);
 	}
 
 	@PatchMapping("/jobs/{appId}")
-	public List<JobDto> patchJobs(@PathVariable String appId,
-			/* @Valid */ @RequestBody List<JobDto> jobDtos /* , BindingResult result */) {
+	public List<JobDto> patchJobs(@PathVariable String appId, @Valid @RequestBody List<JobDto> jobDtos, BindingResult result) {
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("patchJobs: entering: appId={}", appId);
@@ -110,9 +123,9 @@ public class JobController {
 			}
 		}
 
-		/*
-		 * if (result.hasErrors()) { throw new ValidationException(result.getFieldErrors()); }
-		 */
+		if (result.hasErrors()) {
+			throw new ValidationException(result.getFieldErrors());
+		}
 		return jobService.updateJobsWithResults(appId, jobDtos);
 	}
 

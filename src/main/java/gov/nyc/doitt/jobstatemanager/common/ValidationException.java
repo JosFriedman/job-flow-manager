@@ -8,7 +8,7 @@ import org.springframework.validation.FieldError;
 
 public class ValidationException extends JobStateManagerException {
 
-	static final long serialVersionUID = -1L;
+	private static final long serialVersionUID = 1L;
 
 	public ValidationException(String message, Throwable cause) {
 		super(message, cause);
@@ -23,14 +23,13 @@ public class ValidationException extends JobStateManagerException {
 	}
 
 	public ValidationException(List<FieldError> fieldErrors) {
-		this(fieldErrors.stream().map(p -> p.getField() + ": " + p.getCode()).collect(Collectors.joining(", ")));
-	}
 
+		super(fieldErrors.stream().map(p -> p.getField() + ": " + p.getCode()).collect(Collectors.toList()));
+	}
 
 	@Override
 	protected HttpStatus getHttpStatus() {
 		return HttpStatus.UNPROCESSABLE_ENTITY;
 	}
-
 
 }
