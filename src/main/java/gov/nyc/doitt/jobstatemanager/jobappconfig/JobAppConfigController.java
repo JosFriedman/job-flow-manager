@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
 
 @RestController
-@RequestMapping("jobStateManager")
+@RequestMapping("jobAppConfigs")
 public class JobAppConfigController {
 
 	private Logger logger = LoggerFactory.getLogger(JobAppConfigController.class);
@@ -27,7 +27,7 @@ public class JobAppConfigController {
 	@Autowired
 	private JobAppConfigService jobAppConfigService;
 
-	@PostMapping("/jobAppConfigs")
+	@PostMapping("")
 	public JobAppConfigDto createJobAppConfig(@Valid @RequestBody JobAppConfigDto jobAppConfigDto) throws JobStateManagerException {
 
 		logger.debug("createJobAppConfig: entering: {}", jobAppConfigDto);
@@ -35,7 +35,7 @@ public class JobAppConfigController {
 		return jobAppConfigService.createJobAppConfig(jobAppConfigDto);
 	}
 
-	@GetMapping("/jobAppConfigs/{appId}")
+	@GetMapping("/{appId}")
 	public JobAppConfigDto getJobAppConfig(@PathVariable String appId) {
 
 		logger.debug("getJobAppConfig: entering: appId={}", appId);
@@ -43,12 +43,12 @@ public class JobAppConfigController {
 		return jobAppConfigService.getJobAppConfig(appId);
 	}
 
-	@GetMapping("/jobAppConfigs")
+	@GetMapping("")
 	public List<JobAppConfigDto> getJobAppConfigs() {
 		return jobAppConfigService.getJobAppConfigs();
 	}
 
-	@PutMapping("/jobAppConfigs/{appId}")
+	@PutMapping("appId}")
 	public JobAppConfigDto updateJobAppConfig(@PathVariable String appId, @Valid @RequestBody JobAppConfigDto jobAppConfigDto) {
 
 		logger.debug("updateJob: updateJobAppConfig: appId={}, jobAppConfigDto={}", appId, jobAppConfigDto);
@@ -56,7 +56,7 @@ public class JobAppConfigController {
 		return jobAppConfigService.updateJobAppConfig(appId, jobAppConfigDto);
 	}
 
-	@DeleteMapping("/jobAppConfigs/{appId}")
+	@DeleteMapping("/{appId}")
 	public String deleteJobAppConfig(@PathVariable String appId) {
 
 		logger.debug("deleteJobAppConfig: entering: appId={}, jobId={}", appId);

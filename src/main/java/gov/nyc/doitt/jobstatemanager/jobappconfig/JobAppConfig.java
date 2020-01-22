@@ -1,11 +1,13 @@
 package gov.nyc.doitt.jobstatemanager.jobappconfig;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -22,6 +24,9 @@ public class JobAppConfig {
 	private String notifyEmail;
 	private int maxBatchSize;
 	private int maxRetriesForError;
+
+	@DBRef
+	private List<TaskConfig> taskConfigs;
 
 	public String getAppId() {
 		return appId;
@@ -98,6 +103,14 @@ public class JobAppConfig {
 		} else if (!appId.equals(other.appId))
 			return false;
 		return true;
+	}
+
+	public List<TaskConfig> getTaskConfigs() {
+		return taskConfigs;
+	}
+
+	public void setTaskConfigs(List<TaskConfig> taskConfigs) {
+		this.taskConfigs = taskConfigs;
 	}
 
 	@Override

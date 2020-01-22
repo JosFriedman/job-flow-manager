@@ -1,6 +1,7 @@
 package gov.nyc.doitt.jobstatemanager.jobappconfig;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
@@ -17,6 +18,8 @@ public class JobAppConfigDto {
 	private String notifyEmail;
 	private int maxBatchSize;
 	private int maxRetriesForError;
+
+	private List<TaskConfigDto> taskConfigDtos;
 
 	public String getAppId() {
 		return appId;
@@ -64,6 +67,14 @@ public class JobAppConfigDto {
 
 	public void setMaxRetriesForError(int maxRetriesForError) {
 		this.maxRetriesForError = maxRetriesForError;
+	}
+
+	public List<TaskConfigDto> getTaskConfigDtos() {
+		return taskConfigDtos;
+	}
+
+	public void setTaskConfigDtos(List<TaskConfigDto> taskConfigDtos) {
+		this.taskConfigDtos = taskConfigDtos;
 	}
 
 }

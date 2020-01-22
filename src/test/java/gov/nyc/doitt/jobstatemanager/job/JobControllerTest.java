@@ -90,7 +90,7 @@ public class JobControllerTest {
 	@After
 	public void tearDown() throws Exception {
 
-		// put back real JobRepository bean into JobService
+		// put back real TaskRepository bean into TaskService
 		jobRepository = applicationContext.getBean(JobRepository.class);
 		ReflectionTestUtils.setField(jobService, "jobRepository", jobRepository);
 	}

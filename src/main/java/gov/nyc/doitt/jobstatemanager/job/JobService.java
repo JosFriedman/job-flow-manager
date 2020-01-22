@@ -63,7 +63,7 @@ class JobService {
 	 * @param appId
 	 * @return
 	 */
-	List<JobDto> startNextBatch(String appId) {
+	List<JobDto> startTaskForJobs(String taskName, String appId) {
 
 		try {
 			if (!jobAppConfigService.existsJobAppConfig(appId)) {
@@ -97,6 +97,40 @@ class JobService {
 		}
 
 	}
+
+	/**
+	 * Update processing results in jobDtos for jobs specified by appId
+	 * 
+	 * @param appId
+	 * @param jobDto
+	 * @return
+	 */
+	public List<JobDto> endTaskForJobs(String appId, String taskName, List<JobDto> jobDtos) {
+
+		if (!jobAppConfigService.existsJobAppConfig(appId)) {
+			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
+		}
+
+		// get jobs from DB
+		List<String> jobIds = jobDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
+		List<Job> jobs = jobRepository.findByAppIdAndJobIdIn(appId, jobIds);
+		if (jobs.size() != jobIds.size()) {
+			List<String> foundJobIds = jobs.stream().map(p -> p.getJobId()).collect(Collectors.toList());
+			throw new EntityNotFoundException(jobIds.stream().filter(p -> !foundJobIds.contains(p)).collect(Collectors.toList()));
+		}
+		Map<String, Job> jobIdJobMap = jobs.stream().collect(Collectors.toMap(Job::getJobId, Function.identity()));
+
+		// update results
+		List<JobDto> returnJobDtos = new ArrayList<>();
+		jobDtos.forEach(p -> {
+			Job job = jobIdJobMap.get(p.getJobId());
+			JobDto jobDto = updateJobWithResult(job, p);
+			returnJobDtos.add(jobDto);
+		});
+
+		return returnJobDtos;
+	}
+
 
 	/**
 	 * Get jobs for appId

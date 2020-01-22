@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.config.Configuration.AccessLevel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -18,6 +19,9 @@ import org.springframework.util.CollectionUtils;
 class JobAppConfigDtoMapper {
 
 	private ModelMapper modelMapper = new ModelMapper();
+
+	@Autowired
+	private TaskConfigDtoMapper taskConfigDtoMapper;
 
 	private PropertyMap<JobAppConfigDto, JobAppConfig> jobAppConfigDtoPropertyMap = new PropertyMap<JobAppConfigDto, JobAppConfig>() {
 
@@ -35,7 +39,11 @@ class JobAppConfigDtoMapper {
 
 	public JobAppConfig fromDto(JobAppConfigDto jobAppConfigDto) {
 
-		return modelMapper.map(jobAppConfigDto, JobAppConfig.class);
+		JobAppConfig jobAppConfig = modelMapper.map(jobAppConfigDto, JobAppConfig.class);
+
+		List<TaskConfig> taskConfigs = taskConfigDtoMapper.fromDto(jobAppConfigDto.getTaskConfigDtos());
+		jobAppConfig.setTaskConfigs(taskConfigs);
+		return jobAppConfig;
 	}
 
 	public JobAppConfig fromDto(JobAppConfigDto jobAppConfigDto, JobAppConfig jobAppConfig) {
