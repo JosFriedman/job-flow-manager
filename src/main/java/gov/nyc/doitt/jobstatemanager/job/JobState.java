@@ -1,6 +1,6 @@
 package gov.nyc.doitt.jobstatemanager.job;
 
-enum JobState {
+public enum JobState {
 
-	NEW, PROCESSING, COMPLETED, ERROR
+	READY, PROCESSING, COMPLETED, ERROR
 }

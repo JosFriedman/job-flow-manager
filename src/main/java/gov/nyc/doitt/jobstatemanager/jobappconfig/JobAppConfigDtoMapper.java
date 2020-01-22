@@ -60,7 +60,13 @@ class JobAppConfigDtoMapper {
 	}
 
 	public JobAppConfigDto toDto(JobAppConfig jobAppConfig) {
-		return modelMapper.map(jobAppConfig, JobAppConfigDto.class);
+
+		JobAppConfigDto jobAppConfigDto = modelMapper.map(jobAppConfig, JobAppConfigDto.class);
+
+		List<TaskConfigDto> taskConfigDtos = taskConfigDtoMapper.toDto(jobAppConfig.getTaskConfigs());
+		jobAppConfigDto.setTaskConfigDtos(taskConfigDtos);
+		return jobAppConfigDto;
+
 	}
 
 }

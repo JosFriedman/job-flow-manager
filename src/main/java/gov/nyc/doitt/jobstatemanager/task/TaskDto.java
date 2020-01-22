@@ -2,8 +2,6 @@ package gov.nyc.doitt.jobstatemanager.task;
 
 import java.sql.Timestamp;
 
-import javax.validation.constraints.NotBlank;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -11,30 +9,17 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class TaskDto {
 
 	private String jobId;
-	private String description;
-	private Timestamp createdTimestamp;
 	private String state;
 	private Timestamp startTimestamp;
 	private Timestamp endTimestamp;
-	private int errorCount;
 	private String errorReason;
-	private Boolean reset;
 
-
-	public String getDescription() {
-		return description;
+	public String getJobId() {
+		return jobId;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public Timestamp getCreatedTimestamp() {
-		return createdTimestamp;
-	}
-
-	public void setCreatedTimestamp(Timestamp createdTimestamp) {
-		this.createdTimestamp = createdTimestamp;
+	public void setJobId(String jobId) {
+		this.jobId = jobId;
 	}
 
 	public String getState() {
@@ -61,28 +46,12 @@ public class TaskDto {
 		this.endTimestamp = endTimestamp;
 	}
 
-	public int getErrorCount() {
-		return errorCount;
-	}
-
-	public void setErrorCount(int errorCount) {
-		this.errorCount = errorCount;
-	}
-
 	public String getErrorReason() {
 		return errorReason;
 	}
 
 	public void setErrorReason(String errorReason) {
 		this.errorReason = errorReason;
-	}
-
-	public Boolean isReset() {
-		return reset;
-	}
-
-	public void setReset(Boolean reset) {
-		this.reset = reset;
 	}
 
 }

@@ -8,18 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
-import gov.nyc.doitt.jobstatemanager.common.ValidationException;
 
 @RestController
 @RequestMapping("tasks")
@@ -46,12 +40,21 @@ public class TaskController {
 //		binder.addValidators(taskDtoListValidator);
 //	}
 
-	@PostMapping("/")
-	public List<TaskDto> startTasks(@RequestParam String taskName, @RequestParam String appId) {
+	@PostMapping("")
+	public List<TaskDto> startTasks(@RequestParam String appId, @RequestParam String taskName) {
 
-		logger.debug("startTaskForJobs: entering: taskName={}, appId={}", taskName, appId);
-		return taskService.startTasks(taskName, appId);
+		logger.debug("startTasks: entering: appId={}, taskName={}", appId, taskName);
+		return taskService.startTasks(appId, taskName);
 	}
+
+	@PutMapping("")
+	public List<TaskDto> endTasks(@RequestParam String appId, @RequestParam String taskName,
+			@Valid @RequestBody List<TaskDto> taskDtos, BindingResult result) {
+
+		logger.debug("endTasks: entering: appId={}, taskName={}, taskDtos{}", appId, taskName, taskDtos);
+		return taskService.endTasks(appId, taskName, taskDtos);
+	}
+
 //
 //	@PutMapping("/tasks/{taskName}")
 //	public List<JobDto> endTaskForJobs(@PathVariable String taskName, @RequestParam String appId,

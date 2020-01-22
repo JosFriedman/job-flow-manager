@@ -105,7 +105,7 @@ public class JobControllerTest {
 		mockMvc.perform(post("/jobStateManager/jobs").contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobDto)))
 				.andDo(print()).andExpect(status().isOk()).andExpect(jsonPath("$.appId", comparesEqualTo(jobDto.getAppId())))
 				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
-				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.NEW.name())));
+				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
 
 		verify(jobRepository).save(any(Job.class));
 	}
@@ -183,7 +183,7 @@ public class JobControllerTest {
 				.contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobDto))).andDo(print()).andExpect(status().isOk())
 				.andExpect(jsonPath("$.appId", comparesEqualTo(jobDto.getAppId())))
 				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
-				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.NEW.name())));
+				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
 
 		verify(jobRepository).save(any(Job.class));
 	}

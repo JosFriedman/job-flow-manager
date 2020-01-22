@@ -48,7 +48,7 @@ public class JobAppConfigController {
 		return jobAppConfigService.getJobAppConfigs();
 	}
 
-	@PutMapping("appId}")
+	@PutMapping("/{appId}")
 	public JobAppConfigDto updateJobAppConfig(@PathVariable String appId, @Valid @RequestBody JobAppConfigDto jobAppConfigDto) {
 
 		logger.debug("updateJob: updateJobAppConfig: appId={}, jobAppConfigDto={}", appId, jobAppConfigDto);

@@ -10,6 +10,8 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
+
 /**
  * Map Task to and from TaskDto
  * 
@@ -22,8 +24,6 @@ public class TaskDtoMapper {
 	private PropertyMap<TaskDto, Task> taskDtoPropertyMap = new PropertyMap<TaskDto, Task>() {
 
 		protected void configure() {
-			skip(destination.get_id());
-			skip(destination.getCreatedTimestamp());
 			skip(destination.getState());
 		}
 	};
@@ -57,16 +57,31 @@ public class TaskDtoMapper {
 		return task;
 	}
 
-	public List<TaskDto> toDto(List<Task> tasks) {
+	public Task fromDtoResult(TaskDto taskDto, Task task) {
 
-		if (CollectionUtils.isEmpty(tasks))
-			return new ArrayList<TaskDto>();
-		return tasks.stream().map(p -> toDto(p)).collect(Collectors.toList());
+		TaskState state = TaskState.valueOf(taskDto.getState());
+		if (state == TaskState.ERROR) {
+			task.endWithError(taskDto.getErrorReason());
+		} else if (state == TaskState.COMPLETED) {
+			task.endWithSuccess();
+		} else {
+			throw new JobStateManagerException("Unsupported state for result: " + state);
+		}
+		return task;
 	}
 
-	public TaskDto toDto(Task task) {
+//	public List<TaskDto> toDto(List<Task> tasks) {
+//
+//		if (CollectionUtils.isEmpty(tasks))
+//			return new ArrayList<TaskDto>();
+//		return tasks.stream().map(p -> toDto(p)).collect(Collectors.toList());
+//	}
 
-		return modelMapper.map(task, TaskDto.class);
+	public TaskDto toDto(String jobId, Task task) {
+
+		TaskDto taskDto =  modelMapper.map(task, TaskDto.class);
+		taskDto.setJobId(jobId);
+		return taskDto;
 	}
 
 }

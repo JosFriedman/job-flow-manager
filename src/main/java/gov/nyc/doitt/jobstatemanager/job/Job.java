@@ -1,6 +1,7 @@
 package gov.nyc.doitt.jobstatemanager.job;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EnumType;
@@ -9,13 +10,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nyc.doitt.jobstatemanager.task.Task;
 
 @Document
-class Job {
+public class Job {
 
 	@Id
 	@GenericGenerator(name = "db-uuid", strategy = "guid")
@@ -28,17 +28,14 @@ class Job {
 	private Timestamp createdTimestamp;
 	@Enumerated(EnumType.STRING)
 	private JobState state;
-	private Timestamp startTimestamp;
-	private Timestamp endTimestamp;
 	private int errorCount;
-	private String errorReason;
+	private String nextTaskName;
 
-	@DBRef
-	private List<Task> tasks;
-	
+	private List<Task> tasks = new ArrayList<>();
+
 	public Job() {
 		createdTimestamp = new Timestamp(System.currentTimeMillis());
-		state = JobState.NEW;
+		state = JobState.READY;
 	}
 
 	public String get_id() {
@@ -77,56 +74,29 @@ class Job {
 		return state;
 	}
 
-	public Timestamp getStartTimestamp() {
-		return startTimestamp;
-	}
-
-	public Timestamp getEndTimestamp() {
-		return endTimestamp;
-	}
-
 	public int getErrorCount() {
 		return errorCount;
 	}
 
-	public String getErrorReason() {
-		return errorReason;
-	}
-
-	public void start() {
-		state = JobState.PROCESSING;
-		startTimestamp = new Timestamp(System.currentTimeMillis());
-	}
-
-	public void endWithSuccess() {
-		endTimestamp = new Timestamp(System.currentTimeMillis());
-		this.state = JobState.COMPLETED;
-	}
-
-	public void endWithError(String errorReason) {
-
-		endTimestamp = new Timestamp(System.currentTimeMillis());
-		this.state = JobState.ERROR;
-		this.errorReason = errorReason;
-		errorCount++;
-	}
-
-	public void resetWithError() {
-
-		endTimestamp = new Timestamp(System.currentTimeMillis());
-		this.state = JobState.ERROR;
-		this.errorReason = "Reset";
-		errorCount = 1;
-	}
-
-	
-	
 	public List<Task> getTasks() {
 		return tasks;
 	}
 
 	public void setTasks(List<Task> tasks) {
 		this.tasks = tasks;
+	}
+
+	public void startTask(Task task) {
+		tasks.add(task);
+		state = JobState.PROCESSING;
+	}
+
+	public String getNextTaskName() {
+		return nextTaskName;
+	}
+
+	public void setNextTaskName(String nextTaskName) {
+		this.nextTaskName = nextTaskName;
 	}
 
 	@Override
@@ -159,14 +129,11 @@ class Job {
 			return false;
 		return true;
 	}
-	
-	
 
 	@Override
 	public String toString() {
-		return "Job [id=" + _id + ", appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
-				+ createdTimestamp + ", state=" + state + ", startTimestamp=" + startTimestamp + ", endTimestamp=" + endTimestamp
-				+ ", errorCount=" + errorCount + "]";
+		return "Job [appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
+				+ createdTimestamp + ", state=" + state + ", errorCount=" + errorCount + ", tasks=" + tasks + "]";
 	}
 
 	// TODO: josfriedman: remove these setters and change unit tests

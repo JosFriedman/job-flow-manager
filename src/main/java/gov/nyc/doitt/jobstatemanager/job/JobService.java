@@ -1,7 +1,6 @@
 package gov.nyc.doitt.jobstatemanager.job;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +17,7 @@ import gov.nyc.doitt.jobstatemanager.common.EntityNotFoundException;
 import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
 import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfig;
 import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigService;
+import gov.nyc.doitt.jobstatemanager.jobappconfig.TaskConfig;
 
 @Component
 class JobService {
@@ -46,13 +45,17 @@ class JobService {
 		if (!jobAppConfigService.existsJobAppConfig(appId)) {
 			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
 		}
-
 		String jobId = jobDto.getJobId();
 		if (jobRepository.existsByAppIdAndJobId(appId, jobId)) {
 			throw new ConflictException(String.format("Job for appId=%s, jobId=%s already exists", appId, jobId));
 		}
 
 		Job job = jobDtoMapper.fromDto(jobDto);
+
+		JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appId);
+		TaskConfig taskConfig = jobAppConfig.getTaskConfigs().stream().findFirst()
+				.orElseThrow(() -> new JobStateManagerException("JobAppConfig for appId=" + appId + " has no TaskConfigs"));
+		job.setNextTaskName(taskConfig.getName());
 		jobRepository.save(job);
 		return jobDtoMapper.toDto(job);
 	}
@@ -65,37 +68,38 @@ class JobService {
 	 */
 	List<JobDto> startTaskForJobs(String taskName, String appId) {
 
-		try {
-			if (!jobAppConfigService.existsJobAppConfig(appId)) {
-				throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
-			}
-
-			JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appId);
-
-			PageRequest pageRequest = PageRequest.of(0, jobAppConfig.getMaxBatchSize(),
-					Sort.by(Sort.Direction.ASC, "createdTimestamp"));
-
-			List<Job> jobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(appId,
-					Arrays.asList(new JobState[] { JobState.NEW, JobState.ERROR }), jobAppConfig.getMaxRetriesForError() + 1,
-					pageRequest);
-			logger.info("getNextBatch: number of jobs found: {}", jobs.size());
-			if (logger.isDebugEnabled()) {
-				jobs.forEach(p -> logger.debug("job: {}", p.toString()));
-			}
-
-			// mark each submission as picked up for processing
-			jobs.forEach(p -> {
-				p.start();
-				jobRepository.save(p);
-			});
-			return jobDtoMapper.toDto(jobs);
-
-		} catch (JobStateManagerException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new JobStateManagerException(e);
-		}
-
+//		try {
+//			if (!jobAppConfigService.existsJobAppConfig(appId)) {
+//				throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
+//			}
+//
+//			JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appId);
+//
+//			PageRequest pageRequest = PageRequest.of(0, jobAppConfig.getMaxBatchSize(),
+//					Sort.by(Sort.Direction.ASC, "createdTimestamp"));
+//
+//			List<Job> jobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(appId,
+//					Arrays.asList(new JobState[] { JobState.READY, JobState.ERROR }), jobAppConfig.getMaxRetriesForError() + 1,
+//					pageRequest);
+//			logger.info("getNextBatch: number of jobs found: {}", jobs.size());
+//			if (logger.isDebugEnabled()) {
+//				jobs.forEach(p -> logger.debug("job: {}", p.toString()));
+//			}
+//
+//			// mark each submission as picked up for processing
+//			jobs.forEach(p -> {
+////				p.start();
+//				jobRepository.save(p);
+//			});
+//			return jobDtoMapper.toDto(jobs);
+//
+//		} catch (JobStateManagerException e) {
+//			throw e;
+//		} catch (Exception e) {
+//			throw new JobStateManagerException(e);
+//		}
+//
+		return null;
 	}
 
 	/**
@@ -130,7 +134,6 @@ class JobService {
 
 		return returnJobDtos;
 	}
-
 
 	/**
 	 * Get jobs for appId
@@ -253,8 +256,8 @@ class JobService {
 	// Update processing result in job from jobDto
 	private JobDto updateJobWithResult(Job job, JobDto jobDto) {
 
-		jobDtoMapper.fromDtoResult(jobDto, job);
-		jobRepository.save(job);
+//		jobDtoMapper.fromDtoResult(jobDto, job);
+//		jobRepository.save(job);
 		return jobDtoMapper.toDto(job);
 	}
 

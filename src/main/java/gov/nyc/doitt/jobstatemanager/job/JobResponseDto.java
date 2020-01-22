@@ -2,8 +2,6 @@ package gov.nyc.doitt.jobstatemanager.job;
 
 import java.sql.Timestamp;
 
-import javax.validation.constraints.NotBlank;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 

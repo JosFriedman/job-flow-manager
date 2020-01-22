@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -25,7 +24,6 @@ public class JobAppConfig {
 	private int maxBatchSize;
 	private int maxRetriesForError;
 
-	@DBRef
 	private List<TaskConfig> taskConfigs;
 
 	public String getAppId() {
@@ -110,6 +108,7 @@ public class JobAppConfig {
 	}
 
 	public void setTaskConfigs(List<TaskConfig> taskConfigs) {
+		taskConfigs.sort((TaskConfig p, TaskConfig q) -> p.getSequence().compareTo(q.getSequence()));
 		this.taskConfigs = taskConfigs;
 	}
 

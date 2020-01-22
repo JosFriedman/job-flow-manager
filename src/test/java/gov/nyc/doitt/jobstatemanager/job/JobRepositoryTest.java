@@ -11,7 +11,6 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -36,13 +35,13 @@ public class JobRepositoryTest extends TestBase {
 
 		maxBatchSize = 1;
 		Job job = jobMockerUpper.create();
-		job.setState(JobState.NEW);
+		job.setState(JobState.READY);
 		jobRepository.save(job);
 
 		try {
 			PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "createdTimestamp"));
 			List<Job> jobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(jobMockerUpper.appId,
-					Arrays.asList(new JobState[] { JobState.NEW }), maxRetriesForError, pageRequest);
+					Arrays.asList(new JobState[] { JobState.READY }), maxRetriesForError, pageRequest);
 			assertNotNull(jobs);
 			assertEquals(1, jobs.size());
 			assertTrue(jobs.contains(job));
@@ -60,13 +59,13 @@ public class JobRepositoryTest extends TestBase {
 		try {
 			for (int i = 0; i < jobs.size(); i++) {
 				Job job = jobs.get(i);
-				job.setState(i == 0 ? JobState.NEW : JobState.ERROR);
+				job.setState(i == 0 ? JobState.READY : JobState.ERROR);
 				jobRepository.save(job);
 			}
 
 			PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "createdTimestamp"));
 			List<Job> batchOfJobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(jobMockerUpper.appId,
-					Arrays.asList(new JobState[] { JobState.NEW, JobState.ERROR }), maxRetriesForError, pageRequest);
+					Arrays.asList(new JobState[] { JobState.READY, JobState.ERROR }), maxRetriesForError, pageRequest);
 			assertNotNull(batchOfJobs);
 			assertEquals(maxBatchSize, batchOfJobs.size());
 			assertTrue(jobs.containsAll(batchOfJobs));
@@ -94,7 +93,7 @@ public class JobRepositoryTest extends TestBase {
 					job.setState(JobState.ERROR);
 					couldBeInBatchJobs.add(job);
 				} else if (i % 2 == 0) {
-					job.setState(JobState.NEW);
+					job.setState(JobState.READY);
 					couldBeInBatchJobs.add(job);
 				} else {
 					job.setState(JobState.PROCESSING);
@@ -105,7 +104,7 @@ public class JobRepositoryTest extends TestBase {
 
 			PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "createdTimestamp"));
 			List<Job> batchOfJobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(jobMockerUpper.appId,
-					Arrays.asList(new JobState[] { JobState.NEW, JobState.ERROR }), maxRetriesForError + 1, pageRequest);
+					Arrays.asList(new JobState[] { JobState.READY, JobState.ERROR }), maxRetriesForError + 1, pageRequest);
 			assertNotNull(batchOfJobs);
 			assertEquals(maxBatchSize, batchOfJobs.size());
 			assertTrue(couldBeInBatchJobs.containsAll(batchOfJobs));
