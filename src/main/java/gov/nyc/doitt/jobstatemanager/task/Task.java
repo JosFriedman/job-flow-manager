@@ -5,13 +5,7 @@ import java.sql.Timestamp;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-//@Document
 public class Task {
-
-//	@Id
-//	@GenericGenerator(name = "db-uuid", strategy = "guid")
-//	@GeneratedValue(generator = "db-uuid")
-//	private String _id;
 
 	private String name;
 	private String description;
@@ -25,6 +19,7 @@ public class Task {
 	}
 
 	public Task(String name) {
+		this.name = name;
 		startTimestamp = new Timestamp(System.currentTimeMillis()); 
 		state = TaskState.PROCESSING;
 	}
@@ -73,4 +68,5 @@ public class Task {
 		this.errorReason = errorReason;
 	}
 
+	
 }

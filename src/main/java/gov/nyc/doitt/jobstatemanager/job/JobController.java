@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,17 +42,17 @@ public class JobController {
 		binder.addValidators(jobDtoListValidator);
 	}
 
-	@PostMapping("")
-	public JobDto createJob( @Valid @RequestBody JobDto jobDto, BindingResult result)
+	@PostMapping("/{appId}")
+	public JobDto createJob(@PathVariable String appId, @Valid @RequestBody JobDto jobDto, BindingResult result)
 			throws JobStateManagerException {
 
-		logger.debug("createJob: entering: jobDto={}",  jobDto);
+		logger.debug("createJob: entering: appId={}, jobDto={}", appId, jobDto);
 
 		if (result.hasErrors()) {
 			throw new ValidationException(result.getFieldErrors());
 		}
 
-		return jobService.createJob(jobDto);
+		return jobService.createJob(appId, jobDto);
 	}
 
 }

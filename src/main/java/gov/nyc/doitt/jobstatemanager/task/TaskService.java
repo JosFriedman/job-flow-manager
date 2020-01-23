@@ -1,6 +1,5 @@
 package gov.nyc.doitt.jobstatemanager.task;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -44,32 +43,26 @@ class TaskService {
 	 * @param appId
 	 * @return
 	 */
-	List<TaskDto> startTasks(String appId, String taskName) {
+	public List<TaskDto> startTasks(String appId, String taskName) {
 
 		if (!jobAppConfigService.existsJobAppConfig(appId)) {
 			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
 		}
 
+		// get jobs that are available for this task
 		JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appId);
-
 		PageRequest pageRequest = PageRequest.of(0, jobAppConfig.getMaxBatchSize(),
 				Sort.by(Sort.Direction.ASC, "createdTimestamp"));
-
 		List<Job> jobs = jobRepository.findByAppIdAndStateInAndNextTaskName(appId, Arrays.asList(new JobState[] { JobState.READY }),
 				taskName, pageRequest);
 		logger.info("startTasks: number of jobs found: {}", jobs.size());
 
-		List<TaskDto> taskDtos = new ArrayList<>();
-		jobs.forEach(p -> {
+		// create tasks and update jobs
+		jobs.forEach(p -> startTask(taskName, p));
 
-			logger.debug("job: {}", p.toString());
-
-			Task task = new Task(taskName);
-			taskDtos.add(taskDtoMapper.toDto(p.getJobId(), task));
-			p.startTask(task);
-			jobRepository.save(p);
-		});
-		return taskDtos;
+		// return TaskDtos
+		return jobs.stream().map(p -> taskDtoMapper.toDto(p.getJobId(), p.getTasks().get(p.getTasks().size() - 1)))
+				.collect(Collectors.toList());
 	}
 
 	public List<TaskDto> endTasks(String appId, String taskName, List<TaskDto> taskDtos) {
@@ -78,54 +71,72 @@ class TaskService {
 			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
 		}
 
-		// get jobs from DB
+		// get jobs from DB for jobIds in taskDtos
 		List<String> jobIds = taskDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
-
 		List<Job> jobs = jobRepository.findByAppIdAndJobIdInAndStateInAndNextTaskName(appId, jobIds,
 				Arrays.asList(new JobState[] { JobState.PROCESSING }), taskName);
-
 		if (jobs.size() != jobIds.size()) {
 			List<String> foundJobIds = jobs.stream().map(p -> p.getJobId()).collect(Collectors.toList());
-			throw new EntityNotFoundException(jobIds.stream().filter(p -> !foundJobIds.contains(p)).collect(Collectors.toList()));
+			throw new EntityNotFoundException(jobIds.stream().filter(p -> !foundJobIds.contains(p)).map(q -> { return "jobId=" + q + " not found or not ready for this task="+ taskName; }).collect(Collectors.toList()));
 		}
 		Map<String, Job> jobIdJobMap = jobs.stream().collect(Collectors.toMap(Job::getJobId, Function.identity()));
 
-		JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appId);
-		List<TaskConfig> taskConfigs = jobAppConfig.getTaskConfigs();
-		TaskConfig nextTaskConfig = null;
-		for (int i = 0; i < taskConfigs.size(); i++) {
-			TaskConfig taskConfig = taskConfigs.get(i);
-			if (taskConfig.getName().equals(taskName)) {
-				if (i < taskConfigs.size() - 1) {
-					nextTaskConfig = taskConfigs.get(i + 1);
-					break;
-				}
-			}
-		}
-		final TaskConfig nextTaskConfig1 = nextTaskConfig;
-		// update results
-		taskDtos.forEach(p -> {
-
-			Job job = jobIdJobMap.get(p.getJobId());
-			Task task = job.getTasks().get(job.getTasks().size() - 1);
-
-			taskDtoMapper.fromDtoResult(p, task);
-			
-			if (task.getState() == TaskState.COMPLETED) {
-				if (nextTaskConfig1 != null) {
-					job.setNextTaskName(nextTaskConfig1.getName());
-					job.setState(JobState.READY);
-				} else {
-					job.setState(JobState.COMPLETED);
-				}
-			} else {
-				job.setState(JobState.ERROR);
-				
-			}
-			jobRepository.save(job);
-		});
+		// update jobs and tasks with results
+		taskDtos.forEach(p -> endTask(taskName, p, jobIdJobMap.get(p.getJobId()), getNextTaskConfig(appId, taskName)));
 
 		return taskDtos;
 	}
 
+	private void startTask(String taskName, Job job) {
+
+		logger.debug("takName={}, job={}", taskName, job.toString());
+		job.startTask(new Task(taskName));
+		jobRepository.save(job);
+
+	}
+
+	private TaskConfig getNextTaskConfig(String appId, String taskName) {
+
+		JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appId);
+		List<TaskConfig> taskConfigs = jobAppConfig.getTaskConfigs();
+		for (int i = 0; i < taskConfigs.size(); i++) {
+			TaskConfig taskConfig = taskConfigs.get(i);
+			if (taskConfig.getName().equals(taskName)) {
+				return i < taskConfigs.size() - 1 ? taskConfigs.get(i + 1) : null;
+			}
+		}
+		throw new JobStateManagerException(
+				String.format("Task name '%s' not found in JobAppConfig '%s': " + taskName, jobAppConfig));
+	}
+
+	private void endTask(String taskName, TaskDto taskDto, Job job, TaskConfig nextTaskConfig) {
+
+		logger.debug("TaskDto: {}", taskDto.toString());
+
+		if (job.getState() != JobState.PROCESSING) {
+			throw new JobStateManagerException("Job is not in correct state for updating with result: " + job);
+		}
+
+		// get last task
+		Task task = job.getTasks().get(job.getTasks().size() - 1);
+		if (!task.getName().equals(taskName)) {
+			throw new JobStateManagerException(
+					String.format("Given task name '%s' != Task's name '%s': " + taskName, task.getName()));
+		}
+
+		taskDtoMapper.fromDtoResult(taskDto, task);
+
+		if (task.getState() == TaskState.COMPLETED) {
+			if (nextTaskConfig != null) {
+				job.setNextTaskName(nextTaskConfig.getName());
+				job.setState(JobState.READY);
+			} else {
+				job.setNextTaskName(null);
+				job.setState(JobState.COMPLETED);
+			}
+		} else {
+			job.setState(JobState.ERROR);
+		}
+		jobRepository.save(job);
+	}
 }

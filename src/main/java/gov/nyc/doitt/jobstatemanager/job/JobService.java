@@ -39,9 +39,8 @@ class JobService {
 	 * @param jobDto
 	 * @return
 	 */
-	public JobDto createJob(JobDto jobDto) {
+	public JobDto createJob(String appId, JobDto jobDto) {
 
-		String appId = jobDto.getAppId();
 		if (!jobAppConfigService.existsJobAppConfig(appId)) {
 			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
 		}

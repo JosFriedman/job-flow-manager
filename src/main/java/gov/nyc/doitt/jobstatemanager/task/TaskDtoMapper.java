@@ -25,13 +25,14 @@ public class TaskDtoMapper {
 
 		protected void configure() {
 			skip(destination.getState());
+			skip(destination.getStartTimestamp());
+			skip(destination.getEndTimestamp());
 		}
 	};
 
 	public TaskDtoMapper() {
 
 		modelMapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
-
 		modelMapper.addMappings(taskDtoPropertyMap);
 	}
 
@@ -44,11 +45,7 @@ public class TaskDtoMapper {
 
 		if (CollectionUtils.isEmpty(taskDtos))
 			return new ArrayList<Task>();
-		return taskDtos.stream().map(p -> {
-			Task task = fromDto(p);
-			return task;
-		}).collect(Collectors.toList());
-
+		return taskDtos.stream().map(p -> fromDto(p)).collect(Collectors.toList());
 	}
 
 	public Task fromDto(TaskDto taskDto, Task task) {
@@ -58,6 +55,10 @@ public class TaskDtoMapper {
 	}
 
 	public Task fromDtoResult(TaskDto taskDto, Task task) {
+
+		if (task.getState() != TaskState.PROCESSING) {
+			throw new JobStateManagerException("Task is not in correct state for updating with result: " + task);
+		}
 
 		TaskState state = TaskState.valueOf(taskDto.getState());
 		if (state == TaskState.ERROR) {
@@ -70,16 +71,16 @@ public class TaskDtoMapper {
 		return task;
 	}
 
-//	public List<TaskDto> toDto(List<Task> tasks) {
-//
-//		if (CollectionUtils.isEmpty(tasks))
-//			return new ArrayList<TaskDto>();
-//		return tasks.stream().map(p -> toDto(p)).collect(Collectors.toList());
-//	}
+	public List<TaskDto> toDto(String jobId, List<Task> tasks) {
+
+		if (CollectionUtils.isEmpty(tasks))
+			return new ArrayList<TaskDto>();
+		return tasks.stream().map(p -> toDto(jobId, p)).collect(Collectors.toList());
+	}
 
 	public TaskDto toDto(String jobId, Task task) {
 
-		TaskDto taskDto =  modelMapper.map(task, TaskDto.class);
+		TaskDto taskDto = modelMapper.map(task, TaskDto.class);
 		taskDto.setJobId(jobId);
 		return taskDto;
 	}

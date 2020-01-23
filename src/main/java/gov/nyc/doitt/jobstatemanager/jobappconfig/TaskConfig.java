@@ -2,18 +2,8 @@ package gov.nyc.doitt.jobstatemanager.jobappconfig;
 
 import java.sql.Timestamp;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document
 public class TaskConfig {
 
-	@Id
-	@GenericGenerator(name = "db-uuid", strategy = "guid")
-	@GeneratedValue(generator = "db-uuid")
 	private String _id;
 
 	private String name;

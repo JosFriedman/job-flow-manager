@@ -29,8 +29,8 @@ class TaskDtoValidator implements SmartValidator {
 
 		TaskDto taskDto = (TaskDto) target;
 		String prefix = getErrorMessagePrefix(validationHints);
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "appId", prefix + "appId must be specified");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "taskId", prefix + "taskId must be specified");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "jobId", prefix + "jobId must be specified");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "state", prefix + "state must be specified");
 	}
 
 	private String getErrorMessagePrefix(Object[] validationHints) {
