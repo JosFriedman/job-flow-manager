@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
+import gov.nyc.doitt.jobstatemanager.job.Job;
 
 /**
  * Map Task to and from TaskDto
@@ -71,17 +72,20 @@ public class TaskDtoMapper {
 		return task;
 	}
 
-	public List<TaskDto> toDto(String jobId, List<Task> tasks) {
 
-		if (CollectionUtils.isEmpty(tasks))
+	public List<TaskDto> toDto(List<Job> jobs, String taskName) {
+
+		if (CollectionUtils.isEmpty(jobs))
 			return new ArrayList<TaskDto>();
-		return tasks.stream().map(p -> toDto(jobId, p)).collect(Collectors.toList());
+		
+		return jobs.stream().map(p -> toDto(p, p.getLastTask(taskName))).collect(Collectors.toList());
 	}
 
-	public TaskDto toDto(String jobId, Task task) {
+	public TaskDto toDto(Job job, Task task) {
 
 		TaskDto taskDto = modelMapper.map(task, TaskDto.class);
-		taskDto.setJobId(jobId);
+		taskDto.setJobId(job.getJobId());
+		taskDto.setErrorCount(job.getTotalErrorCountForTask(task.getName()));
 		return taskDto;
 	}
 

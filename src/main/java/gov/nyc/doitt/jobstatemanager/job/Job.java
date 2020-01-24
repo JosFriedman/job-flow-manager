@@ -11,7 +11,9 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.util.CollectionUtils;
 
+import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
 import gov.nyc.doitt.jobstatemanager.task.Task;
 
 @Document
@@ -98,6 +100,25 @@ public class Job {
 		this.nextTaskName = nextTaskName;
 	}
 
+	public int getTotalErrorCountForTask(String taskName) {
+		return tasks.stream().filter(p -> p.getName().equals(taskName)).mapToInt(p -> p.getErrorCount()).sum();
+	}
+
+	public Task getLastTask(String taskName) {
+
+		if (CollectionUtils.isEmpty(tasks)) {
+			throw new JobStateManagerException("tasks for " + jobId + " is empty");
+		}
+
+		// get last task
+		Task task = tasks.get(tasks.size() - 1);
+		if (!task.getName().equals(taskName)) {
+			throw new JobStateManagerException(
+					String.format("Given task name '%s' != Task's name '%s': ", taskName, task.getName()));
+		}
+		return task;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -131,8 +152,9 @@ public class Job {
 
 	@Override
 	public String toString() {
-		return "Job [_id=" + _id + ", appName=" + appName + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
-				+ createdTimestamp + ", state=" + state + ", nextTaskName=" + nextTaskName + ", tasks=" + tasks + "]";
+		return "Job [_id=" + _id + ", appName=" + appName + ", jobId=" + jobId + ", description=" + description
+				+ ", createdTimestamp=" + createdTimestamp + ", state=" + state + ", nextTaskName=" + nextTaskName + ", tasks="
+				+ tasks + "]";
 	}
 
 }

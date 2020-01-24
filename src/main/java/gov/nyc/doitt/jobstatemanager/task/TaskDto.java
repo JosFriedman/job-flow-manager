@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class TaskDto {
 
 	private String jobId;
+	private String name;
 	private Timestamp startTimestamp;
 	private Timestamp endTimestamp;
 	private String state;
@@ -21,6 +22,14 @@ public class TaskDto {
 
 	public void setJobId(String jobId) {
 		this.jobId = jobId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Timestamp getStartTimestamp() {
@@ -65,8 +74,8 @@ public class TaskDto {
 
 	@Override
 	public String toString() {
-		return "TaskDto [jobId=" + jobId + ", startTimestamp=" + startTimestamp + ", endTimestamp=" + endTimestamp + ", state="
-				+ state + ", errorReason=" + errorReason + ", errorCount=" + errorCount + "]";
+		return "TaskDto [jobId=" + jobId + ", name=" + name + ", startTimestamp=" + startTimestamp + ", endTimestamp="
+				+ endTimestamp + ", state=" + state + ", errorReason=" + errorReason + ", errorCount=" + errorCount + "]";
 	}
 
 }

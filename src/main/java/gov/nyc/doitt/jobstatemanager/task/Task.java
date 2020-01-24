@@ -57,6 +57,10 @@ public class Task {
 		return errorReason;
 	}
 
+	public int getErrorCount() {
+		return errorCount;
+	}
+
 	public void endWithSuccess() {
 		endTimestamp = new Timestamp(System.currentTimeMillis());
 		this.state = TaskState.COMPLETED;
@@ -65,8 +69,9 @@ public class Task {
 	public void endWithError(String errorReason) {
 
 		endTimestamp = new Timestamp(System.currentTimeMillis());
-		this.state = TaskState.ERROR;
+		state = TaskState.ERROR;
 		this.errorReason = errorReason;
+		errorCount++;
 	}
 
 }

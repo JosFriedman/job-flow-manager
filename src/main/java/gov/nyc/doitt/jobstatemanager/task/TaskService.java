@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import gov.nyc.doitt.jobstatemanager.common.EntityNotFoundException;
@@ -62,7 +63,7 @@ class TaskService {
 		jobs.forEach(p -> startTask(taskName, p));
 
 		// return TaskDtos
-		return jobs.stream().map(p -> taskDtoMapper.toDto(p.getJobId(), p.getTasks().get(p.getTasks().size() - 1)))
+		return jobs.stream().map(p -> taskDtoMapper.toDto(p, p.getTasks().get(p.getTasks().size() - 1)))
 				.collect(Collectors.toList());
 	}
 
@@ -85,61 +86,59 @@ class TaskService {
 		Map<String, Job> jobIdJobMap = jobs.stream().collect(Collectors.toMap(Job::getJobId, Function.identity()));
 
 		// update jobs and tasks with results
-		taskDtos.forEach(p -> endTask(taskName, p, jobIdJobMap.get(p.getJobId()), getNextTaskConfig(appName, taskName)));
+		Pair<TaskConfig, TaskConfig> currentAndNextTaskConfigs = getCurrentAndNextTaskConfigs(appName, taskName);
+		taskDtos.forEach(p -> endTask(taskName, jobIdJobMap.get(p.getJobId()), p, currentAndNextTaskConfigs.getFirst(),
+				currentAndNextTaskConfigs.getSecond()));
 
-		return taskDtos;
+		 return taskDtoMapper.toDto(jobs, taskName);
 	}
 
 	private void startTask(String taskName, Job job) {
 
-		logger.debug("takName={}, job={}", taskName, job.toString());
+		logger.debug("taskName={}, job={}", taskName, job.toString());
 		job.startTask(new Task(taskName));
 		jobRepository.save(job);
 
 	}
 
-	private TaskConfig getNextTaskConfig(String appName, String taskName) {
+	private Pair<TaskConfig, TaskConfig> getCurrentAndNextTaskConfigs(String appName, String taskName) {
 
 		JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appName);
 		List<TaskConfig> taskConfigs = jobAppConfig.getTaskConfigs();
 		for (int i = 0; i < taskConfigs.size(); i++) {
 			TaskConfig taskConfig = taskConfigs.get(i);
 			if (taskConfig.getName().equals(taskName)) {
-				return i < taskConfigs.size() - 1 ? taskConfigs.get(i + 1) : null;
+				return Pair.of(taskConfig, i < taskConfigs.size() - 1 ? taskConfigs.get(i + 1) : null);
 			}
 		}
 		throw new JobStateManagerException(
 				String.format("Task name '%s' not found in JobAppConfig '%s': " + taskName, jobAppConfig));
 	}
 
-	private void endTask(String taskName, TaskDto taskDto, Job job, TaskConfig nextTaskConfig) {
+	private void endTask(String taskName, Job job, TaskDto taskDto, TaskConfig currentTaskConfig, TaskConfig nextTaskConfig) {
 
-		logger.debug("TaskDto: {}", taskDto.toString());
+		logger.debug("taskDto: {}", taskDto);
 
 		if (job.getState() != JobState.PROCESSING) {
 			throw new JobStateManagerException("Job is not in correct state for updating with result: " + job);
 		}
-
-		// get last task
-		Task task = job.getTasks().get(job.getTasks().size() - 1);
-		if (!task.getName().equals(taskName)) {
-			throw new JobStateManagerException(
-					String.format("Given task name '%s' != Task's name '%s': " + taskName, task.getName()));
-		}
-
+		Task task = job.getLastTask(taskName);
 		taskDtoMapper.fromDtoResult(taskDto, task);
 
 		if (task.getState() == TaskState.COMPLETED) {
 			if (nextTaskConfig != null) {
-				job.setNextTaskName(nextTaskConfig.getName());
+				job.setNextTaskName(taskName);
 				job.setState(JobState.READY);
 			} else {
 				job.setNextTaskName(null);
 				job.setState(JobState.COMPLETED);
 			}
-		} else {
+		} else if (job.getTotalErrorCountForTask(taskName) > currentTaskConfig.getMaxRetriesForError()) {
 			job.setState(JobState.ERROR);
+		} else {
+			job.startTask(new Task(taskName));
 		}
+
 		jobRepository.save(job);
 	}
 }
