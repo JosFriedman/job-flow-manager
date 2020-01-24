@@ -49,7 +49,7 @@ class JobService {
 			throw new ConflictException(String.format("Job for appName=%s, jobId=%s already exists", appName, jobId));
 		}
 
-		Job job = jobDtoMapper.fromDto(jobDto);
+		Job job = jobDtoMapper.fromDto(appName, jobDto);
 
 		JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appName);
 		TaskConfig taskConfig = jobAppConfig.getTaskConfigs().stream().findFirst()

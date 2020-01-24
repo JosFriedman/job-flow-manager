@@ -23,6 +23,7 @@ class JobDtoMapper {
 
 		protected void configure() {
 			skip(destination.get_id());
+			skip(destination.getAppName());
 			skip(destination.getCreatedTimestamp());
 			skip(destination.getState());
 		}
@@ -34,9 +35,11 @@ class JobDtoMapper {
 		modelMapper.addMappings(jobDtoPropertyMap);
 	}
 
-	public Job fromDto(JobDto jobDto) {
+	public Job fromDto(String appName, JobDto jobDto) {
 
-		return modelMapper.map(jobDto, Job.class);
+		Job job =  modelMapper.map(jobDto, Job.class);
+		job.setAppName(appName);
+		return job;
 	}
 
 	public Job fromDto(JobDto jobDto, Job job) {

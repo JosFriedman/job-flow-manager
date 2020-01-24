@@ -80,7 +80,7 @@ class TaskService {
 		if (jobs.size() != jobIds.size()) {
 			List<String> foundJobIds = jobs.stream().map(p -> p.getJobId()).collect(Collectors.toList());
 			throw new EntityNotFoundException(jobIds.stream().filter(p -> !foundJobIds.contains(p)).map(q -> {
-				return "jobId=" + q + " not found or not ready for this task=" + taskName;
+				return "jobId=" + q + " not found or not processing this task=" + taskName;
 			}).collect(Collectors.toList()));
 		}
 		Map<String, Job> jobIdJobMap = jobs.stream().collect(Collectors.toMap(Job::getJobId, Function.identity()));

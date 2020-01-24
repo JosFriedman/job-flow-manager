@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nyc.doitt.jobstatemanager.common.ValidationException;
 
 @RestController
-@RequestMapping("jobs")
+@RequestMapping("tasks")
 public class TaskController {
 
 	private Logger logger = LoggerFactory.getLogger(TaskController.class);
@@ -44,15 +45,15 @@ public class TaskController {
 		binder.addValidators(taskDtoListValidator);
 	}
 
-	@PostMapping("/{appName}/tasks/{taskName}")
-	public List<TaskDto> startTasks(@PathVariable String appName, @PathVariable String taskName) {
+	@PostMapping("/{appName}")
+	public List<TaskDto> startTasks(@PathVariable String appName, @RequestParam String taskName) {
 
 		logger.debug("startTasks: entering: appName={}, taskName={}", appName, taskName);
 		return taskService.startTasks(appName, taskName);
 	}
 
-	@PutMapping("/{appName}/tasks/{taskName}")
-	public List<TaskDto> endTasks(@PathVariable String appName, @PathVariable String taskName,
+	@PutMapping("/{appName}")
+	public List<TaskDto> endTasks(@PathVariable String appName, @RequestParam String taskName,
 			@Valid @RequestBody List<TaskDto> taskDtos, BindingResult result) {
 
 		if (logger.isDebugEnabled()) {
