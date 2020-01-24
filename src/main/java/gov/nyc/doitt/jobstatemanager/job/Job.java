@@ -100,8 +100,8 @@ public class Job {
 		this.nextTaskName = nextTaskName;
 	}
 
-	public int getTotalErrorCountForTask(String taskName) {
-		return tasks.stream().filter(p -> p.getName().equals(taskName)).mapToInt(p -> p.getErrorCount()).sum();
+	public long getTotalErrorCountForTask(String taskName) {
+		return tasks.stream().filter(p -> p.getName().equals(taskName)).count();
 	}
 
 	public Task getLastTask(String taskName) {

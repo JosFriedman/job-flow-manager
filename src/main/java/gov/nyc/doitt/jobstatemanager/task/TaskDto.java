@@ -14,7 +14,7 @@ public class TaskDto {
 	private Timestamp endTimestamp;
 	private String state;
 	private String errorReason;
-	private int errorCount;
+	private long errorCount;
 
 	public String getJobId() {
 		return jobId;
@@ -64,11 +64,11 @@ public class TaskDto {
 		this.errorReason = errorReason;
 	}
 
-	public int getErrorCount() {
+	public long getErrorCount() {
 		return errorCount;
 	}
 
-	public void setErrorCount(int errorCount) {
+	public void setErrorCount(long errorCount) {
 		this.errorCount = errorCount;
 	}
 

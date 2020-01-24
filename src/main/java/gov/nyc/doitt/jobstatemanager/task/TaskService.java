@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import gov.nyc.doitt.jobstatemanager.common.EntityNotFoundException;
@@ -87,10 +87,10 @@ class TaskService {
 
 		// update jobs and tasks with results
 		Pair<TaskConfig, TaskConfig> currentAndNextTaskConfigs = getCurrentAndNextTaskConfigs(appName, taskName);
-		taskDtos.forEach(p -> endTask(taskName, jobIdJobMap.get(p.getJobId()), p, currentAndNextTaskConfigs.getFirst(),
-				currentAndNextTaskConfigs.getSecond()));
+		taskDtos.forEach(p -> endTask(taskName, jobIdJobMap.get(p.getJobId()), p, currentAndNextTaskConfigs.getLeft(),
+				currentAndNextTaskConfigs.getRight()));
 
-		 return taskDtoMapper.toDto(jobs, taskName);
+		return taskDtoMapper.toDto(jobs, taskName);
 	}
 
 	private void startTask(String taskName, Job job) {

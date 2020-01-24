@@ -14,7 +14,6 @@ public class Task {
 	private Timestamp endTimestamp;
 	private TaskState state;
 	private String errorReason;
-	private int errorCount;
 
 	public Task() {
 	}
@@ -57,10 +56,6 @@ public class Task {
 		return errorReason;
 	}
 
-	public int getErrorCount() {
-		return errorCount;
-	}
-
 	public void endWithSuccess() {
 		endTimestamp = new Timestamp(System.currentTimeMillis());
 		this.state = TaskState.COMPLETED;
@@ -71,7 +66,12 @@ public class Task {
 		endTimestamp = new Timestamp(System.currentTimeMillis());
 		state = TaskState.ERROR;
 		this.errorReason = errorReason;
-		errorCount++;
+	}
+
+	@Override
+	public String toString() {
+		return "Task [name=" + name + ", description=" + description + ", startTimestamp=" + startTimestamp + ", endTimestamp="
+				+ endTimestamp + ", state=" + state + ", errorReason=" + errorReason + "]";
 	}
 
 }
