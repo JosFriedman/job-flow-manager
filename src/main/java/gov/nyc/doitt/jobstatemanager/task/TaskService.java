@@ -136,7 +136,7 @@ class TaskService {
 		} else if (job.getTotalErrorCountForTask(taskName) > currentTaskConfig.getMaxRetriesForError()) {
 			job.setState(JobState.ERROR);
 		} else {
-			job.startTask(new Task(taskName));
+			job.setState(JobState.READY);
 		}
 
 		jobRepository.save(job);
