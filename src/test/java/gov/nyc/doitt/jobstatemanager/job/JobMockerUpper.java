@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobMockerUpper {
 
-	public String appId = "myApp1";
+	public String appName = "myApp1";
 
 	public List<Job> createList(int listSize) throws Exception {
 
@@ -32,7 +32,7 @@ public class JobMockerUpper {
 
 		Job job = new Job();
 
-		FieldUtils.writeField(job, "appId", appId, true);
+		FieldUtils.writeField(job, "appName", appName, true);
 		FieldUtils.writeField(job, "jobId", "jobId" + idx, true);
 		FieldUtils.writeField(job, "description", "description" + idx, true);
 

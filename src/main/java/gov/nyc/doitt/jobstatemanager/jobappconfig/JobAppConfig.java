@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
+
 @Document
 public class JobAppConfig {
 
@@ -17,25 +19,27 @@ public class JobAppConfig {
 	@GeneratedValue(generator = "db-uuid")
 	private String _id;
 
-	private String appId;
+	private String appName;
 	private String description;
 	private Timestamp createdTimestamp;
 	private String notifyEmail;
-	private int maxBatchSize;
-	private int maxRetriesForError;
 
 	private List<TaskConfig> taskConfigs;
 
-	public String getAppId() {
-		return appId;
+	public JobAppConfig() {
+		createdTimestamp = new Timestamp(System.currentTimeMillis());
+	}
+
+	public String getAppName() {
+		return appName;
 	}
 
 	public String get_id() {
 		return _id;
 	}
 
-	public void setAppId(String appId) {
-		this.appId = appId;
+	public void setAppName(String appName) {
+		this.appName = appName;
 	}
 
 	public String getDescription() {
@@ -62,27 +66,12 @@ public class JobAppConfig {
 		this.notifyEmail = notifyEmail;
 	}
 
-	public int getMaxBatchSize() {
-		return maxBatchSize;
-	}
-
-	public void setMaxBatchSize(int maxBatchSize) {
-		this.maxBatchSize = maxBatchSize;
-	}
-
-	public int getMaxRetriesForError() {
-		return maxRetriesForError;
-	}
-
-	public void setMaxRetriesForError(int maxRetriesForError) {
-		this.maxRetriesForError = maxRetriesForError;
-	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((appId == null) ? 0 : appId.hashCode());
+		result = prime * result + ((appName == null) ? 0 : appName.hashCode());
 		return result;
 	}
 
@@ -95,10 +84,10 @@ public class JobAppConfig {
 		if (getClass() != obj.getClass())
 			return false;
 		JobAppConfig other = (JobAppConfig) obj;
-		if (appId == null) {
-			if (other.appId != null)
+		if (appName == null) {
+			if (other.appName != null)
 				return false;
-		} else if (!appId.equals(other.appId))
+		} else if (!appName.equals(other.appName))
 			return false;
 		return true;
 	}
@@ -112,11 +101,15 @@ public class JobAppConfig {
 		this.taskConfigs = taskConfigs;
 	}
 
+	public TaskConfig getTaskConfig(String taskName) {
+		
+		return taskConfigs.stream().filter(p -> p.getName().equals(taskName)).findFirst().orElseThrow(() -> new JobStateManagerException("TaskConfig for taskName=" + taskName + " not found"));
+	}
+	
 	@Override
 	public String toString() {
-		return "JobAppConfig [_id=" + _id + ", appId=" + appId + ", description=" + description + ", createdTimestamp="
-				+ createdTimestamp + ", notifyEmail=" + notifyEmail + ", maxBatchSize=" + maxBatchSize + ", maxRetriesForError="
-				+ maxRetriesForError + "]";
+		return "JobAppConfig [_id=" + _id + ", appName=" + appName + ", description=" + description + ", createdTimestamp="
+				+ createdTimestamp + ", notifyEmail=" + notifyEmail + ", taskConfigs=" + taskConfigs + "]";
 	}
 
 }

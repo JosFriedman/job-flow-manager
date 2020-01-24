@@ -35,12 +35,12 @@ public class JobAppConfigController {
 		return jobAppConfigService.createJobAppConfig(jobAppConfigDto);
 	}
 
-	@GetMapping("/{appId}")
-	public JobAppConfigDto getJobAppConfig(@PathVariable String appId) {
+	@GetMapping("/{appName}")
+	public JobAppConfigDto getJobAppConfig(@PathVariable String appName) {
 
-		logger.debug("getJobAppConfig: entering: appId={}", appId);
+		logger.debug("getJobAppConfig: entering: appName={}", appName);
 
-		return jobAppConfigService.getJobAppConfig(appId);
+		return jobAppConfigService.getJobAppConfig(appName);
 	}
 
 	@GetMapping("")
@@ -48,19 +48,19 @@ public class JobAppConfigController {
 		return jobAppConfigService.getJobAppConfigs();
 	}
 
-	@PutMapping("/{appId}")
-	public JobAppConfigDto updateJobAppConfig(@PathVariable String appId, @Valid @RequestBody JobAppConfigDto jobAppConfigDto) {
+	@PutMapping("/{appName}")
+	public JobAppConfigDto updateJobAppConfig(@PathVariable String appName, @Valid @RequestBody JobAppConfigDto jobAppConfigDto) {
 
-		logger.debug("updateJob: updateJobAppConfig: appId={}, jobAppConfigDto={}", appId, jobAppConfigDto);
+		logger.debug("updateJob: updateJobAppConfig: appName={}, jobAppConfigDto={}", appName, jobAppConfigDto);
 
-		return jobAppConfigService.updateJobAppConfig(appId, jobAppConfigDto);
+		return jobAppConfigService.updateJobAppConfig(appName, jobAppConfigDto);
 	}
 
-	@DeleteMapping("/{appId}")
-	public String deleteJobAppConfig(@PathVariable String appId) {
+	@DeleteMapping("/{appName}")
+	public String deleteJobAppConfig(@PathVariable String appName) {
 
-		logger.debug("deleteJobAppConfig: entering: appId={}, jobId={}", appId);
+		logger.debug("deleteJobAppConfig: entering: appName={}, jobId={}", appName);
 
-		return jobAppConfigService.deleteJobAppConfig(appId);
+		return jobAppConfigService.deleteJobAppConfig(appName);
 	}
 }

@@ -29,9 +29,9 @@ public class JobAppConfigService {
 	 */
 	public JobAppConfigDto createJobAppConfig(JobAppConfigDto jobAppConfigDto) {
 
-		String appId = jobAppConfigDto.getAppId();
-		if (jobAppConfigRepository.existsByAppId(appId)) {
-			throw new ConflictException(String.format("JobAppConfig for appId=%s already exists", appId));
+		String appName = jobAppConfigDto.getAppName();
+		if (jobAppConfigRepository.existsByAppName(appName)) {
+			throw new ConflictException(String.format("JobAppConfig for appName=%s already exists", appName));
 		}
 
 		JobAppConfig jobAppConfig = jobAppConfigDtoMapper.fromDto(jobAppConfigDto);
@@ -40,25 +40,25 @@ public class JobAppConfigService {
 	}
 
 	/**
-	 * Get jobAppConfig for appId
+	 * Get jobAppConfig for appName
 	 * 
-	 * @param appId
+	 * @param appName
 	 * @return
 	 */
-	public JobAppConfigDto getJobAppConfig(String appId) {
+	public JobAppConfigDto getJobAppConfig(String appName) {
 
-		return jobAppConfigDtoMapper.toDto(getJobAppConfigDomain(appId));
+		return jobAppConfigDtoMapper.toDto(getJobAppConfigDomain(appName));
 	}
 
-	public JobAppConfig getJobAppConfigDomain(String appId) {
-		if (!jobAppConfigRepository.existsByAppId(appId)) {
-			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
+	public JobAppConfig getJobAppConfigDomain(String appName) {
+		if (!jobAppConfigRepository.existsByAppName(appName)) {
+			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appName=%s", appName));
 		}
-		return jobAppConfigRepository.findByAppId(appId);
+		return jobAppConfigRepository.findByAppName(appName);
 	}
 
-	public boolean existsJobAppConfig(String appId) {
-		return jobAppConfigRepository.existsByAppId(appId);
+	public boolean existsJobAppConfig(String appName) {
+		return jobAppConfigRepository.existsByAppName(appName);
 	}
 
 	/**
@@ -68,41 +68,41 @@ public class JobAppConfigService {
 	 */
 	public List<JobAppConfigDto> getJobAppConfigs() {
 
-		return jobAppConfigDtoMapper.toDto(jobAppConfigRepository.findAllByOrderByAppIdAsc());
+		return jobAppConfigDtoMapper.toDto(jobAppConfigRepository.findAllByOrderByAppNameAsc());
 	}
 
 	/**
-	 * Update jobAppConfig specified by appIdd, from jobAppConfigDto
+	 * Update jobAppConfig specified by appNamed, from jobAppConfigDto
 	 * 
-	 * @param appId
+	 * @param appName
 	 * @param jobAppConfigDto
 	 * @return
 	 */
-	public JobAppConfigDto updateJobAppConfig(String appId, JobAppConfigDto jobAppConfigDto) {
+	public JobAppConfigDto updateJobAppConfig(String appName, JobAppConfigDto jobAppConfigDto) {
 
-		if (!jobAppConfigRepository.existsByAppId(appId)) {
-			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
+		if (!jobAppConfigRepository.existsByAppName(appName)) {
+			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appName=%s", appName));
 		}
 
-		JobAppConfig jobAppConfig = jobAppConfigRepository.findByAppId(appId);
+		JobAppConfig jobAppConfig = jobAppConfigRepository.findByAppName(appName);
 		jobAppConfigDtoMapper.fromDto(jobAppConfigDto, jobAppConfig);
 		jobAppConfigRepository.save(jobAppConfig);
 		return jobAppConfigDtoMapper.toDto(jobAppConfig);
 	}
 
 	/**
-	 * Delete jobAppConfig specified by appId
+	 * Delete jobAppConfig specified by appName
 	 * 
-	 * @param appId
+	 * @param appName
 	 * @return
 	 */
-	public String deleteJobAppConfig(String appId) {
+	public String deleteJobAppConfig(String appName) {
 
-		if (!jobAppConfigRepository.existsByAppId(appId)) {
-			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appId=%s", appId));
+		if (!jobAppConfigRepository.existsByAppName(appName)) {
+			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appName=%s", appName));
 		}
-		jobAppConfigRepository.deleteByAppId(appId);
-		return appId;
+		jobAppConfigRepository.deleteByAppName(appName);
+		return appName;
 	}
 
 }

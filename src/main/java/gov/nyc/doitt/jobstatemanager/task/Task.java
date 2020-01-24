@@ -10,17 +10,18 @@ public class Task {
 	private String name;
 	private String description;
 	@Enumerated(EnumType.STRING)
-	private TaskState state;
 	private Timestamp startTimestamp;
 	private Timestamp endTimestamp;
+	private TaskState state;
 	private String errorReason;
+	private int errorCount;
 
 	public Task() {
 	}
 
 	public Task(String name) {
 		this.name = name;
-		startTimestamp = new Timestamp(System.currentTimeMillis()); 
+		startTimestamp = new Timestamp(System.currentTimeMillis());
 		state = TaskState.PROCESSING;
 	}
 
@@ -68,5 +69,4 @@ public class Task {
 		this.errorReason = errorReason;
 	}
 
-	
 }

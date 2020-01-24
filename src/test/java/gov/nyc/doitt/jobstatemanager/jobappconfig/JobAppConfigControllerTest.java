@@ -87,11 +87,11 @@ public class JobAppConfigControllerTest {
 
 		JobAppConfigDto jobAppConfigDto = jobAppConfigDtoMockerUpper.create();
 
-		when(jobAppConfigRepository.existsByAppId(jobAppConfigDto.getAppId())).thenReturn(false);
+		when(jobAppConfigRepository.existsByAppName(jobAppConfigDto.getAppName())).thenReturn(false);
 
 		mockMvc.perform(post("/jobStateManager/jobAppConfigs").contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(jobAppConfigDto))).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.appId", comparesEqualTo(jobAppConfigDto.getAppId())));
+				.andExpect(jsonPath("$.appName", comparesEqualTo(jobAppConfigDto.getAppName())));
 
 		verify(jobAppConfigRepository).save(any(JobAppConfig.class));
 	}
@@ -101,7 +101,7 @@ public class JobAppConfigControllerTest {
 
 		List<JobAppConfig> jobAppConfigs = jobAppConfigMockerUpper.createList(5);
 
-		when(jobAppConfigRepository.findAllByOrderByAppIdAsc()).thenReturn(jobAppConfigs);
+		when(jobAppConfigRepository.findAllByOrderByAppNameAsc()).thenReturn(jobAppConfigs);
 
 		ResultActions resultActions = mockMvc.perform(get("/jobStateManager/jobAppConfigs")).andDo(print())
 				.andExpect(status().isOk());
@@ -114,28 +114,28 @@ public class JobAppConfigControllerTest {
 			JobAppConfig jobAppConfig = jobAppConfigs.get(i);
 			JobAppConfigDto jobAppConfigDto = jobAppConfigDtos.get(i);
 
-			assertEquals(jobAppConfig.getAppId(), jobAppConfigDto.getAppId());
+			assertEquals(jobAppConfig.getAppName(), jobAppConfigDto.getAppName());
 		}
 
-		verify(jobAppConfigRepository).findAllByOrderByAppIdAsc();
+		verify(jobAppConfigRepository).findAllByOrderByAppNameAsc();
 	}
 
 	@Test
 	public void testGet() throws Exception {
 
 		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create("myApp1");
-		String appId = jobAppConfig.getAppId();
+		String appName = jobAppConfig.getAppName();
 
-		when(jobAppConfigRepository.existsByAppId(eq(appId))).thenReturn(true);
-		when(jobAppConfigRepository.findByAppId(eq(appId))).thenReturn(jobAppConfig);
+		when(jobAppConfigRepository.existsByAppName(eq(appName))).thenReturn(true);
+		when(jobAppConfigRepository.findByAppName(eq(appName))).thenReturn(jobAppConfig);
 
-		ResultActions resultActions = mockMvc.perform(get("/jobStateManager/jobAppConfigs/" + appId)).andDo(print())
+		ResultActions resultActions = mockMvc.perform(get("/jobStateManager/jobAppConfigs/" + appName)).andDo(print())
 				.andExpect(status().isOk());
 
 		String content = resultActions.andReturn().getResponse().getContentAsString();
 		JobAppConfigDto jobAppConfigDto = jobAppConfigDtoJsonAsObject(content);
-		assertEquals(jobAppConfig.getAppId(), jobAppConfigDto.getAppId());
-		verify(jobAppConfigRepository).findByAppId(eq(appId));
+		assertEquals(jobAppConfig.getAppName(), jobAppConfigDto.getAppName());
+		verify(jobAppConfigRepository).findByAppName(eq(appName));
 	}
 
 	@Test
@@ -144,12 +144,12 @@ public class JobAppConfigControllerTest {
 		JobAppConfigDto jobAppConfigDto = jobAppConfigDtoMockerUpper.create();
 		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create();
 
-		when(jobAppConfigRepository.existsByAppId(eq(jobAppConfigDto.getAppId()))).thenReturn(true);
-		when(jobAppConfigRepository.findByAppId(eq(jobAppConfigDto.getAppId()))).thenReturn(jobAppConfig);
+		when(jobAppConfigRepository.existsByAppName(eq(jobAppConfigDto.getAppName()))).thenReturn(true);
+		when(jobAppConfigRepository.findByAppName(eq(jobAppConfigDto.getAppName()))).thenReturn(jobAppConfig);
 
-		mockMvc.perform(put("/jobStateManager/jobAppConfigs/" + jobAppConfigDto.getAppId()).contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(put("/jobStateManager/jobAppConfigs/" + jobAppConfigDto.getAppName()).contentType(MediaType.APPLICATION_JSON)
 				.content(asJsonString(jobAppConfigDto))).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.appId", comparesEqualTo(jobAppConfigDto.getAppId())));
+				.andExpect(jsonPath("$.appName", comparesEqualTo(jobAppConfigDto.getAppName())));
 
 		verify(jobAppConfigRepository).save(any(JobAppConfig.class));
 	}
@@ -159,12 +159,12 @@ public class JobAppConfigControllerTest {
 
 		JobAppConfigDto jobAppConfigDto = jobAppConfigDtoMockerUpper.create();
 
-		when(jobAppConfigRepository.existsByAppId(eq(jobAppConfigDto.getAppId()))).thenReturn(true);
+		when(jobAppConfigRepository.existsByAppName(eq(jobAppConfigDto.getAppName()))).thenReturn(true);
 
-		mockMvc.perform(delete("/jobStateManager/jobAppConfigs/" + jobAppConfigDto.getAppId())).andDo(print())
+		mockMvc.perform(delete("/jobStateManager/jobAppConfigs/" + jobAppConfigDto.getAppName())).andDo(print())
 				.andExpect(status().isOk());
 
-		verify(jobAppConfigRepository).deleteByAppId(eq(jobAppConfigDto.getAppId()));
+		verify(jobAppConfigRepository).deleteByAppName(eq(jobAppConfigDto.getAppName()));
 	}
 
 	private String asJsonString(Object obj) {

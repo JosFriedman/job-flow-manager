@@ -40,7 +40,7 @@ public class JobRepositoryTest extends TestBase {
 
 		try {
 			PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "createdTimestamp"));
-			List<Job> jobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(jobMockerUpper.appId,
+			List<Job> jobs = jobRepository.findByAppNameAndStateInAndErrorCountLessThan(jobMockerUpper.appName,
 					Arrays.asList(new JobState[] { JobState.READY }), maxRetriesForError, pageRequest);
 			assertNotNull(jobs);
 			assertEquals(1, jobs.size());
@@ -64,7 +64,7 @@ public class JobRepositoryTest extends TestBase {
 			}
 
 			PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "createdTimestamp"));
-			List<Job> batchOfJobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(jobMockerUpper.appId,
+			List<Job> batchOfJobs = jobRepository.findByAppNameAndStateInAndErrorCountLessThan(jobMockerUpper.appName,
 					Arrays.asList(new JobState[] { JobState.READY, JobState.ERROR }), maxRetriesForError, pageRequest);
 			assertNotNull(batchOfJobs);
 			assertEquals(maxBatchSize, batchOfJobs.size());
@@ -103,7 +103,7 @@ public class JobRepositoryTest extends TestBase {
 			assertTrue(couldBeInBatchJobs.size() >= maxBatchSize); // make sure our test data is valid
 
 			PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "createdTimestamp"));
-			List<Job> batchOfJobs = jobRepository.findByAppIdAndStateInAndErrorCountLessThan(jobMockerUpper.appId,
+			List<Job> batchOfJobs = jobRepository.findByAppNameAndStateInAndErrorCountLessThan(jobMockerUpper.appName,
 					Arrays.asList(new JobState[] { JobState.READY, JobState.ERROR }), maxRetriesForError + 1, pageRequest);
 			assertNotNull(batchOfJobs);
 			assertEquals(maxBatchSize, batchOfJobs.size());

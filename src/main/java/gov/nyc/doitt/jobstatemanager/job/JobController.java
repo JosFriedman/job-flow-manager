@@ -42,17 +42,17 @@ public class JobController {
 		binder.addValidators(jobDtoListValidator);
 	}
 
-	@PostMapping("/{appId}")
-	public JobDto createJob(@PathVariable String appId, @Valid @RequestBody JobDto jobDto, BindingResult result)
+	@PostMapping("/{appName}")
+	public JobDto createJob(@PathVariable String appName, @Valid @RequestBody JobDto jobDto, BindingResult result)
 			throws JobStateManagerException {
 
-		logger.debug("createJob: entering: appId={}, jobDto={}", appId, jobDto);
+		logger.debug("createJob: entering: appName={}, jobDto={}", appName, jobDto);
 
 		if (result.hasErrors()) {
 			throw new ValidationException(result.getFieldErrors());
 		}
 
-		return jobService.createJob(appId, jobDto);
+		return jobService.createJob(appName, jobDto);
 	}
 
 }

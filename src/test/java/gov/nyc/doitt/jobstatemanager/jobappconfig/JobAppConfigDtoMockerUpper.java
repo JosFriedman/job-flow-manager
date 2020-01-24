@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobAppConfigDtoMockerUpper {
 
-	public String appId = "myApp";
+	public String appName = "myApp";
 
 	public List<JobAppConfigDto> createList(int listSize) throws Exception {
 
@@ -30,7 +30,7 @@ public class JobAppConfigDtoMockerUpper {
 
 		JobAppConfigDto jobAppConfigDto = new JobAppConfigDto();
 
-		jobAppConfigDto.setAppId(appId + idx);
+		jobAppConfigDto.setAppName(appName + idx);
 		jobAppConfigDto.setDescription("description" + idx);
 		jobAppConfigDto.setNotifyEmail("josfriedman@doitt.nyc.gov");
 		jobAppConfigDto.setMaxBatchSize(2);

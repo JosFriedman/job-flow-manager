@@ -29,7 +29,7 @@ class JobDtoValidator implements SmartValidator {
 
 		JobDto jobDto = (JobDto) target;
 		String prefix = getErrorMessagePrefix(validationHints);
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "appId", prefix + "appId must be specified");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "appName", prefix + "appName must be specified");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "jobId", prefix + "jobId must be specified");
 	}
 

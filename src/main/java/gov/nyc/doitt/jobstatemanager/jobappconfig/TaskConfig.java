@@ -10,6 +10,12 @@ public class TaskConfig {
 	private Integer sequence;
 	private String description;
 	private Timestamp createdTimestamp;
+	private int maxBatchSize;
+	private int maxRetriesForError;
+
+	public TaskConfig() {
+		createdTimestamp = new Timestamp(System.currentTimeMillis());
+	}
 
 	public String get_id() {
 		return _id;
@@ -45,6 +51,29 @@ public class TaskConfig {
 
 	public void setCreatedTimestamp(Timestamp createdTimestamp) {
 		this.createdTimestamp = createdTimestamp;
+	}
+
+	public int getMaxBatchSize() {
+		return maxBatchSize;
+	}
+
+	public void setMaxBatchSize(int maxBatchSize) {
+		this.maxBatchSize = maxBatchSize;
+	}
+
+	public int getMaxRetriesForError() {
+		return maxRetriesForError;
+	}
+
+	public void setMaxRetriesForError(int maxRetriesForError) {
+		this.maxRetriesForError = maxRetriesForError;
+	}
+
+	@Override
+	public String toString() {
+		return "TaskConfig [_id=" + _id + ", name=" + name + ", sequence=" + sequence + ", description=" + description
+				+ ", createdTimestamp=" + createdTimestamp + ", maxBatchSize=" + maxBatchSize + ", maxRetriesForError="
+				+ maxRetriesForError + "]";
 	}
 
 }

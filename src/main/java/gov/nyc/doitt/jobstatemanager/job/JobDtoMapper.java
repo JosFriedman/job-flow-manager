@@ -31,7 +31,6 @@ class JobDtoMapper {
 	public JobDtoMapper() {
 
 		modelMapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
-
 		modelMapper.addMappings(jobDtoPropertyMap);
 	}
 

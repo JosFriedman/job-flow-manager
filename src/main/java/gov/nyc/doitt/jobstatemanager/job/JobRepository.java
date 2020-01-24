@@ -10,22 +10,22 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface JobRepository extends MongoRepository<Job, String> {
 
-	List<Job> findByAppIdAndStateInAndNextTaskName(String appId, List<JobState> states, String taskName, Pageable pageable);
+	List<Job> findByAppNameAndStateInAndNextTaskName(String appName, List<JobState> states, String taskName, Pageable pageable);
 
-	List<Job> findByAppIdAndJobIdInAndStateInAndNextTaskName(String appId, List<String> jobIds, List<JobState> states,
+	List<Job> findByAppNameAndJobIdInAndStateInAndNextTaskName(String appName, List<String> jobIds, List<JobState> states,
 			String taskName);
 
-	boolean existsByAppIdAndJobId(String appId, String jobId);
+	boolean existsByAppNameAndJobId(String appName, String jobId);
 
-	String deleteByAppIdAndJobId(String appId, String jobId);
+	String deleteByAppNameAndJobId(String appName, String jobId);
 
-	Job findByAppIdAndJobId(String appId, String jobId);
+	Job findByAppNameAndJobId(String appName, String jobId);
 
-	List<Job> findByAppId(String appId, Sort sort);
+	List<Job> findByAppName(String appName, Sort sort);
 
-	List<Job> findByAppIdAndState(String appId, String state, Sort sort);
+	List<Job> findByAppNameAndState(String appName, String state, Sort sort);
 
-	List<Job> findByAppIdAndJobIdIn(String appId, List<String> jobIds);
+	List<Job> findByAppNameAndJobIdIn(String appName, List<String> jobIds);
 
 	List<Job> findAll(Sort sort);
 

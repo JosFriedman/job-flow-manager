@@ -45,19 +45,19 @@ public class TaskController {
 		binder.addValidators(taskDtoListValidator);
 	}
 
-	@PostMapping("/{appId}")
-	public List<TaskDto> startTasks(@PathVariable String appId, @RequestParam String taskName) {
+	@PostMapping("/{appName}")
+	public List<TaskDto> startTasks(@PathVariable String appName, @RequestParam String taskName) {
 
-		logger.debug("startTasks: entering: appId={}, taskName={}", appId, taskName);
-		return taskService.startTasks(appId, taskName);
+		logger.debug("startTasks: entering: appName={}, taskName={}", appName, taskName);
+		return taskService.startTasks(appName, taskName);
 	}
 
-	@PutMapping("/{appId}")
-	public List<TaskDto> endTasks(@PathVariable String appId, @RequestParam String taskName,
+	@PutMapping("/{appName}")
+	public List<TaskDto> endTasks(@PathVariable String appName, @RequestParam String taskName,
 			@Valid @RequestBody List<TaskDto> taskDtos, BindingResult result) {
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("endTasks: entering: appId={}, taskName={}", appId, taskName);
+			logger.debug("endTasks: entering: appName={}, taskName={}", appName, taskName);
 			if (logger.isDebugEnabled()) {
 				taskDtos.forEach(p -> logger.debug("taskDto: {}", p));
 			}
@@ -67,7 +67,7 @@ public class TaskController {
 			throw new ValidationException(result.getFieldErrors());
 		}
 
-		return taskService.endTasks(appId, taskName, taskDtos);
+		return taskService.endTasks(appName, taskName, taskDtos);
 	}
 
 }

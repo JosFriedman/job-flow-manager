@@ -11,22 +11,20 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class JobAppConfigDto {
 
-	@NotBlank(message = "appId may not be empty")
-	private String appId;
+	@NotBlank(message = "appName may not be empty")
+	private String appName;
 	private String description;
 	private Timestamp createdTimestamp;
 	private String notifyEmail;
-	private int maxBatchSize;
-	private int maxRetriesForError;
 
 	private List<TaskConfigDto> taskConfigDtos;
 
-	public String getAppId() {
-		return appId;
+	public String getAppName() {
+		return appName;
 	}
 
-	public void setAppId(String appId) {
-		this.appId = appId;
+	public void setAppName(String appName) {
+		this.appName = appName;
 	}
 
 	public String getDescription() {
@@ -53,28 +51,18 @@ public class JobAppConfigDto {
 		this.notifyEmail = notifyEmail;
 	}
 
-	public int getMaxBatchSize() {
-		return maxBatchSize;
-	}
-
-	public void setMaxBatchSize(int maxBatchSize) {
-		this.maxBatchSize = maxBatchSize;
-	}
-
-	public int getMaxRetriesForError() {
-		return maxRetriesForError;
-	}
-
-	public void setMaxRetriesForError(int maxRetriesForError) {
-		this.maxRetriesForError = maxRetriesForError;
-	}
-
 	public List<TaskConfigDto> getTaskConfigDtos() {
 		return taskConfigDtos;
 	}
 
 	public void setTaskConfigDtos(List<TaskConfigDto> taskConfigDtos) {
 		this.taskConfigDtos = taskConfigDtos;
+	}
+
+	@Override
+	public String toString() {
+		return "JobAppConfigDto [appName=" + appName + ", description=" + description + ", createdTimestamp=" + createdTimestamp
+				+ ", notifyEmail=" + notifyEmail + ", taskConfigDtos=" + taskConfigDtos + "]";
 	}
 
 }

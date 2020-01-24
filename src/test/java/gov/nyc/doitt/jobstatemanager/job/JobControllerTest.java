@@ -100,10 +100,10 @@ public class JobControllerTest {
 
 		JobDto jobDto = jobDtoMockerUpper.create();
 
-		when(jobAppConfigService.existsJobAppConfig(jobDto.getAppId())).thenReturn(true);
+		when(jobAppConfigService.existsJobAppConfig(jobDto.getAppName())).thenReturn(true);
 
 		mockMvc.perform(post("/jobStateManager/jobs").contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobDto)))
-				.andDo(print()).andExpect(status().isOk()).andExpect(jsonPath("$.appId", comparesEqualTo(jobDto.getAppId())))
+				.andDo(print()).andExpect(status().isOk()).andExpect(jsonPath("$.appName", comparesEqualTo(jobDto.getAppName())))
 				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
 				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
 
@@ -115,11 +115,11 @@ public class JobControllerTest {
 
 		List<Job> jobs = jobMockerUpper.createList(5);
 		Job job0 = jobs.get(0);
-		String appId = job0.getAppId();
+		String appName = job0.getAppName();
 
-		when(jobRepository.findByAppId(eq(appId), any(Sort.class))).thenReturn(jobs);
+		when(jobRepository.findByAppName(eq(appName), any(Sort.class))).thenReturn(jobs);
 
-		ResultActions resultActions = mockMvc.perform(get("/jobStateManager/jobs/" + appId)).andDo(print())
+		ResultActions resultActions = mockMvc.perform(get("/jobStateManager/jobs/" + appName)).andDo(print())
 				.andExpect(status().isOk());
 
 		String content = resultActions.andReturn().getResponse().getContentAsString();
@@ -133,7 +133,7 @@ public class JobControllerTest {
 			assertEquals(job.getJobId(), jobDto.getJobId());
 		}
 
-		verify(jobRepository).findByAppId(eq(appId), any(Sort.class));
+		verify(jobRepository).findByAppName(eq(appName), any(Sort.class));
 	}
 
 	@Test
@@ -141,18 +141,18 @@ public class JobControllerTest {
 
 		List<Job> jobs = jobMockerUpper.createList(5);
 		Job job0 = jobs.get(0);
-		String appId = job0.getAppId();
+		String appName = job0.getAppName();
 		
-		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appId);
+		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appName);
 
-		when(jobAppConfigService.existsJobAppConfig(job0.getAppId())).thenReturn(true);
+		when(jobAppConfigService.existsJobAppConfig(job0.getAppName())).thenReturn(true);
 
-		when(jobAppConfigService.getJobAppConfigDomain(job0.getAppId())).thenReturn(jobAppConfig);
+		when(jobAppConfigService.getJobAppConfigDomain(job0.getAppName())).thenReturn(jobAppConfig);
 
-		when(jobRepository.findByAppIdAndStateInAndErrorCountLessThan(eq(appId), anyList(), eq(jobAppConfig.getMaxRetriesForError() + 1), any(Pageable.class)))
+		when(jobRepository.findByAppNameAndStateInAndErrorCountLessThan(eq(appName), anyList(), eq(jobAppConfig.getMaxRetriesForError() + 1), any(Pageable.class)))
 				.thenReturn(jobs.subList(0, jobAppConfig.getMaxBatchSize()));
 
-		ResultActions resultActions = mockMvc.perform(post("/jobStateManager/jobs/" + appId + "/startNextBatch")).andDo(print())
+		ResultActions resultActions = mockMvc.perform(post("/jobStateManager/jobs/" + appName + "/startNextBatch")).andDo(print())
 				.andExpect(status().isOk());
 
 		String content = resultActions.andReturn().getResponse().getContentAsString();
@@ -166,7 +166,7 @@ public class JobControllerTest {
 			assertEquals(job.getJobId(), jobDto.getJobId());
 		}
 
-		verify(jobRepository).findByAppIdAndStateInAndErrorCountLessThan(eq(appId), anyList(), eq(jobAppConfig.getMaxRetriesForError() + 1),
+		verify(jobRepository).findByAppNameAndStateInAndErrorCountLessThan(eq(appName), anyList(), eq(jobAppConfig.getMaxRetriesForError() + 1),
 				any(Pageable.class));
 	}
 
@@ -176,12 +176,12 @@ public class JobControllerTest {
 		JobDto jobDto = jobDtoMockerUpper.create();
 		Job job = jobMockerUpper.create();
 
-		when(jobRepository.existsByAppIdAndJobId(eq(jobDto.getAppId()), eq(jobDto.getJobId()))).thenReturn(true);
-		when(jobRepository.findByAppIdAndJobId(eq(jobDto.getAppId()), eq(jobDto.getJobId()))).thenReturn(job);
+		when(jobRepository.existsByAppNameAndJobId(eq(jobDto.getAppName()), eq(jobDto.getJobId()))).thenReturn(true);
+		when(jobRepository.findByAppNameAndJobId(eq(jobDto.getAppName()), eq(jobDto.getJobId()))).thenReturn(job);
 
-		mockMvc.perform(put("/jobStateManager/jobs/" + jobDto.getAppId() + "/job/" + jobDto.getJobId())
+		mockMvc.perform(put("/jobStateManager/jobs/" + jobDto.getAppName() + "/job/" + jobDto.getJobId())
 				.contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobDto))).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.appId", comparesEqualTo(jobDto.getAppId())))
+				.andExpect(jsonPath("$.appName", comparesEqualTo(jobDto.getAppName())))
 				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
 				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
 
@@ -193,12 +193,12 @@ public class JobControllerTest {
 
 		JobDto jobDto = jobDtoMockerUpper.create();
 
-		when(jobRepository.existsByAppIdAndJobId(eq(jobDto.getAppId()), eq(jobDto.getJobId()))).thenReturn(true);
+		when(jobRepository.existsByAppNameAndJobId(eq(jobDto.getAppName()), eq(jobDto.getJobId()))).thenReturn(true);
 
-		mockMvc.perform(delete("/jobStateManager/jobs/" + jobDto.getAppId() + "/job/" + jobDto.getJobId())).andDo(print())
+		mockMvc.perform(delete("/jobStateManager/jobs/" + jobDto.getAppName() + "/job/" + jobDto.getJobId())).andDo(print())
 				.andExpect(status().isOk());
 
-		verify(jobRepository).deleteByAppIdAndJobId(eq(jobDto.getAppId()), eq(jobDto.getJobId()));
+		verify(jobRepository).deleteByAppNameAndJobId(eq(jobDto.getAppName()), eq(jobDto.getJobId()));
 	}
 
 	private String asJsonString(Object obj) {

@@ -30,7 +30,6 @@ public class TaskConfigDtoMapper {
 	public TaskConfigDtoMapper() {
 
 		modelMapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
-
 		modelMapper.addMappings(taskConfigDtoPropertyMap);
 	}
 
@@ -43,10 +42,7 @@ public class TaskConfigDtoMapper {
 
 		if (CollectionUtils.isEmpty(taskConfigDtos))
 			return new ArrayList<TaskConfig>();
-		return taskConfigDtos.stream().map(p -> {
-			TaskConfig taskConfig = fromDto(p);
-			return taskConfig;
-		}).collect(Collectors.toList());
+		return taskConfigDtos.stream().map(p -> fromDto(p)).collect(Collectors.toList());
 
 	}
 

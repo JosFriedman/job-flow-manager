@@ -22,13 +22,12 @@ public class Job {
 	@GeneratedValue(generator = "db-uuid")
 	private String _id;
 
-	private String appId;
+	private String appName;
 	private String jobId;
 	private String description;
 	private Timestamp createdTimestamp;
 	@Enumerated(EnumType.STRING)
 	private JobState state;
-	private int errorCount;
 	private String nextTaskName;
 
 	private List<Task> tasks = new ArrayList<>();
@@ -42,12 +41,12 @@ public class Job {
 		return _id;
 	}
 
-	public String getAppId() {
-		return appId;
+	public String getAppName() {
+		return appName;
 	}
 
-	public void setAppId(String appId) {
-		this.appId = appId;
+	public void setAppName(String appName) {
+		this.appName = appName;
 	}
 
 	public String getJobId() {
@@ -74,8 +73,8 @@ public class Job {
 		return state;
 	}
 
-	public int getErrorCount() {
-		return errorCount;
+	public void setState(JobState state) {
+		this.state = state;
 	}
 
 	public List<Task> getTasks() {
@@ -103,7 +102,7 @@ public class Job {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((appId == null) ? 0 : appId.hashCode());
+		result = prime * result + ((appName == null) ? 0 : appName.hashCode());
 		result = prime * result + ((jobId == null) ? 0 : jobId.hashCode());
 		return result;
 	}
@@ -117,10 +116,10 @@ public class Job {
 		if (getClass() != obj.getClass())
 			return false;
 		Job other = (Job) obj;
-		if (appId == null) {
-			if (other.appId != null)
+		if (appName == null) {
+			if (other.appName != null)
 				return false;
-		} else if (!appId.equals(other.appId))
+		} else if (!appName.equals(other.appName))
 			return false;
 		if (jobId == null) {
 			if (other.jobId != null)
@@ -132,18 +131,8 @@ public class Job {
 
 	@Override
 	public String toString() {
-		return "Job [appId=" + appId + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
-				+ createdTimestamp + ", state=" + state + ", errorCount=" + errorCount + ", tasks=" + tasks + "]";
-	}
-
-	// TODO: josfriedman: remove these setters and change unit tests
-
-	public void setState(JobState state) {
-		this.state = state;
-	}
-
-	public void setErrorCount(int errorCount) {
-		this.errorCount = errorCount;
+		return "Job [_id=" + _id + ", appName=" + appName + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
+				+ createdTimestamp + ", state=" + state + ", nextTaskName=" + nextTaskName + ", tasks=" + tasks + "]";
 	}
 
 }

@@ -8,12 +8,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 interface JobAppConfigRepository extends MongoRepository<JobAppConfig, String> {
 
-	List<JobAppConfig> findAllByOrderByAppIdAsc();
+	List<JobAppConfig> findAllByOrderByAppNameAsc();
 
-	JobAppConfig findByAppId(String appId);
+	JobAppConfig findByAppName(String appName);
 
-	boolean existsByAppId(String appId);
+	boolean existsByAppName(String appName);
 
-	String deleteByAppId(String appId);
+	String deleteByAppName(String appName);
 
 }

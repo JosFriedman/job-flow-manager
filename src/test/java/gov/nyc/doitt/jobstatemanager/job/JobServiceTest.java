@@ -53,18 +53,18 @@ public class JobServiceTest extends TestBase {
 //	@Test
 //	public void testJobServiceNoJobs() throws Exception {
 //
-//		String appId = "myApp";
-//		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appId);
-//		when(jobAppConfigService.existsJobAppConfig(eq(appId))).thenReturn(true);
-//		when(jobAppConfigService.getJobAppConfigDomain(eq(appId))).thenReturn(jobAppConfig);
+//		String appName = "myApp";
+//		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appName);
+//		when(jobAppConfigService.existsJobAppConfig(eq(appName))).thenReturn(true);
+//		when(jobAppConfigService.getJobAppConfigDomain(eq(appName))).thenReturn(jobAppConfig);
 //
 //		List<Job> jobs = Collections.emptyList();
-//		when(jobRepository.findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<TaskState>anyList(), anyInt(),
+//		when(jobRepository.findByAppNameAndStateInAndErrorCountLessThan(eq(appName), ArgumentMatchers.<TaskState>anyList(), anyInt(),
 //				eq(pageable))).thenReturn(jobs);
 //
-//		List<JobDto> batchOfJobDtos = jobService.startNextBatch(appId);
+//		List<JobDto> batchOfJobDtos = jobService.startNextBatch(appName);
 //
-//		verify(jobRepository, times(1)).findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<TaskState>anyList(),
+//		verify(jobRepository, times(1)).findByAppNameAndStateInAndErrorCountLessThan(eq(appName), ArgumentMatchers.<TaskState>anyList(),
 //				anyInt(), any(Pageable.class));
 //		assertTrue(batchOfJobDtos.isEmpty());
 //	}
@@ -72,22 +72,22 @@ public class JobServiceTest extends TestBase {
 //	@Test
 //	public void testJobServiceWithJobs() throws Exception {
 //
-//		String appId = "myApp";
-//		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appId);
-//		when(jobAppConfigService.existsJobAppConfig(eq(appId))).thenReturn(true);
-//		when(jobAppConfigService.getJobAppConfigDomain(eq(appId))).thenReturn(jobAppConfig);
+//		String appName = "myApp";
+//		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appName);
+//		when(jobAppConfigService.existsJobAppConfig(eq(appName))).thenReturn(true);
+//		when(jobAppConfigService.getJobAppConfigDomain(eq(appName))).thenReturn(jobAppConfig);
 //
 //		int listSize = 5;
 //		List<Job> jobs = JobMockerUpper.createList(listSize);
 //
-//		when(jobRepository.findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<TaskState>anyList(), anyInt(),
+//		when(jobRepository.findByAppNameAndStateInAndErrorCountLessThan(eq(appName), ArgumentMatchers.<TaskState>anyList(), anyInt(),
 //				any(Pageable.class))).thenReturn(jobs);
 //
-//		when(jobRepository.existsByAppIdAndJobId(eq(appId), anyString())).thenReturn(true);
+//		when(jobRepository.existsByAppNameAndJobId(eq(appName), anyString())).thenReturn(true);
 //
-//		List<JobDto> batchOfJobDtos = jobService.startNextBatch(appId);
+//		List<JobDto> batchOfJobDtos = jobService.startNextBatch(appName);
 //
-//		verify(jobRepository, times(1)).findByAppIdAndStateInAndErrorCountLessThan(eq(appId), ArgumentMatchers.<TaskState>anyList(),
+//		verify(jobRepository, times(1)).findByAppNameAndStateInAndErrorCountLessThan(eq(appName), ArgumentMatchers.<TaskState>anyList(),
 //				anyInt(), any(Pageable.class));
 //		assertEquals(listSize, batchOfJobDtos.size());
 //
