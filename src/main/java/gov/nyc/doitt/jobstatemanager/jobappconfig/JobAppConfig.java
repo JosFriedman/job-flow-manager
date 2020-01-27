@@ -97,7 +97,6 @@ public class JobAppConfig {
 	}
 
 	public void setTaskConfigs(List<TaskConfig> taskConfigs) {
-		taskConfigs.sort((TaskConfig p, TaskConfig q) -> p.getSequence().compareTo(q.getSequence()));
 		this.taskConfigs = taskConfigs;
 	}
 

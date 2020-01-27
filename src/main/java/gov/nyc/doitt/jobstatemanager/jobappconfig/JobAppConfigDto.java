@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class JobAppConfigDto {
 
-	@NotBlank(message = "appName may not be empty")
 	private String appName;
 	private String description;
 	private Timestamp createdTimestamp;

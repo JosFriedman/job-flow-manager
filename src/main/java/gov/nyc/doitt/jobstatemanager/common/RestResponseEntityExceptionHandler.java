@@ -29,7 +29,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		if (errors != null) {
 			body.put("errors", errors);
 		} else {
-			body.put("errors", ex.getMessage());			
+			body.put("error", ex.getMessage());			
 		}
 		logger.error(ex.getMessage(), ex);
 		return handleExceptionInternal(ex, body, new HttpHeaders(), ex.getHttpStatus(), request);

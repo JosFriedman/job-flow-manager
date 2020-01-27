@@ -1,25 +1,11 @@
 package gov.nyc.doitt.jobstatemanager.jobappconfig;
 
-import java.sql.Timestamp;
-
 public class TaskConfig {
 
-	private String _id;
-
 	private String name;
-	private Integer sequence;
 	private String description;
-	private Timestamp createdTimestamp;
 	private int maxBatchSize;
 	private int maxRetriesForError;
-
-	public TaskConfig() {
-		createdTimestamp = new Timestamp(System.currentTimeMillis());
-	}
-
-	public String get_id() {
-		return _id;
-	}
 
 	public String getName() {
 		return name;
@@ -29,28 +15,12 @@ public class TaskConfig {
 		this.name = name;
 	}
 
-	public Integer getSequence() {
-		return sequence;
-	}
-
-	public void setSequence(Integer sequence) {
-		this.sequence = sequence;
-	}
-
 	public String getDescription() {
 		return description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public Timestamp getCreatedTimestamp() {
-		return createdTimestamp;
-	}
-
-	public void setCreatedTimestamp(Timestamp createdTimestamp) {
-		this.createdTimestamp = createdTimestamp;
 	}
 
 	public int getMaxBatchSize() {
@@ -71,9 +41,8 @@ public class TaskConfig {
 
 	@Override
 	public String toString() {
-		return "TaskConfig [_id=" + _id + ", name=" + name + ", sequence=" + sequence + ", description=" + description
-				+ ", createdTimestamp=" + createdTimestamp + ", maxBatchSize=" + maxBatchSize + ", maxRetriesForError="
-				+ maxRetriesForError + "]";
+		return "TaskConfig [name=" + name + ", description=" + description + ", maxBatchSize=" + maxBatchSize
+				+ ", maxRetriesForError=" + maxRetriesForError + "]";
 	}
 
 }

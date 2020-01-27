@@ -22,8 +22,6 @@ public class TaskConfigDtoMapper {
 	private PropertyMap<TaskConfigDto, TaskConfig> taskConfigDtoPropertyMap = new PropertyMap<TaskConfigDto, TaskConfig>() {
 
 		protected void configure() {
-			skip(destination.get_id());
-			skip(destination.getCreatedTimestamp());
 		}
 	};
 
