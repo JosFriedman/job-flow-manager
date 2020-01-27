@@ -33,9 +33,19 @@ public class JobAppConfigDtoMockerUpper {
 		jobAppConfigDto.setAppName(appName + idx);
 		jobAppConfigDto.setDescription("description" + idx);
 		jobAppConfigDto.setNotifyEmail("josfriedman@doitt.nyc.gov");
-		jobAppConfigDto.setMaxBatchSize(2);
-		jobAppConfigDto.setMaxRetriesForError(3);
 
+		List<TaskConfigDto> taskConfigDtos = new ArrayList<>();
+		for (int j = 0; j < 3; j++) {
+
+			TaskConfigDto taskConfigDto = new TaskConfigDto();
+			taskConfigDto.setName("name" + j);
+			taskConfigDto.setDescription("description" + j);
+			taskConfigDto.setMaxBatchSize(j + 50);
+			taskConfigDto.setMaxRetriesForError(j);
+			taskConfigDtos.add(taskConfigDto);
+		}
+
+		jobAppConfigDto.setTaskConfigDtos(taskConfigDtos);
 		return jobAppConfigDto;
 	}
 }

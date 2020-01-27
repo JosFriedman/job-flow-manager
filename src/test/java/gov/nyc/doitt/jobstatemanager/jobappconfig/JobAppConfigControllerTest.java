@@ -24,7 +24,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -40,10 +43,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nyc.doitt.jobstatemanager.AppConfig;
 
+@Configuration
+@PropertySource("classpath:application.properties")
 @ContextConfiguration(classes = { AppConfig.class })
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 public class JobAppConfigControllerTest {
+
+	@Value("${server.servlet.context-path}")
+	private String contextRoot;
+
+	protected String getContextRoot() {
+		return contextRoot;
+	}
 
 	@Autowired
 	private WebApplicationContext wac;
@@ -89,9 +101,9 @@ public class JobAppConfigControllerTest {
 
 		when(jobAppConfigRepository.existsByAppName(jobAppConfigDto.getAppName())).thenReturn(false);
 
-		mockMvc.perform(post("/jobStateManager/jobAppConfigs").contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(jobAppConfigDto))).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.appName", comparesEqualTo(jobAppConfigDto.getAppName())));
+		mockMvc.perform(post(getContextRoot() + "/jobAppConfigs").contextPath(getContextRoot())
+				.contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobAppConfigDto))).andDo(print())
+				.andExpect(status().isOk()).andExpect(jsonPath("$.appName", comparesEqualTo(jobAppConfigDto.getAppName())));
 
 		verify(jobAppConfigRepository).save(any(JobAppConfig.class));
 	}
@@ -147,9 +159,9 @@ public class JobAppConfigControllerTest {
 		when(jobAppConfigRepository.existsByAppName(eq(jobAppConfigDto.getAppName()))).thenReturn(true);
 		when(jobAppConfigRepository.findByAppName(eq(jobAppConfigDto.getAppName()))).thenReturn(jobAppConfig);
 
-		mockMvc.perform(put("/jobStateManager/jobAppConfigs/" + jobAppConfigDto.getAppName()).contentType(MediaType.APPLICATION_JSON)
-				.content(asJsonString(jobAppConfigDto))).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.appName", comparesEqualTo(jobAppConfigDto.getAppName())));
+		mockMvc.perform(put("/jobStateManager/jobAppConfigs/" + jobAppConfigDto.getAppName())
+				.contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobAppConfigDto))).andDo(print())
+				.andExpect(status().isOk()).andExpect(jsonPath("$.appName", comparesEqualTo(jobAppConfigDto.getAppName())));
 
 		verify(jobAppConfigRepository).save(any(JobAppConfig.class));
 	}

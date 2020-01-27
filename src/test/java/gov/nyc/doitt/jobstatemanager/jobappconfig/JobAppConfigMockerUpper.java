@@ -33,8 +33,6 @@ public class JobAppConfigMockerUpper {
 		jobAppConfig.setAppName(appName );
 		jobAppConfig.setDescription("description" + appName);
 		jobAppConfig.setNotifyEmail("josfriedman@doitt.nyc.gov");
-		jobAppConfig.setMaxBatchSize(2);
-		jobAppConfig.setMaxRetriesForError(3);
 
 		return jobAppConfig;
 	}

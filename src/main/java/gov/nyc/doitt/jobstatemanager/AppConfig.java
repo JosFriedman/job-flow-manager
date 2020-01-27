@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.MongoDbFactory;
@@ -26,7 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class AppConfig {
 
 	@Autowired
-	MongoDbFactory mongoDbFactory;
+	private MongoDbFactory mongoDbFactory;
 
 	@Bean
 	public MongoTemplate mongoTemplate() throws Exception {
