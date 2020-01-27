@@ -28,13 +28,14 @@ public class JobMockerUpper {
 		return create(i);
 	}
 
-	private Job create(int idx) throws Exception {
+	public Job create(int idx) throws Exception {
 
 		Job job = new Job();
 
 		FieldUtils.writeField(job, "appName", appName, true);
 		FieldUtils.writeField(job, "jobId", "jobId" + idx, true);
 		FieldUtils.writeField(job, "description", "description" + idx, true);
+		FieldUtils.writeField(job, "nextTaskName", "nextTaskName" + idx, true);
 
 		// make very old so it is found first
 		FieldUtils.writeField(job, "createdTimestamp", new Timestamp(System.currentTimeMillis() - 9000000000000L + idx), true);

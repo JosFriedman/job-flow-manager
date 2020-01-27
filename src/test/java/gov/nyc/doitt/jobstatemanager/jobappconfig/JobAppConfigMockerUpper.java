@@ -30,10 +30,22 @@ public class JobAppConfigMockerUpper {
 
 		JobAppConfig jobAppConfig = new JobAppConfig();
 
-		jobAppConfig.setAppName(appName );
+		jobAppConfig.setAppName(appName);
 		jobAppConfig.setDescription("description" + appName);
 		jobAppConfig.setNotifyEmail("josfriedman@doitt.nyc.gov");
 
+		List<TaskConfig> taskConfigs = new ArrayList<>();
+		for (int j = 0; j < 3; j++) {
+
+			TaskConfig taskConfig = new TaskConfig();
+			taskConfig.setName("name" + j);
+			taskConfig.setDescription("description" + j);
+			taskConfig.setMaxBatchSize(j + 50);
+			taskConfig.setMaxRetriesForError(j);
+			taskConfigs.add(taskConfig);
+		}
+
+		jobAppConfig.setTaskConfigs(taskConfigs);
 		return jobAppConfig;
 	}
 }

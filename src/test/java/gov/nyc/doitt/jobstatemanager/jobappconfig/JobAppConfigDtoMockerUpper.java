@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobAppConfigDtoMockerUpper {
 
-	public String appName = "myApp";
+	public String appName = "myApp1";
 
 	public List<JobAppConfigDto> createList(int listSize) throws Exception {
 
