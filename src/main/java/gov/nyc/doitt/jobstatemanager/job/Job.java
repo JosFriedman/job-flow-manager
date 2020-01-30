@@ -32,7 +32,7 @@ public class Job {
 	private JobState state;
 	private String nextTaskName;
 
-	private List<Task> tasks = new ArrayList<>();
+	private ArrayList<Task> tasks = new ArrayList<>();
 
 	public Job() {
 		createdTimestamp = new Timestamp(System.currentTimeMillis());
@@ -83,7 +83,7 @@ public class Job {
 		return tasks;
 	}
 
-	public void setTasks(List<Task> tasks) {
+	public void setTasks(ArrayList<Task> tasks) {
 		this.tasks = tasks;
 	}
 

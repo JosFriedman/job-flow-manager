@@ -1,6 +1,7 @@
 package gov.nyc.doitt.jobstatemanager.jobappconfig;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.GeneratedValue;
@@ -24,7 +25,7 @@ public class JobAppConfig {
 	private Timestamp createdTimestamp;
 	private String notifyEmail;
 
-	private List<TaskConfig> taskConfigs;
+	private ArrayList<TaskConfig> taskConfigs;
 
 	public JobAppConfig() {
 		createdTimestamp = new Timestamp(System.currentTimeMillis());
@@ -96,7 +97,7 @@ public class JobAppConfig {
 		return taskConfigs;
 	}
 
-	public void setTaskConfigs(List<TaskConfig> taskConfigs) {
+	public void setTaskConfigs(ArrayList<TaskConfig> taskConfigs) {
 		this.taskConfigs = taskConfigs;
 	}
 

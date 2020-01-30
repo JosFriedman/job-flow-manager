@@ -34,7 +34,7 @@ public class JobAppConfigDtoMockerUpper {
 		jobAppConfigDto.setDescription("description" + idx);
 		jobAppConfigDto.setNotifyEmail("josfriedman@doitt.nyc.gov");
 
-		List<TaskConfigDto> taskConfigDtos = new ArrayList<>();
+		ArrayList<TaskConfigDto> taskConfigDtos = new ArrayList<>();
 		for (int j = 0; j < 3; j++) {
 
 			TaskConfigDto taskConfigDto = new TaskConfigDto();

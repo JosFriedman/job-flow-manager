@@ -36,11 +36,11 @@ public class TaskConfigDtoMapper {
 		return modelMapper.map(taskConfigDto, TaskConfig.class);
 	}
 
-	public List<TaskConfig> fromDto(List<TaskConfigDto> taskConfigDtos) {
+	public ArrayList<TaskConfig> fromDto(List<TaskConfigDto> taskConfigDtos) {
 
 		if (CollectionUtils.isEmpty(taskConfigDtos))
 			return new ArrayList<TaskConfig>();
-		return taskConfigDtos.stream().map(p -> fromDto(p)).collect(Collectors.toList());
+		return taskConfigDtos.stream().map(p -> fromDto(p)).collect(Collectors.toCollection(ArrayList::new));
 
 	}
 
@@ -50,11 +50,11 @@ public class TaskConfigDtoMapper {
 		return taskConfig;
 	}
 
-	public List<TaskConfigDto> toDto(List<TaskConfig> taskConfigs) {
+	public ArrayList<TaskConfigDto> toDto(List<TaskConfig> taskConfigs) {
 
 		if (CollectionUtils.isEmpty(taskConfigs))
 			return new ArrayList<TaskConfigDto>();
-		return taskConfigs.stream().map(p -> toDto(p)).collect(Collectors.toList());
+		return taskConfigs.stream().map(p -> toDto(p)).collect(Collectors.toCollection(ArrayList::new)); 
 	}
 
 	public TaskConfigDto toDto(TaskConfig taskConfig) {

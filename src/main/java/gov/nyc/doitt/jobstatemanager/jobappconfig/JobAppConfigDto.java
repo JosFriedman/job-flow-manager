@@ -1,9 +1,8 @@
 package gov.nyc.doitt.jobstatemanager.jobappconfig;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
-
-import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -16,7 +15,7 @@ public class JobAppConfigDto {
 	private Timestamp createdTimestamp;
 	private String notifyEmail;
 
-	private List<TaskConfigDto> taskConfigDtos;
+	private ArrayList<TaskConfigDto> taskConfigDtos;
 
 	public String getAppName() {
 		return appName;
@@ -50,11 +49,11 @@ public class JobAppConfigDto {
 		this.notifyEmail = notifyEmail;
 	}
 
-	public List<TaskConfigDto> getTaskConfigDtos() {
+	public ArrayList<TaskConfigDto> getTaskConfigDtos() {
 		return taskConfigDtos;
 	}
 
-	public void setTaskConfigDtos(List<TaskConfigDto> taskConfigDtos) {
+	public void setTaskConfigDtos(ArrayList<TaskConfigDto> taskConfigDtos) {
 		this.taskConfigDtos = taskConfigDtos;
 	}
 
