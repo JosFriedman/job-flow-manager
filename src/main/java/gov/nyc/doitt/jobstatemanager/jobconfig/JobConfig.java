@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.jobappconfig;
+package gov.nyc.doitt.jobstatemanager.jobconfig;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -13,34 +13,34 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
 
 @Document
-public class JobAppConfig {
+public class JobConfig {
 
 	@Id
 	@GenericGenerator(name = "db-uuid", strategy = "guid")
 	@GeneratedValue(generator = "db-uuid")
 	private String _id;
 
-	private String appName;
+	private String jobName;
 	private String description;
 	private Timestamp createdTimestamp;
 	private String notifyEmail;
 
 	private ArrayList<TaskConfig> taskConfigs;
 
-	public JobAppConfig() {
+	public JobConfig() {
 		createdTimestamp = new Timestamp(System.currentTimeMillis());
 	}
 
-	public String getAppName() {
-		return appName;
+	public String getJobName() {
+		return jobName;
 	}
 
 	public String get_id() {
 		return _id;
 	}
 
-	public void setAppName(String appName) {
-		this.appName = appName;
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
 	}
 
 	public String getDescription() {
@@ -72,7 +72,7 @@ public class JobAppConfig {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((appName == null) ? 0 : appName.hashCode());
+		result = prime * result + ((jobName == null) ? 0 : jobName.hashCode());
 		return result;
 	}
 
@@ -84,11 +84,11 @@ public class JobAppConfig {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		JobAppConfig other = (JobAppConfig) obj;
-		if (appName == null) {
-			if (other.appName != null)
+		JobConfig other = (JobConfig) obj;
+		if (jobName == null) {
+			if (other.jobName != null)
 				return false;
-		} else if (!appName.equals(other.appName))
+		} else if (!jobName.equals(other.jobName))
 			return false;
 		return true;
 	}
@@ -108,7 +108,7 @@ public class JobAppConfig {
 	
 	@Override
 	public String toString() {
-		return "JobAppConfig [_id=" + _id + ", appName=" + appName + ", description=" + description + ", createdTimestamp="
+		return "JobConfig [_id=" + _id + ", jobName=" + jobName + ", description=" + description + ", createdTimestamp="
 				+ createdTimestamp + ", notifyEmail=" + notifyEmail + ", taskConfigs=" + taskConfigs + "]";
 	}
 

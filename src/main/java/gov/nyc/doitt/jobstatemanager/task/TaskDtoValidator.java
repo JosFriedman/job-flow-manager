@@ -34,8 +34,6 @@ class TaskDtoValidator implements SmartValidator {
 	}
 
 	private String getErrorMessagePrefix(Object[] validationHints) {
-
 		return ArrayUtils.isEmpty(validationHints) || validationHints[0] == null ? "" : "taskDto[" + validationHints[0] + "].";
-
 	}
 }

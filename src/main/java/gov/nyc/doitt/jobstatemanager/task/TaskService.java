@@ -19,9 +19,9 @@ import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
 import gov.nyc.doitt.jobstatemanager.job.Job;
 import gov.nyc.doitt.jobstatemanager.job.JobRepository;
 import gov.nyc.doitt.jobstatemanager.job.JobState;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfig;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigService;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.TaskConfig;
+import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfig;
+import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigService;
+import gov.nyc.doitt.jobstatemanager.jobconfig.TaskConfig;
 
 @Component
 class TaskService {
@@ -29,7 +29,7 @@ class TaskService {
 	private Logger logger = LoggerFactory.getLogger(TaskService.class);
 
 	@Autowired
-	private JobAppConfigService jobAppConfigService;
+	private JobConfigService jobConfigService;
 
 	@Autowired
 	private JobRepository jobRepository;
@@ -38,24 +38,24 @@ class TaskService {
 	private TaskDtoMapper taskDtoMapper;
 
 	/**
-	 * Start taskName tasks for all qualifying jobs for appName
+	 * Start taskName tasks for all qualifying jobs for jobName
 	 * 
 	 * @param taskName
-	 * @param appName
+	 * @param jobName
 	 * @return
 	 */
-	public List<TaskDto> startTasks(String appName, String taskName) {
+	public List<TaskDto> startTasks(String jobName, String taskName) {
 
-		if (!jobAppConfigService.existsJobAppConfig(appName)) {
-			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appName=%s", appName));
+		if (!jobConfigService.existsJobConfig(jobName)) {
+			throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
 		}
 
 		// get jobs that are available for this task
-		JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appName);
-		TaskConfig taskConfig = jobAppConfig.getTaskConfig(taskName);
+		JobConfig jobConfig = jobConfigService.getJobConfigDomain(jobName);
+		TaskConfig taskConfig = jobConfig.getTaskConfig(taskName);
 
 		PageRequest pageRequest = PageRequest.of(0, taskConfig.getMaxBatchSize(), Sort.by(Sort.Direction.ASC, "createdTimestamp"));
-		List<Job> jobs = jobRepository.findByAppNameAndStateInAndNextTaskName(appName,
+		List<Job> jobs = jobRepository.findByJobNameAndStateInAndNextTaskName(jobName,
 				Arrays.asList(new JobState[] { JobState.READY }), taskName, pageRequest);
 		logger.info("startTasks: number of jobs found: {}", jobs.size());
 
@@ -67,15 +67,15 @@ class TaskService {
 				.collect(Collectors.toList());
 	}
 
-	public List<TaskDto> endTasks(String appName, String taskName, List<TaskDto> taskDtos) {
+	public List<TaskDto> endTasks(String jobName, String taskName, List<TaskDto> taskDtos) {
 
-		if (!jobAppConfigService.existsJobAppConfig(appName)) {
-			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appName=%s", appName));
+		if (!jobConfigService.existsJobConfig(jobName)) {
+			throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
 		}
 
 		// get jobs from DB for jobIds in taskDtos
 		List<String> jobIds = taskDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
-		List<Job> jobs = jobRepository.findByAppNameAndJobIdInAndStateInAndNextTaskName(appName, jobIds,
+		List<Job> jobs = jobRepository.findByJobNameAndJobIdInAndStateInAndNextTaskName(jobName, jobIds,
 				Arrays.asList(new JobState[] { JobState.PROCESSING }), taskName);
 		if (jobs.size() != jobIds.size()) {
 			List<String> foundJobIds = jobs.stream().map(p -> p.getJobId()).collect(Collectors.toList());
@@ -86,7 +86,7 @@ class TaskService {
 		Map<String, Job> jobIdJobMap = jobs.stream().collect(Collectors.toMap(Job::getJobId, Function.identity()));
 
 		// update jobs and tasks with results
-		Pair<TaskConfig, TaskConfig> currentAndNextTaskConfigs = getCurrentAndNextTaskConfigs(appName, taskName);
+		Pair<TaskConfig, TaskConfig> currentAndNextTaskConfigs = getCurrentAndNextTaskConfigs(jobName, taskName);
 		taskDtos.forEach(p -> endTask(taskName, jobIdJobMap.get(p.getJobId()), p, currentAndNextTaskConfigs.getLeft(),
 				currentAndNextTaskConfigs.getRight()));
 
@@ -101,10 +101,10 @@ class TaskService {
 
 	}
 
-	private Pair<TaskConfig, TaskConfig> getCurrentAndNextTaskConfigs(String appName, String taskName) {
+	private Pair<TaskConfig, TaskConfig> getCurrentAndNextTaskConfigs(String jobName, String taskName) {
 
-		JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appName);
-		List<TaskConfig> taskConfigs = jobAppConfig.getTaskConfigs();
+		JobConfig jobConfig = jobConfigService.getJobConfigDomain(jobName);
+		List<TaskConfig> taskConfigs = jobConfig.getTaskConfigs();
 		for (int i = 0; i < taskConfigs.size(); i++) {
 			TaskConfig taskConfig = taskConfigs.get(i);
 			if (taskConfig.getName().equals(taskName)) {
@@ -112,7 +112,7 @@ class TaskService {
 			}
 		}
 		throw new JobStateManagerException(
-				String.format("Task name '%s' not found in JobAppConfig '%s': " + taskName, jobAppConfig));
+				String.format("Task name '%s' not found in JobConfig '%s': " + taskName, jobConfig));
 	}
 
 	private void endTask(String taskName, Job job, TaskDto taskDto, TaskConfig currentTaskConfig, TaskConfig nextTaskConfig) {

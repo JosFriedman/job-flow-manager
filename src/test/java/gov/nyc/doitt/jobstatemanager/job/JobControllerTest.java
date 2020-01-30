@@ -34,17 +34,17 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfig;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigDto;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigMockerUpper;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigService;
+import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfig;
+import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigDto;
+import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigMockerUpper;
+import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigService;
 import gov.nyc.doitt.jobstatemanager.test.BaseTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class JobControllerTest extends BaseTest {
 
 	@Mock
-	private JobAppConfigService jobAppConfigService;
+	private JobConfigService jobConfigService;
 
 	@Autowired
 	private JobDtoMockerUpper jobDtoMockerUpper;
@@ -53,7 +53,7 @@ public class JobControllerTest extends BaseTest {
 	private JobMockerUpper jobMockerUpper;
 
 	@Autowired
-	private JobAppConfigMockerUpper jobAppConfigMockerUpper;
+	private JobConfigMockerUpper jobConfigMockerUpper;
 
 	@Autowired
 	@InjectMocks
@@ -84,16 +84,16 @@ public class JobControllerTest extends BaseTest {
 	public void testCreate() throws Exception {
 
 		JobDto jobDto = jobDtoMockerUpper.create(2);
-		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(jobDto.getAppName());
+		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
 		
 
-		when(jobAppConfigService.existsJobAppConfig(jobDto.getAppName())).thenReturn(true);
+		when(jobConfigService.existsJobConfig(jobDto.getJobName())).thenReturn(true);
 
-		when(jobAppConfigService.getJobAppConfigDomain(jobDto.getAppName())).thenReturn(jobAppConfig);
+		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
 
-		mockMvc.perform(post(getContextRoot() + "/jobs/" + jobDto.getAppName()).contentType(MediaType.APPLICATION_JSON).contextPath(getContextRoot())
+		mockMvc.perform(post(getContextRoot() + "/jobs/" + jobDto.getJobName()).contentType(MediaType.APPLICATION_JSON).contextPath(getContextRoot())
 				.content(asJsonString(jobDto))).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.appName", comparesEqualTo(jobDto.getAppName())))
+				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
 				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
 				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
 
@@ -105,11 +105,11 @@ public class JobControllerTest extends BaseTest {
 //
 //		List<Job> jobs = jobMockerUpper.createList(5);
 //		Job job0 = jobs.get(0);
-//		String appName = job0.getAppName();
+//		String jobName = job0.getJobName();
 //
-//		when(jobRepository.findByAppName(eq(appName), any(Sort.class))).thenReturn(jobs);
+//		when(jobRepository.findByJobName(eq(jobName), any(Sort.class))).thenReturn(jobs);
 //
-//		ResultActions resultActions = mockMvc.perform(get(getContextRoot() + "/jobs/" + appName).contextPath(getContextRoot()))
+//		ResultActions resultActions = mockMvc.perform(get(getContextRoot() + "/jobs/" + jobName).contextPath(getContextRoot()))
 //				.andDo(print()).andExpect(status().isOk());
 //
 //		String content = resultActions.andReturn().getResponse().getContentAsString();
@@ -123,7 +123,7 @@ public class JobControllerTest extends BaseTest {
 //			assertEquals(job.getJobId(), jobDto.getJobId());
 //		}
 //
-//		verify(jobRepository).findByAppName(eq(appName), any(Sort.class));
+//		verify(jobRepository).findByJobName(eq(jobName), any(Sort.class));
 //	}
 
 //	@Test
@@ -131,24 +131,24 @@ public class JobControllerTest extends BaseTest {
 //
 //		List<Job> jobs = jobMockerUpper.createList(5);
 //		Job job0 = jobs.get(0);
-//		String appName = job0.getAppName();
+//		String jobName = job0.getJobName();
 //		
-//		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appName);
+//		JobConfig jobConfig = jobConfigMockerUpper.create(jobName);
 //
-//		when(jobAppConfigService.existsJobAppConfig(job0.getAppName())).thenReturn(true);
+//		when(jobConfigService.existsJobConfig(job0.getJobName())).thenReturn(true);
 //
-//		when(jobAppConfigService.getJobAppConfigDomain(job0.getAppName())).thenReturn(jobAppConfig);
+//		when(jobConfigService.getJobConfigDomain(job0.getJobName())).thenReturn(jobConfig);
 //
-//		when(jobRepository.findByAppNameAndStateInAndErrorCountLessThan(eq(appName), anyList(), eq(jobAppConfig.getMaxRetriesForError() + 1), any(Pageable.class)))
-//				.thenReturn(jobs.subList(0, jobAppConfig.getMaxBatchSize()));
+//		when(jobRepository.findByJobNameAndStateInAndErrorCountLessThan(eq(jobName), anyList(), eq(jobConfig.getMaxRetriesForError() + 1), any(Pageable.class)))
+//				.thenReturn(jobs.subList(0, jobConfig.getMaxBatchSize()));
 //
-//		ResultActions resultActions = mockMvc.perform(post("/jobStateManager/jobs/" + appName + "/startNextBatch")).andDo(print())
+//		ResultActions resultActions = mockMvc.perform(post("/jobStateManager/jobs/" + jobName + "/startNextBatch")).andDo(print())
 //				.andExpect(status().isOk());
 //
 //		String content = resultActions.andReturn().getResponse().getContentAsString();
 //		List<JobDto> jobDtos = jobDtosJsonAsObject(content);
 //
-//		assertEquals(jobAppConfig.getMaxBatchSize(), jobDtos.size());
+//		assertEquals(jobConfig.getMaxBatchSize(), jobDtos.size());
 //		for (int i = 0; i < jobDtos.size(); i++) {
 //			Job job = jobs.get(i);
 //			JobDto jobDto = jobDtos.get(i);
@@ -156,7 +156,7 @@ public class JobControllerTest extends BaseTest {
 //			assertEquals(job.getJobId(), jobDto.getJobId());
 //		}
 //
-//		verify(jobRepository).findByAppNameAndStateInAndErrorCountLessThan(eq(appName), anyList(), eq(jobAppConfig.getMaxRetriesForError() + 1),
+//		verify(jobRepository).findByJobNameAndStateInAndErrorCountLessThan(eq(jobName), anyList(), eq(jobConfig.getMaxRetriesForError() + 1),
 //				any(Pageable.class));
 //	}
 //
@@ -166,12 +166,12 @@ public class JobControllerTest extends BaseTest {
 //		JobDto jobDto = jobDtoMockerUpper.create();
 //		Job job = jobMockerUpper.create();
 //
-//		when(jobRepository.existsByAppNameAndJobId(eq(jobDto.getAppName()), eq(jobDto.getJobId()))).thenReturn(true);
-//		when(jobRepository.findByAppNameAndJobId(eq(jobDto.getAppName()), eq(jobDto.getJobId()))).thenReturn(job);
+//		when(jobRepository.existsByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(true);
+//		when(jobRepository.findByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(job);
 //
-//		mockMvc.perform(put("/jobStateManager/jobs/" + jobDto.getAppName() + "/job/" + jobDto.getJobId())
+//		mockMvc.perform(put("/jobStateManager/jobs/" + jobDto.getJobName() + "/job/" + jobDto.getJobId())
 //				.contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobDto))).andDo(print()).andExpect(status().isOk())
-//				.andExpect(jsonPath("$.appName", comparesEqualTo(jobDto.getAppName())))
+//				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
 //				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
 //				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
 //
@@ -183,12 +183,12 @@ public class JobControllerTest extends BaseTest {
 //
 //		JobDto jobDto = jobDtoMockerUpper.create();
 //
-//		when(jobRepository.existsByAppNameAndJobId(eq(jobDto.getAppName()), eq(jobDto.getJobId()))).thenReturn(true);
+//		when(jobRepository.existsByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(true);
 //
-//		mockMvc.perform(delete("/jobStateManager/jobs/" + jobDto.getAppName() + "/job/" + jobDto.getJobId())).andDo(print())
+//		mockMvc.perform(delete("/jobStateManager/jobs/" + jobDto.getJobName() + "/job/" + jobDto.getJobId())).andDo(print())
 //				.andExpect(status().isOk());
 //
-//		verify(jobRepository).deleteByAppNameAndJobId(eq(jobDto.getAppName()), eq(jobDto.getJobId()));
+//		verify(jobRepository).deleteByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()));
 //	}
 //
 //	private String asJsonString(Object obj) {

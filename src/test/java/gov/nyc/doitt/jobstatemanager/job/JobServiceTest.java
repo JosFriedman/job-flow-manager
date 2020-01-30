@@ -12,8 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import gov.nyc.doitt.jobstatemanager.TestBase;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigMockerUpper;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigService;
+import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigMockerUpper;
+import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigService;
 
 @RunWith(SpringRunner.class)
 public class JobServiceTest extends TestBase {
@@ -25,10 +25,10 @@ public class JobServiceTest extends TestBase {
 	private JobRepository jobRepository;
 
 	@Mock
-	private JobAppConfigService jobAppConfigService;
+	private JobConfigService jobConfigService;
 
 	@Autowired
-	private JobAppConfigMockerUpper jobAppConfigMockerUpper;
+	private JobConfigMockerUpper jobConfigMockerUpper;
 
 	@Autowired
 	private JobDtoMapper jobDtoMapper;
@@ -49,22 +49,22 @@ public class JobServiceTest extends TestBase {
 	public void dummy() {
 
 	}
-	
+
 //	@Test
 //	public void testJobServiceNoJobs() throws Exception {
 //
-//		String appName = "myApp";
-//		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appName);
-//		when(jobAppConfigService.existsJobAppConfig(eq(appName))).thenReturn(true);
-//		when(jobAppConfigService.getJobAppConfigDomain(eq(appName))).thenReturn(jobAppConfig);
+//		String jobName = "myApp";
+//		JobConfig jobConfig = jobConfigMockerUpper.create(jobName);
+//		when(jobConfigService.existsJobConfig(eq(jobName))).thenReturn(true);
+//		when(jobConfigService.getJobConfigDomain(eq(jobName))).thenReturn(jobConfig);
 //
 //		List<Job> jobs = Collections.emptyList();
-//		when(jobRepository.findByAppNameAndStateInAndErrorCountLessThan(eq(appName), ArgumentMatchers.<TaskState>anyList(), anyInt(),
+//		when(jobRepository.findByJobNameAndStateInAndErrorCountLessThan(eq(jobName), ArgumentMatchers.<TaskState>anyList(), anyInt(),
 //				eq(pageable))).thenReturn(jobs);
 //
-//		List<JobDto> batchOfJobDtos = jobService.startNextBatch(appName);
+//		List<JobDto> batchOfJobDtos = jobService.startNextBatch(jobName);
 //
-//		verify(jobRepository, times(1)).findByAppNameAndStateInAndErrorCountLessThan(eq(appName), ArgumentMatchers.<TaskState>anyList(),
+//		verify(jobRepository, times(1)).findByJobNameAndStateInAndErrorCountLessThan(eq(jobName), ArgumentMatchers.<TaskState>anyList(),
 //				anyInt(), any(Pageable.class));
 //		assertTrue(batchOfJobDtos.isEmpty());
 //	}
@@ -72,22 +72,22 @@ public class JobServiceTest extends TestBase {
 //	@Test
 //	public void testJobServiceWithJobs() throws Exception {
 //
-//		String appName = "myApp";
-//		JobAppConfig jobAppConfig = jobAppConfigMockerUpper.create(appName);
-//		when(jobAppConfigService.existsJobAppConfig(eq(appName))).thenReturn(true);
-//		when(jobAppConfigService.getJobAppConfigDomain(eq(appName))).thenReturn(jobAppConfig);
+//		String jobName = "myApp";
+//		JobConfig jobConfig = jobConfigMockerUpper.create(jobName);
+//		when(jobConfigService.existsJobConfig(eq(jobName))).thenReturn(true);
+//		when(jobConfigService.getJobConfigDomain(eq(jobName))).thenReturn(jobConfig);
 //
 //		int listSize = 5;
 //		List<Job> jobs = JobMockerUpper.createList(listSize);
 //
-//		when(jobRepository.findByAppNameAndStateInAndErrorCountLessThan(eq(appName), ArgumentMatchers.<TaskState>anyList(), anyInt(),
+//		when(jobRepository.findByJobNameAndStateInAndErrorCountLessThan(eq(jobName), ArgumentMatchers.<TaskState>anyList(), anyInt(),
 //				any(Pageable.class))).thenReturn(jobs);
 //
-//		when(jobRepository.existsByAppNameAndJobId(eq(appName), anyString())).thenReturn(true);
+//		when(jobRepository.existsByJobNameAndJobId(eq(jobName), anyString())).thenReturn(true);
 //
-//		List<JobDto> batchOfJobDtos = jobService.startNextBatch(appName);
+//		List<JobDto> batchOfJobDtos = jobService.startNextBatch(jobName);
 //
-//		verify(jobRepository, times(1)).findByAppNameAndStateInAndErrorCountLessThan(eq(appName), ArgumentMatchers.<TaskState>anyList(),
+//		verify(jobRepository, times(1)).findByJobNameAndStateInAndErrorCountLessThan(eq(jobName), ArgumentMatchers.<TaskState>anyList(),
 //				anyInt(), any(Pageable.class));
 //		assertEquals(listSize, batchOfJobDtos.size());
 //

@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 import gov.nyc.doitt.jobstatemanager.common.ConflictException;
 import gov.nyc.doitt.jobstatemanager.common.EntityNotFoundException;
 import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfig;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.JobAppConfigService;
-import gov.nyc.doitt.jobstatemanager.jobappconfig.TaskConfig;
+import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfig;
+import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigService;
+import gov.nyc.doitt.jobstatemanager.jobconfig.TaskConfig;
 
 @Component
 class JobService {
@@ -25,7 +25,7 @@ class JobService {
 	private Logger logger = LoggerFactory.getLogger(JobService.class);
 
 	@Autowired
-	private JobAppConfigService jobAppConfigService;
+	private JobConfigService jobConfigService;
 
 	@Autowired
 	private JobRepository jobRepository;
@@ -39,46 +39,46 @@ class JobService {
 	 * @param jobDto
 	 * @return
 	 */
-	public JobDto createJob(String appName, JobDto jobDto) {
+	public JobDto createJob(String jobName, JobDto jobDto) {
 
-		if (!jobAppConfigService.existsJobAppConfig(appName)) {
-			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appName=%s", appName));
+		if (!jobConfigService.existsJobConfig(jobName)) {
+			throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
 		}
 		String jobId = jobDto.getJobId();
-		if (jobRepository.existsByAppNameAndJobId(appName, jobId)) {
-			throw new ConflictException(String.format("Job for appName=%s, jobId=%s already exists", appName, jobId));
+		if (jobRepository.existsByJobNameAndJobId(jobName, jobId)) {
+			throw new ConflictException(String.format("Job for jobName=%s, jobId=%s already exists", jobName, jobId));
 		}
 
-		Job job = jobDtoMapper.fromDto(appName, jobDto);
+		Job job = jobDtoMapper.fromDto(jobName, jobDto);
 
-		JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appName);
-		TaskConfig taskConfig = jobAppConfig.getTaskConfigs().stream().findFirst()
-				.orElseThrow(() -> new JobStateManagerException("JobAppConfig for appName=" + appName + " has no TaskConfigs"));
+		JobConfig jobConfig = jobConfigService.getJobConfigDomain(jobName);
+		TaskConfig taskConfig = jobConfig.getTaskConfigs().stream().findFirst()
+				.orElseThrow(() -> new JobStateManagerException("JobConfig for jobName=" + jobName + " has no TaskConfigs"));
 		job.setNextTaskName(taskConfig.getName());
 		jobRepository.save(job);
 		return jobDtoMapper.toDto(job);
 	}
 
 	/**
-	 * Start and return next batch of jobs for appName
+	 * Start and return next batch of jobs for jobName
 	 * 
-	 * @param appName
+	 * @param jobName
 	 * @return
 	 */
-	List<JobDto> startTaskForJobs(String taskName, String appName) {
+	List<JobDto> startTaskForJobs(String taskName, String jobName) {
 
 //		try {
-//			if (!jobAppConfigService.existsJobAppConfig(appName)) {
-//				throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appName=%s", appName));
+//			if (!jobConfigService.existsJobConfig(jobName)) {
+//				throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
 //			}
 //
-//			JobAppConfig jobAppConfig = jobAppConfigService.getJobAppConfigDomain(appName);
+//			JobConfig jobConfig = jobConfigService.getJobConfigDomain(jobName);
 //
-//			PageRequest pageRequest = PageRequest.of(0, jobAppConfig.getMaxBatchSize(),
+//			PageRequest pageRequest = PageRequest.of(0, jobConfig.getMaxBatchSize(),
 //					Sort.by(Sort.Direction.ASC, "createdTimestamp"));
 //
-//			List<Job> jobs = jobRepository.findByAppNameAndStateInAndErrorCountLessThan(appName,
-//					Arrays.asList(new JobState[] { JobState.READY, JobState.ERROR }), jobAppConfig.getMaxRetriesForError() + 1,
+//			List<Job> jobs = jobRepository.findByJobNameAndStateInAndErrorCountLessThan(jobName,
+//					Arrays.asList(new JobState[] { JobState.READY, JobState.ERROR }), jobConfig.getMaxRetriesForError() + 1,
 //					pageRequest);
 //			logger.info("getNextBatch: number of jobs found: {}", jobs.size());
 //			if (logger.isDebugEnabled()) {
@@ -102,21 +102,21 @@ class JobService {
 	}
 
 	/**
-	 * Update processing results in jobDtos for jobs specified by appName
+	 * Update processing results in jobDtos for jobs specified by jobName
 	 * 
-	 * @param appName
+	 * @param jobName
 	 * @param jobDto
 	 * @return
 	 */
-	public List<JobDto> endTaskForJobs(String appName, String taskName, List<JobDto> jobDtos) {
+	public List<JobDto> endTaskForJobs(String jobName, String taskName, List<JobDto> jobDtos) {
 
-		if (!jobAppConfigService.existsJobAppConfig(appName)) {
-			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appName=%s", appName));
+		if (!jobConfigService.existsJobConfig(jobName)) {
+			throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
 		}
 
 		// get jobs from DB
 		List<String> jobIds = jobDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
-		List<Job> jobs = jobRepository.findByAppNameAndJobIdIn(appName, jobIds);
+		List<Job> jobs = jobRepository.findByJobNameAndJobIdIn(jobName, jobIds);
 		if (jobs.size() != jobIds.size()) {
 			List<String> foundJobIds = jobs.stream().map(p -> p.getJobId()).collect(Collectors.toList());
 			throw new EntityNotFoundException(jobIds.stream().filter(p -> !foundJobIds.contains(p)).collect(Collectors.toList()));
@@ -135,43 +135,43 @@ class JobService {
 	}
 
 	/**
-	 * Get jobs for appName
+	 * Get jobs for jobName
 	 * 
-	 * @param appName
+	 * @param jobName
 	 * @return
 	 */
-	List<JobDto> getJobs(String appName, Sort sort) {
+	List<JobDto> getJobs(String jobName, Sort sort) {
 
-		return jobDtoMapper.toDto(jobRepository.findByAppName(appName, sort));
+		return jobDtoMapper.toDto(jobRepository.findByJobName(jobName, sort));
 	}
 
 	/**
-	 * Get jobs for appName and state
+	 * Get jobs for jobName and state
 	 * 
-	 * @param appName
+	 * @param jobName
 	 * @return
 	 */
-	List<JobDto> getJobs(String appName, JobState state, Sort sort) {
+	List<JobDto> getJobs(String jobName, JobState state, Sort sort) {
 
-		return jobDtoMapper.toDto(jobRepository.findByAppNameAndState(appName, state.name(), sort));
+		return jobDtoMapper.toDto(jobRepository.findByJobNameAndState(jobName, state.name(), sort));
 	}
 
 	/**
-	 * Update processing results in jobDtos for jobs specified by appName
+	 * Update processing results in jobDtos for jobs specified by jobName
 	 * 
-	 * @param appName
+	 * @param jobName
 	 * @param jobDto
 	 * @return
 	 */
-	public List<JobDto> updateJobsWithResults(String appName, List<JobDto> jobDtos) {
+	public List<JobDto> updateJobsWithResults(String jobName, List<JobDto> jobDtos) {
 
-		if (!jobAppConfigService.existsJobAppConfig(appName)) {
-			throw new EntityNotFoundException(String.format("Can't find JobAppConfig for appName=%s", appName));
+		if (!jobConfigService.existsJobConfig(jobName)) {
+			throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
 		}
 
 		// get jobs from DB
 		List<String> jobIds = jobDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
-		List<Job> jobs = jobRepository.findByAppNameAndJobIdIn(appName, jobIds);
+		List<Job> jobs = jobRepository.findByJobNameAndJobIdIn(jobName, jobIds);
 		if (jobs.size() != jobIds.size()) {
 			List<String> foundJobIds = jobs.stream().map(p -> p.getJobId()).collect(Collectors.toList());
 			throw new EntityNotFoundException(jobIds.stream().filter(p -> !foundJobIds.contains(p)).collect(Collectors.toList()));
@@ -190,19 +190,19 @@ class JobService {
 	}
 
 	/**
-	 * Delete job specified by appName and jobId
+	 * Delete job specified by jobName and jobId
 	 * 
-	 * @param appName
+	 * @param jobName
 	 * @param jobId
 	 * @return
 	 */
-	public String deleteJob(String appName, String jobId) {
+	public String deleteJob(String jobName, String jobId) {
 
-		if (!jobRepository.existsByAppNameAndJobId(appName, jobId)) {
-			throw new EntityNotFoundException(String.format("Can't find Job for appName=%s, jobId=%s", appName, jobId));
+		if (!jobRepository.existsByJobNameAndJobId(jobName, jobId)) {
+			throw new EntityNotFoundException(String.format("Can't find Job for jobName=%s, jobId=%s", jobName, jobId));
 		}
-		jobRepository.deleteByAppNameAndJobId(appName, jobId);
-		return appName + "/" + jobId;
+		jobRepository.deleteByJobNameAndJobId(jobName, jobId);
+		return jobName + "/" + jobId;
 	}
 
 	/**
@@ -216,36 +216,36 @@ class JobService {
 	}
 
 	/**
-	 * Get job specified by appName and jobId
+	 * Get job specified by jobName and jobId
 	 * 
-	 * @param appName
+	 * @param jobName
 	 * @param jobId
 	 * @return
 	 */
-	public JobDto getJob(String appName, String jobId) {
+	public JobDto getJob(String jobName, String jobId) {
 
-		Job job = jobRepository.findByAppNameAndJobId(appName, jobId);
+		Job job = jobRepository.findByJobNameAndJobId(jobName, jobId);
 		if (job == null) {
-			throw new EntityNotFoundException(String.format("Can't find Job for appName=%s, jobId=%s", appName, jobId));
+			throw new EntityNotFoundException(String.format("Can't find Job for jobName=%s, jobId=%s", jobName, jobId));
 		}
 		return jobDtoMapper.toDto(job);
 
 	}
 
 	/**
-	 * Update job specified by appName and jobId, from jobDto
+	 * Update job specified by jobName and jobId, from jobDto
 	 * 
-	 * @param appName
+	 * @param jobName
 	 * @param jobId
 	 * @param jobDto
 	 * @return
 	 */
-	public JobDto updateJob(String appName, String jobId, JobDto jobDto) {
+	public JobDto updateJob(String jobName, String jobId, JobDto jobDto) {
 
-		if (!jobRepository.existsByAppNameAndJobId(appName, jobId)) {
-			throw new EntityNotFoundException(String.format("Can't find Job for appName=%s, jobId=%s", appName, jobId));
+		if (!jobRepository.existsByJobNameAndJobId(jobName, jobId)) {
+			throw new EntityNotFoundException(String.format("Can't find Job for jobName=%s, jobId=%s", jobName, jobId));
 		}
-		Job job = jobRepository.findByAppNameAndJobId(appName, jobId);
+		Job job = jobRepository.findByJobNameAndJobId(jobName, jobId);
 		jobDtoMapper.fromDto(jobDto, job);
 
 		jobRepository.save(job);

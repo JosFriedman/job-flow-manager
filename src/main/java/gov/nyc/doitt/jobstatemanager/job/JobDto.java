@@ -8,18 +8,18 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class JobDto {
 
-	private String appName;
+	private String jobName;
 	private String jobId;
 	private String description;
 	private Timestamp createdTimestamp;
 	private String state;
 
-	public String getAppName() {
-		return appName;
+	public String getJobName() {
+		return jobName;
 	}
 
-	public void setAppName(String appName) {
-		this.appName = appName;
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
 	}
 
 	public String getJobId() {
@@ -56,7 +56,7 @@ public class JobDto {
 
 	@Override
 	public String toString() {
-		return "JobDto [appName=" + appName + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
+		return "JobDto [jobName=" + jobName + ", jobId=" + jobId + ", description=" + description + ", createdTimestamp="
 				+ createdTimestamp + ", state=" + state + "]";
 	}
 

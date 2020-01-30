@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.jobappconfig;
+package gov.nyc.doitt.jobstatemanager.jobconfig;
 
 import java.util.List;
 
@@ -8,24 +8,24 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Validates the JobAppConfigDto payload in REST calls
+ * Validates the JobConfigDto payload in REST calls
  */
 @SuppressWarnings("unused")
 @Component
-class JobAppConfigDtoValidator implements Validator {
+class JobConfigDtoValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return JobAppConfigDto.class.isAssignableFrom(clazz);
+		return JobConfigDto.class.isAssignableFrom(clazz);
 	}
 
 	@Override
 	public void validate(Object target, Errors errors) {
 
-		JobAppConfigDto jobAppConfigDto = (JobAppConfigDto) target;
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "appName", "appName must be specified");
+		JobConfigDto jobConfigDto = (JobConfigDto) target;
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "jobName", "jobName must be specified");
 
-		List<TaskConfigDto> taskConfigDtos = jobAppConfigDto.getTaskConfigDtos();
+		List<TaskConfigDto> taskConfigDtos = jobConfigDto.getTaskConfigDtos();
 		ValidationUtils.rejectIfEmpty(errors, "taskConfigDtos", "taskConfigDtos must be specified");
 		if (taskConfigDtos == null) {
 			return;

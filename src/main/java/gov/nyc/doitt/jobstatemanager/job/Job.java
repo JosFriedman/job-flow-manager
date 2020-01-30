@@ -24,7 +24,7 @@ public class Job {
 	@GeneratedValue(generator = "db-uuid")
 	private String _id;
 
-	private String appName;
+	private String jobName;
 	private String jobId;
 	private String description;
 	private Timestamp createdTimestamp;
@@ -43,12 +43,12 @@ public class Job {
 		return _id;
 	}
 
-	public String getAppName() {
-		return appName;
+	public String getJobName() {
+		return jobName;
 	}
 
-	public void setAppName(String appName) {
-		this.appName = appName;
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
 	}
 
 	public String getJobId() {
@@ -123,7 +123,7 @@ public class Job {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((appName == null) ? 0 : appName.hashCode());
+		result = prime * result + ((jobName == null) ? 0 : jobName.hashCode());
 		result = prime * result + ((jobId == null) ? 0 : jobId.hashCode());
 		return result;
 	}
@@ -137,10 +137,10 @@ public class Job {
 		if (getClass() != obj.getClass())
 			return false;
 		Job other = (Job) obj;
-		if (appName == null) {
-			if (other.appName != null)
+		if (jobName == null) {
+			if (other.jobName != null)
 				return false;
-		} else if (!appName.equals(other.appName))
+		} else if (!jobName.equals(other.jobName))
 			return false;
 		if (jobId == null) {
 			if (other.jobId != null)
@@ -152,7 +152,7 @@ public class Job {
 
 	@Override
 	public String toString() {
-		return "Job [_id=" + _id + ", appName=" + appName + ", jobId=" + jobId + ", description=" + description
+		return "Job [_id=" + _id + ", jobName=" + jobName + ", jobId=" + jobId + ", description=" + description
 				+ ", createdTimestamp=" + createdTimestamp + ", state=" + state + ", nextTaskName=" + nextTaskName + ", tasks="
 				+ tasks + "]";
 	}

@@ -1,6 +1,10 @@
-package gov.nyc.doitt.jobstatemanager.jobappconfig;
+package gov.nyc.doitt.jobstatemanager.jobconfig;
 
-public class TaskConfig {
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
+public class TaskConfigDto {
 
 	private String name;
 	private String description;
@@ -41,7 +45,7 @@ public class TaskConfig {
 
 	@Override
 	public String toString() {
-		return "TaskConfig [name=" + name + ", description=" + description + ", maxBatchSize=" + maxBatchSize
+		return "TaskConfigDto [name=" + name + ", description=" + description + ", maxBatchSize=" + maxBatchSize
 				+ ", maxRetriesForError=" + maxRetriesForError + "]";
 	}
 
