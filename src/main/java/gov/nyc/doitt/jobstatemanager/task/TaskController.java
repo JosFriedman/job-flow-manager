@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,22 +44,20 @@ public class TaskController {
 		binder.addValidators(taskDtoListValidator);
 	}
 
-	@PostMapping("/{jobName}")
-	public List<TaskDto> startTasks(@PathVariable String jobName, @RequestParam String taskName) {
+	@PostMapping(params = { "jobName", "taskName" })
+	public List<TaskDto> startTasks(@RequestParam String jobName, @RequestParam String taskName) {
 
 		logger.debug("startTasks: entering: jobName={}, taskName={}", jobName, taskName);
 		return taskService.startTasks(jobName, taskName);
 	}
 
-	@PutMapping("/{jobName}")
-	public List<TaskDto> endTasks(@PathVariable String jobName, @RequestParam String taskName,
+	@PutMapping(params = { "jobName", "taskName" })
+	public List<TaskDto> endTasks(@RequestParam String jobName, @RequestParam String taskName,
 			@Valid @RequestBody List<TaskDto> taskDtos, BindingResult result) {
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("endTasks: entering: jobName={}, taskName={}", jobName, taskName);
-			if (logger.isDebugEnabled()) {
-				taskDtos.forEach(p -> logger.debug("taskDto: {}", p));
-			}
+			taskDtos.forEach(p -> logger.debug("taskDto: {}", p));
 		}
 
 		if (result.hasErrors()) {
