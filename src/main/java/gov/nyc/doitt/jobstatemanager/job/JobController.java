@@ -77,7 +77,7 @@ public class JobController {
 		return jobService.getJobs(jobName, sort);
 	}
 
-	@GetMapping(params = { "sort" })
+	@GetMapping
 	public List<JobDto> getJobs(@RequestParam(name = "sort", required = false) String[] sortParams) {
 
 		logger.debug("getJob: entering: sortParams={}", (Object[]) sortParams);
