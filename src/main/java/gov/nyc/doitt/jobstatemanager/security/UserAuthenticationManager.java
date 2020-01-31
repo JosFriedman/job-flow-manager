@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.authorization;
+package gov.nyc.doitt.jobstatemanager.security;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +66,7 @@ public class UserAuthenticationManager implements AuthenticationManager {
 	private List<GrantedAuthority> createGrantedAuthorities(UserAccount userAccount) {
 
 		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-		grantedAuthorities.add(createGrantedAuthority(Role.ROLE_ADMIN.toString()));		
+		grantedAuthorities.add(createGrantedAuthority("ROLE_ADMIN"));		
 //		if (userAccount != null && roleRegistry.isAdmin(userAccount.getEmail())) {
 //			grantedAuthorities.add(createGrantedAuthority(Role.ROLE_ADMIN.toString()));
 //		}

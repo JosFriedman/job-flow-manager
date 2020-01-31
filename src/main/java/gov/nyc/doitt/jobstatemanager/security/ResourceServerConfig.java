@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.authorization;
+package gov.nyc.doitt.jobstatemanager.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.authorization;
+package gov.nyc.doitt.jobstatemanager.security;
 
 /**
  * Params for user validation and for authorization

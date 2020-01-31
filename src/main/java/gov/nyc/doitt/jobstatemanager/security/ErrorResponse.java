@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.authorization;
+package gov.nyc.doitt.jobstatemanager.security;
 
 import java.util.HashMap;
 import java.util.Map;

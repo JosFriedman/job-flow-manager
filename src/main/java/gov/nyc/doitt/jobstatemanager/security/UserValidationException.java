@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.authorization;
+package gov.nyc.doitt.jobstatemanager.security;
 
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 

@@ -1,4 +1,4 @@
-package gov.nyc.doitt.jobstatemanager.authorization;
+package gov.nyc.doitt.jobstatemanager.security;
 
 import java.io.IOException;
 
@@ -34,7 +34,7 @@ abstract public class AbstractExceptionHandler {
 	private OAuth2ExceptionRenderer exceptionRenderer;
 
 	/**
-	 * Return AccessDeniedException in standard Content API error JSON
+	 * Return AccessDeniedException in our standard error JSON
 	 */
 	protected void doHandle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex)
 			throws IOException, ServletException {
@@ -49,7 +49,7 @@ abstract public class AbstractExceptionHandler {
 	}
 
 	/**
-	 * Return AuthenticationException in standard Content API error JSON
+	 * Return AuthenticationException in our standard error JSON
 	 */
 	protected void doHandle(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex)
 			throws IOException, ServletException {
