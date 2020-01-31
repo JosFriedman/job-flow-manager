@@ -41,7 +41,7 @@ public class JobRepositoryTest extends BaseTest {
 		}
 
 		try {
-			int j = 1;
+			int j = 0;
 			PageRequest pageRequest = PageRequest.of(0, maxBatchSize, Sort.by(Sort.Direction.ASC, "createdTimestamp"));
 			List<Job> returnedJobs = jobRepository.findByJobNameAndStateInAndNextTaskName(jobMockerUpper.jobName,
 					Arrays.asList(new JobState[] { JobState.READY }), "nextTaskName" + j, pageRequest);

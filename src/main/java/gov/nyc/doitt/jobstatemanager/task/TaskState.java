@@ -1,6 +1,6 @@
 package gov.nyc.doitt.jobstatemanager.task;
 
-enum TaskState {
+public enum TaskState {
 
 	PROCESSING, COMPLETED, ERROR
 }

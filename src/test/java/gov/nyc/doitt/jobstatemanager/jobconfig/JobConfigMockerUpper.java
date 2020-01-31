@@ -12,7 +12,7 @@ import gov.nyc.doitt.jobstatemanager.jobconfig.TaskConfig;
 @Component
 public class JobConfigMockerUpper {
 
-	public String jobName = "myApp";
+	public String jobName = "myJob";
 
 	public List<JobConfig> createList(int listSize) throws Exception {
 

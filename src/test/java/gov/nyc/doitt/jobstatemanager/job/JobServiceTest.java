@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import gov.nyc.doitt.jobstatemanager.TestBase;
 import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigMockerUpper;
 import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigService;
+import gov.nyc.doitt.jobstatemanager.test.BaseTest;
 
 @RunWith(SpringRunner.class)
-public class JobServiceTest extends TestBase {
+public class JobServiceTest extends BaseTest {
 
 	@Autowired
 	private JobMockerUpper JobMockerUpper;
@@ -53,7 +53,7 @@ public class JobServiceTest extends TestBase {
 //	@Test
 //	public void testJobServiceNoJobs() throws Exception {
 //
-//		String jobName = "myApp";
+//		String jobName = "myJob";
 //		JobConfig jobConfig = jobConfigMockerUpper.create(jobName);
 //		when(jobConfigService.existsJobConfig(eq(jobName))).thenReturn(true);
 //		when(jobConfigService.getJobConfigDomain(eq(jobName))).thenReturn(jobConfig);
@@ -72,7 +72,7 @@ public class JobServiceTest extends TestBase {
 //	@Test
 //	public void testJobServiceWithJobs() throws Exception {
 //
-//		String jobName = "myApp";
+//		String jobName = "myJob";
 //		JobConfig jobConfig = jobConfigMockerUpper.create(jobName);
 //		when(jobConfigService.existsJobConfig(eq(jobName))).thenReturn(true);
 //		when(jobConfigService.getJobConfigDomain(eq(jobName))).thenReturn(jobConfig);

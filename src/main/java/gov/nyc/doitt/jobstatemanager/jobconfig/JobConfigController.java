@@ -61,6 +61,9 @@ public class JobConfigController {
 
 	@GetMapping("")
 	public List<JobConfigDto> getJobConfigs() {
+
+		logger.debug("getJobConfigs: entering");
+		
 		return jobConfigService.getJobConfigs();
 	}
 

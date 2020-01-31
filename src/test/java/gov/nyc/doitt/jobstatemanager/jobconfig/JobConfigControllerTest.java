@@ -115,7 +115,7 @@ public class JobConfigControllerTest extends BaseTest {
 	@Test
 	public void testGet() throws Exception {
 
-		JobConfig jobConfig = jobConfigMockerUpper.create("myApp1");
+		JobConfig jobConfig = jobConfigMockerUpper.create("myJob1");
 		String jobName = jobConfig.getJobName();
 
 		when(jobConfigRepository.existsByJobName(eq(jobName))).thenReturn(true);

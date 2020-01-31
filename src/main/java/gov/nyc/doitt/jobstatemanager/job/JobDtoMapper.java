@@ -7,8 +7,12 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.config.Configuration.AccessLevel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+
+import gov.nyc.doitt.jobstatemanager.task.TaskDto;
+import gov.nyc.doitt.jobstatemanager.task.TaskDtoMapper;
 
 /**
  * Map Job to and from JobDto
@@ -16,6 +20,9 @@ import org.springframework.util.CollectionUtils;
  */
 @Component
 class JobDtoMapper {
+
+	@Autowired
+	private TaskDtoMapper taskDtoMapper;
 
 	private ModelMapper modelMapper = new ModelMapper();
 
@@ -26,6 +33,7 @@ class JobDtoMapper {
 			skip(destination.getJobName());
 			skip(destination.getCreatedTimestamp());
 			skip(destination.getState());
+			skip(destination.getTasks());
 		}
 	};
 
@@ -37,7 +45,7 @@ class JobDtoMapper {
 
 	public Job fromDto(String jobName, JobDto jobDto) {
 
-		Job job =  modelMapper.map(jobDto, Job.class);
+		Job job = modelMapper.map(jobDto, Job.class);
 		job.setJobName(jobName);
 		return job;
 	}
@@ -48,23 +56,6 @@ class JobDtoMapper {
 		return job;
 	}
 
-//	public Job fromDtoResult(JobDto jobDto, Job job) {
-//
-//		JobState state = JobState.valueOf(jobDto.getState());
-//		if (state == JobState.ERROR) {
-//			if (Boolean.TRUE == jobDto.isReset()) {
-//				job.resetWithError();
-//			} else {
-//				job.endWithError(jobDto.getErrorReason());
-//			}
-//		} else if (state == JobState.COMPLETED) {
-//			job.endWithSuccess();
-//		} else {
-//			throw new JobStateManagerException("Unsupported state for result: " +  state);
-//		}
-//		return job;
-//	}
-
 	public List<JobDto> toDto(List<Job> jobs) {
 
 		if (CollectionUtils.isEmpty(jobs))
@@ -74,7 +65,13 @@ class JobDtoMapper {
 
 	public JobDto toDto(Job job) {
 
-		return modelMapper.map(job, JobDto.class);
+		JobDto jobDto = modelMapper.map(job, JobDto.class);
+
+		ArrayList<TaskDto> taskDtos = taskDtoMapper.toDto(job, job.getTasks());
+		jobDto.setTaskDtos(taskDtos);
+
+		return jobDto;
+
 	}
 
 }

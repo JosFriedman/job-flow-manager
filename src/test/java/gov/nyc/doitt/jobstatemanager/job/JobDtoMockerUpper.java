@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobDtoMockerUpper {
 
-	public String jobName = "myApp";
+	public String jobName = "myJob";
 
 	public List<JobDto> createList(int listSize) throws Exception {
 

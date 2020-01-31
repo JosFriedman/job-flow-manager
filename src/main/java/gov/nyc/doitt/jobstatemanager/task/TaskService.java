@@ -62,9 +62,8 @@ class TaskService {
 		// create tasks and update jobs
 		jobs.forEach(p -> startTask(taskName, p));
 
-		// return TaskDtos
-		return jobs.stream().map(p -> taskDtoMapper.toDto(p, p.getTasks().get(p.getTasks().size() - 1)))
-				.collect(Collectors.toList());
+		// return last task for each job in list of TaskDtos
+		return jobs.stream().map(p -> taskDtoMapper.toDto(p, p.getLastTask())).collect(Collectors.toList());
 	}
 
 	public List<TaskDto> endTasks(String jobName, String taskName, List<TaskDto> taskDtos) {
@@ -111,8 +110,7 @@ class TaskService {
 				return Pair.of(taskConfig, i < taskConfigs.size() - 1 ? taskConfigs.get(i + 1) : null);
 			}
 		}
-		throw new JobStateManagerException(
-				String.format("Task name '%s' not found in JobConfig '%s': " + taskName, jobConfig));
+		throw new JobStateManagerException(String.format("Task name '%s' not found in JobConfig '%s': " + taskName, jobConfig));
 	}
 
 	private void endTask(String taskName, Job job, TaskDto taskDto, TaskConfig currentTaskConfig, TaskConfig nextTaskConfig) {

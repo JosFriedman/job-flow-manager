@@ -12,7 +12,7 @@ import gov.nyc.doitt.jobstatemanager.jobconfig.TaskConfigDto;
 @Component
 public class JobConfigDtoMockerUpper {
 
-	public String jobName = "myApp1";
+	public String jobName = "myJob1";
 
 	public List<JobConfigDto> createList(int listSize) throws Exception {
 
@@ -47,8 +47,8 @@ public class JobConfigDtoMockerUpper {
 			taskConfigDto.setMaxRetriesForError(j);
 			taskConfigDtos.add(taskConfigDto);
 		}
-
 		jobConfigDto.setTaskConfigDtos(taskConfigDtos);
+
 		return jobConfigDto;
 	}
 }

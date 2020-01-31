@@ -1,10 +1,6 @@
 package gov.nyc.doitt.jobstatemanager.job;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,81 +56,6 @@ class JobService {
 	}
 
 	/**
-	 * Start and return next batch of jobs for jobName
-	 * 
-	 * @param jobName
-	 * @return
-	 */
-	List<JobDto> startTaskForJobs(String taskName, String jobName) {
-
-//		try {
-//			if (!jobConfigService.existsJobConfig(jobName)) {
-//				throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
-//			}
-//
-//			JobConfig jobConfig = jobConfigService.getJobConfigDomain(jobName);
-//
-//			PageRequest pageRequest = PageRequest.of(0, jobConfig.getMaxBatchSize(),
-//					Sort.by(Sort.Direction.ASC, "createdTimestamp"));
-//
-//			List<Job> jobs = jobRepository.findByJobNameAndStateInAndErrorCountLessThan(jobName,
-//					Arrays.asList(new JobState[] { JobState.READY, JobState.ERROR }), jobConfig.getMaxRetriesForError() + 1,
-//					pageRequest);
-//			logger.info("getNextBatch: number of jobs found: {}", jobs.size());
-//			if (logger.isDebugEnabled()) {
-//				jobs.forEach(p -> logger.debug("job: {}", p.toString()));
-//			}
-//
-//			// mark each submission as picked up for processing
-//			jobs.forEach(p -> {
-////				p.start();
-//				jobRepository.save(p);
-//			});
-//			return jobDtoMapper.toDto(jobs);
-//
-//		} catch (JobStateManagerException e) {
-//			throw e;
-//		} catch (Exception e) {
-//			throw new JobStateManagerException(e);
-//		}
-//
-		return null;
-	}
-
-	/**
-	 * Update processing results in jobDtos for jobs specified by jobName
-	 * 
-	 * @param jobName
-	 * @param jobDto
-	 * @return
-	 */
-	public List<JobDto> endTaskForJobs(String jobName, String taskName, List<JobDto> jobDtos) {
-
-		if (!jobConfigService.existsJobConfig(jobName)) {
-			throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
-		}
-
-		// get jobs from DB
-		List<String> jobIds = jobDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
-		List<Job> jobs = jobRepository.findByJobNameAndJobIdIn(jobName, jobIds);
-		if (jobs.size() != jobIds.size()) {
-			List<String> foundJobIds = jobs.stream().map(p -> p.getJobId()).collect(Collectors.toList());
-			throw new EntityNotFoundException(jobIds.stream().filter(p -> !foundJobIds.contains(p)).collect(Collectors.toList()));
-		}
-		Map<String, Job> jobIdJobMap = jobs.stream().collect(Collectors.toMap(Job::getJobId, Function.identity()));
-
-		// update results
-		List<JobDto> returnJobDtos = new ArrayList<>();
-		jobDtos.forEach(p -> {
-			Job job = jobIdJobMap.get(p.getJobId());
-			JobDto jobDto = updateJobWithResult(job, p);
-			returnJobDtos.add(jobDto);
-		});
-
-		return returnJobDtos;
-	}
-
-	/**
 	 * Get jobs for jobName
 	 * 
 	 * @param jobName
@@ -154,39 +75,6 @@ class JobService {
 	List<JobDto> getJobs(String jobName, JobState state, Sort sort) {
 
 		return jobDtoMapper.toDto(jobRepository.findByJobNameAndState(jobName, state.name(), sort));
-	}
-
-	/**
-	 * Update processing results in jobDtos for jobs specified by jobName
-	 * 
-	 * @param jobName
-	 * @param jobDto
-	 * @return
-	 */
-	public List<JobDto> updateJobsWithResults(String jobName, List<JobDto> jobDtos) {
-
-		if (!jobConfigService.existsJobConfig(jobName)) {
-			throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
-		}
-
-		// get jobs from DB
-		List<String> jobIds = jobDtos.stream().map(p -> p.getJobId()).collect(Collectors.toList());
-		List<Job> jobs = jobRepository.findByJobNameAndJobIdIn(jobName, jobIds);
-		if (jobs.size() != jobIds.size()) {
-			List<String> foundJobIds = jobs.stream().map(p -> p.getJobId()).collect(Collectors.toList());
-			throw new EntityNotFoundException(jobIds.stream().filter(p -> !foundJobIds.contains(p)).collect(Collectors.toList()));
-		}
-		Map<String, Job> jobIdJobMap = jobs.stream().collect(Collectors.toMap(Job::getJobId, Function.identity()));
-
-		// update results
-		List<JobDto> returnJobDtos = new ArrayList<>();
-		jobDtos.forEach(p -> {
-			Job job = jobIdJobMap.get(p.getJobId());
-			JobDto jobDto = updateJobWithResult(job, p);
-			returnJobDtos.add(jobDto);
-		});
-
-		return returnJobDtos;
 	}
 
 	/**
@@ -233,30 +121,21 @@ class JobService {
 	}
 
 	/**
-	 * Update job specified by jobName and jobId, from jobDto
+	 * Reset job specified by jobName and jobId
 	 * 
 	 * @param jobName
 	 * @param jobId
-	 * @param jobDto
 	 * @return
 	 */
-	public JobDto updateJob(String jobName, String jobId, JobDto jobDto) {
+	public JobDto resetJob(String jobName, String jobId) {
 
-		if (!jobRepository.existsByJobNameAndJobId(jobName, jobId)) {
+		Job job = jobRepository.findByJobNameAndJobId(jobName, jobId);
+		if (job == null) {
 			throw new EntityNotFoundException(String.format("Can't find Job for jobName=%s, jobId=%s", jobName, jobId));
 		}
-		Job job = jobRepository.findByJobNameAndJobId(jobName, jobId);
-		jobDtoMapper.fromDto(jobDto, job);
+		job.reset();
 
 		jobRepository.save(job);
-		return jobDtoMapper.toDto(job);
-	}
-
-	// Update processing result in job from jobDto
-	private JobDto updateJobWithResult(Job job, JobDto jobDto) {
-
-//		jobDtoMapper.fromDtoResult(jobDto, job);
-//		jobRepository.save(job);
 		return jobDtoMapper.toDto(job);
 	}
 

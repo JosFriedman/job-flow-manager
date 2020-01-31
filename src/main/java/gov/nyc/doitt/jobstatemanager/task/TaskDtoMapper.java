@@ -72,13 +72,20 @@ public class TaskDtoMapper {
 		return task;
 	}
 
-
 	public List<TaskDto> toDto(List<Job> jobs, String taskName) {
 
 		if (CollectionUtils.isEmpty(jobs))
 			return new ArrayList<TaskDto>();
-		
+
 		return jobs.stream().map(p -> toDto(p, p.getLastTask(taskName))).collect(Collectors.toList());
+	}
+
+	public ArrayList<TaskDto> toDto(Job job, List<Task> tasks) {
+
+		if (CollectionUtils.isEmpty(tasks))
+			return new ArrayList<TaskDto>();
+
+		return tasks.stream().map(p -> toDto(job, p)).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	public TaskDto toDto(Job job, Task task) {

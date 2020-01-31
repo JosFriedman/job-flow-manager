@@ -79,7 +79,7 @@ public class Job {
 		this.state = state;
 	}
 
-	public List<Task> getTasks() {
+	public ArrayList<Task> getTasks() {
 		return tasks;
 	}
 
@@ -101,7 +101,7 @@ public class Job {
 	}
 
 	public long getTotalErrorCountForTask(String taskName) {
-		return tasks.stream().filter(p -> p.getName().equals(taskName)).count();
+		return tasks.stream().filter(p -> !p.isDeleted() && p.getName().equals(taskName)).count();
 	}
 
 	public Task getLastTask(String taskName) {
@@ -117,6 +117,19 @@ public class Job {
 					String.format("Given task name '%s' != Task's name '%s': ", taskName, task.getName()));
 		}
 		return task;
+	}
+
+	public Task getLastTask() {
+
+		if (CollectionUtils.isEmpty(tasks)) {
+			throw new JobStateManagerException("tasks for " + jobId + " is empty");
+		}
+		return tasks.get(tasks.size() - 1);
+	}
+
+	public void reset() {
+		state = JobState.READY;
+		tasks.forEach(p -> p.setDeleted(true));
 	}
 
 	@Override

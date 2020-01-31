@@ -9,11 +9,12 @@ public class Task {
 
 	private String name;
 	private String description;
-	@Enumerated(EnumType.STRING)
 	private Timestamp startTimestamp;
 	private Timestamp endTimestamp;
+	@Enumerated(EnumType.STRING)
 	private TaskState state;
 	private String errorReason;
+	private boolean deleted;
 
 	public Task() {
 	}
@@ -40,20 +41,44 @@ public class Task {
 		this.description = description;
 	}
 
-	public TaskState getState() {
-		return state;
-	}
-
 	public Timestamp getStartTimestamp() {
 		return startTimestamp;
+	}
+
+	public void setStartTimestamp(Timestamp startTimestamp) {
+		this.startTimestamp = startTimestamp;
 	}
 
 	public Timestamp getEndTimestamp() {
 		return endTimestamp;
 	}
 
+	public void setEndTimestamp(Timestamp endTimestamp) {
+		this.endTimestamp = endTimestamp;
+	}
+
+	public TaskState getState() {
+		return state;
+	}
+
+	public void setState(TaskState state) {
+		this.state = state;
+	}
+
 	public String getErrorReason() {
 		return errorReason;
+	}
+
+	public void setErrorReason(String errorReason) {
+		this.errorReason = errorReason;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	public void endWithSuccess() {
@@ -71,7 +96,7 @@ public class Task {
 	@Override
 	public String toString() {
 		return "Task [name=" + name + ", description=" + description + ", startTimestamp=" + startTimestamp + ", endTimestamp="
-				+ endTimestamp + ", state=" + state + ", errorReason=" + errorReason + "]";
+				+ endTimestamp + ", state=" + state + ", errorReason=" + errorReason + ", deleted=" + deleted + "]";
 	}
 
 }
