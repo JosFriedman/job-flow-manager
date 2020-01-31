@@ -6,9 +6,6 @@ import java.util.Random;
 
 import org.springframework.stereotype.Component;
 
-import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigDto;
-import gov.nyc.doitt.jobstatemanager.jobconfig.TaskConfigDto;
-
 @Component
 public class JobConfigDtoMockerUpper {
 

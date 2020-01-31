@@ -24,6 +24,7 @@ public class JobConfig {
 	private String description;
 	private Timestamp createdTimestamp;
 	private String notifyEmail;
+	private String authToken;
 
 	private ArrayList<TaskConfig> taskConfigs;
 
@@ -67,6 +68,13 @@ public class JobConfig {
 		this.notifyEmail = notifyEmail;
 	}
 
+	public String getAuthToken() {
+		return authToken;
+	}
+
+	public void setAuthToken(String authToken) {
+		this.authToken = authToken;
+	}
 
 	@Override
 	public int hashCode() {
@@ -102,10 +110,11 @@ public class JobConfig {
 	}
 
 	public TaskConfig getTaskConfig(String taskName) {
-		
-		return taskConfigs.stream().filter(p -> p.getName().equals(taskName)).findFirst().orElseThrow(() -> new JobStateManagerException("TaskConfig for taskName=" + taskName + " not found"));
+
+		return taskConfigs.stream().filter(p -> p.getName().equals(taskName)).findFirst()
+				.orElseThrow(() -> new JobStateManagerException("TaskConfig for taskName=" + taskName + " not found"));
 	}
-	
+
 	@Override
 	public String toString() {
 		return "JobConfig [_id=" + _id + ", jobName=" + jobName + ", description=" + description + ", createdTimestamp="

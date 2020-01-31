@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.modelmapper.AbstractConverter;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.config.Configuration.AccessLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+
+import gov.nyc.doitt.jobstatemanager.security.Encryptor;
 
 /**
  * Map JobConfig to and from JobConfigDto
@@ -23,11 +27,23 @@ class JobConfigDtoMapper {
 	@Autowired
 	private TaskConfigDtoMapper taskConfigDtoMapper;
 
+	@Autowired
+	private Encryptor encryptor;
+
+	private Converter<String, String> encryptingConverter = new AbstractConverter<String, String>() {
+
+		@Override
+		protected String convert(String source) {
+			return encryptor.encrypt(source);
+		}
+	};
+
 	private PropertyMap<JobConfigDto, JobConfig> jobConfigDtoPropertyMap = new PropertyMap<JobConfigDto, JobConfig>() {
 
 		protected void configure() {
 			skip(destination.get_id());
 			skip(destination.getCreatedTimestamp());
+			using(encryptingConverter).map().setAuthToken(source.getAuthToken());
 		}
 	};
 

@@ -6,24 +6,20 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * Holds UserAccount details
+ *
  * 
  */
-public class UserAuthenticationToken extends AbstractAuthenticationToken {
+public class GrantedAuthoritiesToken extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = 1L;
 
-	private final UserAccount userAccount;
-
-	public UserAuthenticationToken(UserAccount userAccount) {
+	public GrantedAuthoritiesToken() {
 		super(null);
-		this.userAccount = userAccount;
 		setAuthenticated(false);
 	}
 
-	public UserAuthenticationToken(UserAccount userAccount, Collection<? extends GrantedAuthority> authorities) {
+	public GrantedAuthoritiesToken(Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
-		this.userAccount = userAccount;
 		setAuthenticated(true);
 	}
 
@@ -34,11 +30,7 @@ public class UserAuthenticationToken extends AbstractAuthenticationToken {
 
 	@Override
 	public Object getPrincipal() {
-		return userAccount;
-	}
-
-	public UserAccount getUserAccount() {
-		return userAccount;
+		return null;
 	}
 
 }

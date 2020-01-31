@@ -1,5 +1,6 @@
 package gov.nyc.doitt.jobstatemanager.security;
 
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	private AuthParamsExtractor authParamsExtractor;
 
 	@Autowired
-	private UserAuthenticationManager userAuthenticationManager;
+	private JobStateManagerAuthenticationManager jobStateManagerAuthenticationManager;
 
 	@Autowired
 	private OAuth2WebSecurityExpressionHandler expressionHandler;
@@ -49,7 +50,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	public void configure(ResourceServerSecurityConfigurer resources) {
 		resources.resourceId(RESOURCE_ID).stateless(false);
 		resources.tokenExtractor(authParamsExtractor);
-		resources.authenticationManager(userAuthenticationManager);
+		resources.authenticationManager(jobStateManagerAuthenticationManager);
 		resources.expressionHandler(expressionHandler);
 		resources.authenticationEntryPoint(userAuthenticationEntryPoint);
 	}
@@ -72,9 +73,12 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 		return new DefaultOAuth2ExceptionRenderer();
 	}
 
-//	@Bean
-//	public HandlerExceptionResolver handlerExceptionResolver() {
-//		return new DefaultHandlerExceptionResolver();
-//	}
+	@Bean
+	public StandardPBEStringEncryptor standardPBEStringEncryptor() {
+
+		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+		encryptor.setPassword("jasypt"); // set jasypt password
+		return encryptor;
+	}
 
 }

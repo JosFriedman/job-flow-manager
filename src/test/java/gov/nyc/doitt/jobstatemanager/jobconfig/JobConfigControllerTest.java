@@ -34,10 +34,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfig;
-import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigDto;
-import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigRepository;
-import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigService;
 import gov.nyc.doitt.jobstatemanager.test.BaseTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)

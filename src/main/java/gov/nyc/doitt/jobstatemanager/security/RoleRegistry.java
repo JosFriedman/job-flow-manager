@@ -1,35 +1,34 @@
 package gov.nyc.doitt.jobstatemanager.security;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Registry of Content API security roles
+ * Registry of admin security roles
  */
 @Component
-class RoleRegistry implements InitializingBean {
+class RoleRegistry {
 
-//	@Value("${admin.users}")
-	private String adminUsers = "josfriedman@doitt.nyc.gov";
+	@Autowired
+	private Encryptor encryptor;
 
-	private Set<String> adminUserSet;
+//	@Value("${admin.tokens}")
+	private String[] adminAuthTokens = { "wdxpirpCI0GUP913pciZ6RZrqdpSgH8LxR89ysXxmT0VKrnIu9A4oO3Hhxe0sWJao5PWtSqraPNu0CISh4vMS29VlNpu0KIL+DXa7D3Y6AQ=" };
 
-	boolean isAdmin(String userEmail) {
-		return userEmail == null ? false : adminUserSet.contains(userEmail);
-	}
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		String[] users = adminUsers.split("\\s*,\\s*");
-		adminUserSet = new HashSet<String>(Arrays.asList(users));
+	private Set<String> adminAuthTokenSet;
+
+	boolean isAdmin(String s) {
+		return getAdminAuthTokenSet().contains(s);
 	}
 
-	public Set<String> getAdminUserSet() {
-		return adminUserSet;
+	private synchronized Set<String> getAdminAuthTokenSet() {
+		if (adminAuthTokenSet == null) {
+			adminAuthTokenSet = Arrays.asList(adminAuthTokens).stream().map(p -> encryptor.decrypt(p)).collect(Collectors.toSet());
+		}
+		return adminAuthTokenSet;
 	}
 }

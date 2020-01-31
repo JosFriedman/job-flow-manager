@@ -22,7 +22,6 @@ import gov.nyc.doitt.jobstatemanager.common.ValidationException;
 
 @RestController
 @RequestMapping("tasks")
-@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class TaskController {
 
 	private Logger logger = LoggerFactory.getLogger(TaskController.class);

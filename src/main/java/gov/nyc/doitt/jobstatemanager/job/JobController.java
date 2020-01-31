@@ -51,8 +51,8 @@ public class JobController {
 		binder.addValidators(jobDtoListValidator);
 	}
 
-	@PostMapping("/{jobName}")
-	public JobDto createJob(@PathVariable String jobName, @Valid @RequestBody JobDto jobDto, BindingResult result)
+	@PostMapping(params = { "jobName" })
+	public JobDto createJob(@RequestParam String jobName, @Valid @RequestBody JobDto jobDto, BindingResult result)
 			throws JobStateManagerException {
 
 		logger.debug("createJob: entering: jobName={}, jobDto={}", jobName, jobDto);
