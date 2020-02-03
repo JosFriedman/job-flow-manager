@@ -46,6 +46,7 @@ public class JobAuthorizer {
 			checkAuthorization(jobName);
 			
 			return true;
+			
 		} catch (Exception e) {
 			log.error("Can't authorize request: " + request, e);
 			return false;

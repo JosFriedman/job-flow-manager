@@ -3,7 +3,7 @@ package gov.nyc.doitt.jobstatemanager.security;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 
 /**
- * Thrown for user-validation failures
+ * Thrown for job authorization failures
  */
 public class JobAuthorizationException extends OAuth2Exception {
 

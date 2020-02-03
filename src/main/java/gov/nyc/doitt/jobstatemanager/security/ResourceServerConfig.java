@@ -36,15 +36,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	private OAuth2WebSecurityExpressionHandler expressionHandler;
 
 	@Autowired
-	private JobAccessDeniedHandler jobAccessDeniedHandler;
-
-	@Bean
-	public JobAuthorizer jobAuthorizer() {
-		return new JobAuthorizer();
-	}
-
-	@Autowired
-	private JobAuthentiicationExceptionHandler jobAuthentiicationExceptionHandler;
+	private JobAuthenticationExceptionHandler jobAuthenticationExceptionHandler;
 
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) {
@@ -52,13 +44,18 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 		resources.tokenExtractor(authParamsExtractor);
 		resources.authenticationManager(jobAuthenticationManager);
 		resources.expressionHandler(expressionHandler);
-		resources.authenticationEntryPoint(jobAuthentiicationExceptionHandler);
+		resources.authenticationEntryPoint(jobAuthenticationExceptionHandler);
 	}
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers("/**").access("@jobAuthorizer.checkRequest(request)");
-		http.exceptionHandling().accessDeniedHandler(jobAccessDeniedHandler);
+		http.exceptionHandling().accessDeniedHandler(jobAuthenticationExceptionHandler);
+	}
+
+	@Bean
+	public JobAuthorizer jobAuthorizer() {
+		return new JobAuthorizer();
 	}
 
 	@Bean

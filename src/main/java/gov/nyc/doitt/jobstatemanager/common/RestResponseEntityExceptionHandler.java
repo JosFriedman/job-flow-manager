@@ -1,5 +1,6 @@
 package gov.nyc.doitt.jobstatemanager.common;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +27,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
 		Map<String, Object> body = new LinkedHashMap<>();
 		List<String> errors = ex.getErrors();
-		if (errors != null) {
-			body.put("errors", errors);
-		} else {
-			body.put("error", ex.getMessage());			
+		if (errors == null) {
+			errors = new ArrayList<>();
+			errors.add(ex.getMessage());
 		}
+		body.put("errors", errors);
 		logger.error(ex.getMessage(), ex);
 		return handleExceptionInternal(ex, body, new HttpHeaders(), ex.getHttpStatus(), request);
 	}
