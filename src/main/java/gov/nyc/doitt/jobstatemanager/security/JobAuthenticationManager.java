@@ -18,9 +18,9 @@ import gov.nyc.doitt.jobstatemanager.common.ValidationException;
  * Custom AuthenticationManager that gets authentication params and validates them
  */
 @Component
-public class JobStateManagerAuthenticationManager implements AuthenticationManager {
+public class JobAuthenticationManager implements AuthenticationManager {
 
-	private Logger logger = LoggerFactory.getLogger(JobStateManagerAuthenticationManager.class);
+	private Logger logger = LoggerFactory.getLogger(JobAuthenticationManager.class);
 
 	@Autowired
 	private RoleRegistry roleRegistry;
@@ -28,21 +28,21 @@ public class JobStateManagerAuthenticationManager implements AuthenticationManag
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-		ValidateInParams validateInParams = (ValidateInParams) authentication.getCredentials();
+		String authToken = (String) authentication.getCredentials();
 
-		logger.debug("authenticate: validateInParams: {}", validateInParams);
+		logger.debug("authenticate: authToken: {}", authToken);
 
-		if (validateInParams == null) {
-			throw new ValidationException("authenticate: validateInParams is null");
-		}
+		Role role = roleRegistry.getRole(authToken);
+		JobAuthorizationToken jobAuthorizationToken = new JobAuthorizationToken(authToken, createGrantedAuthorities(role));
+		jobAuthorizationToken.setDetails(authentication.getDetails());
+		return jobAuthorizationToken;
+	}
 
-		boolean isAdmin = roleRegistry.isAdmin(validateInParams.getAccessToken());
-		if (!isAdmin) {
-		}
-		GrantedAuthoritiesToken grantedAuthoritiesToken = new GrantedAuthoritiesToken(createGrantedAuthorities(isAdmin));
-		grantedAuthoritiesToken.setDetails(authentication.getDetails());
-		grantedAuthoritiesToken.setAuthenticated(true);
-		return grantedAuthoritiesToken;
+	private List<GrantedAuthority> createGrantedAuthorities(Role role) {
+
+		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+			grantedAuthorities.add(createGrantedAuthority(role.toString()));
+		return grantedAuthorities;
 	}
 
 	@SuppressWarnings("serial")
@@ -56,13 +56,5 @@ public class JobStateManagerAuthenticationManager implements AuthenticationManag
 		};
 	}
 
-	private List<GrantedAuthority> createGrantedAuthorities(boolean admin) {
-
-		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-		if (admin) {
-			grantedAuthorities.add(createGrantedAuthority("ROLE_ADMIN"));
-		}
-		return grantedAuthorities;
-	}
 
 }

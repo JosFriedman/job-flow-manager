@@ -25,36 +25,24 @@ public class AuthParamsExtractor implements TokenExtractor {
 
 	public static final String ACCESS_TOKEN = "Authorization";
 
-	@Autowired
-	private JobNameExtractor jobNameExtractor;
-
 	@Override
 	public Authentication extract(HttpServletRequest request) {
 
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("extract: request: %s", request));
 		}
-		ValidateInParams validateInParams = null;
 		String accessToken = extractHeaderToken(request);
 
-		if (!StringUtils.isEmpty(accessToken)) {
+		if (StringUtils.isEmpty(accessToken)) {
+			throw new JobAuthorizationException(
+					String.format("Error trying to get accessToken from request: %s", request.getServletPath()));
 
-			try {
-				String jobName = jobNameExtractor.getJobName(request); // may be null
-				validateInParams = new ValidateInParams(accessToken, jobName);
-			} catch (Exception e) {
-				throw new UserValidationException(
-						String.format("Error trying to get jobName from request: %s", request.getServletPath(), e));
-			}
-
-		} // ... else no validation to be done, i.e., validationInParams are null
-
-		if (log.isDebugEnabled())
-
-		{
-			log.debug(String.format("extract: validateInParams: %s", validateInParams));
 		}
-		return new PreAuthenticatedAuthenticationToken("", validateInParams);
+
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("extract: accessToken: %s", accessToken));
+		}
+		return new PreAuthenticatedAuthenticationToken("", accessToken);
 
 	}
 

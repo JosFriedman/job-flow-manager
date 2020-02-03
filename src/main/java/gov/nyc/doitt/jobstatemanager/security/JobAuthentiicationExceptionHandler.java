@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * Handler for Content API AuthenticationExceptions
  */
 @Component
-public class UserAuthenticationEntryPoint extends AbstractExceptionHandler implements AuthenticationEntryPoint {
+public class JobAuthentiicationExceptionHandler extends AbstractExceptionHandler implements AuthenticationEntryPoint {
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)

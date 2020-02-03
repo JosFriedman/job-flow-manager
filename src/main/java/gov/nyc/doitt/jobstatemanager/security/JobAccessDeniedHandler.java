@@ -11,10 +11,10 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 /**
- * Handler for Content API AccessDeniedExceptions
+ * Handler for AccessDeniedExceptions
  */
 @Component
-public class UserAccessDeniedHandler extends AbstractExceptionHandler implements AccessDeniedHandler {
+public class JobAccessDeniedHandler extends AbstractExceptionHandler implements AccessDeniedHandler {
 
 	@Override
 	/**

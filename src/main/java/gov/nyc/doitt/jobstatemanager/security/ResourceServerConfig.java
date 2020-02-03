@@ -30,35 +30,35 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	private AuthParamsExtractor authParamsExtractor;
 
 	@Autowired
-	private JobStateManagerAuthenticationManager jobStateManagerAuthenticationManager;
+	private JobAuthenticationManager jobAuthenticationManager;
 
 	@Autowired
 	private OAuth2WebSecurityExpressionHandler expressionHandler;
 
 	@Autowired
-	private UserAccessDeniedHandler userAccessDeniedHandler;
+	private JobAccessDeniedHandler jobAccessDeniedHandler;
 
 	@Bean
-	public JobStateManagerAuthorizer jobStateManagerAuthorizer() {
-		return new JobStateManagerAuthorizer();
+	public JobAuthorizer jobAuthorizer() {
+		return new JobAuthorizer();
 	}
 
 	@Autowired
-	private UserAuthenticationEntryPoint userAuthenticationEntryPoint;
+	private JobAuthentiicationExceptionHandler jobAuthentiicationExceptionHandler;
 
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) {
 		resources.resourceId(RESOURCE_ID).stateless(false);
 		resources.tokenExtractor(authParamsExtractor);
-		resources.authenticationManager(jobStateManagerAuthenticationManager);
+		resources.authenticationManager(jobAuthenticationManager);
 		resources.expressionHandler(expressionHandler);
-		resources.authenticationEntryPoint(userAuthenticationEntryPoint);
+		resources.authenticationEntryPoint(jobAuthentiicationExceptionHandler);
 	}
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/**").access("@jobStateManagerAuthorizer.checkRequest(request)");
-		http.exceptionHandling().accessDeniedHandler(userAccessDeniedHandler);
+		http.authorizeRequests().antMatchers("/**").access("@jobAuthorizer.checkRequest(request)");
+		http.exceptionHandling().accessDeniedHandler(jobAccessDeniedHandler);
 	}
 
 	@Bean

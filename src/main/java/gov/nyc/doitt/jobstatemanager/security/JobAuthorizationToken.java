@@ -9,28 +9,32 @@ import org.springframework.security.core.GrantedAuthority;
  *
  * 
  */
-public class GrantedAuthoritiesToken extends AbstractAuthenticationToken {
+public class JobAuthorizationToken extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = 1L;
 
-	public GrantedAuthoritiesToken() {
-		super(null);
-		setAuthenticated(false);
-	}
-
-	public GrantedAuthoritiesToken(Collection<? extends GrantedAuthority> authorities) {
+	private String token;
+	
+	public JobAuthorizationToken(String token, Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
+		this.token = token;
 		setAuthenticated(true);
 	}
 
 	@Override
 	public Object getCredentials() {
-		return null;
+		return token;
 	}
 
 	@Override
 	public Object getPrincipal() {
 		return null;
 	}
+
+	public String getToken() {
+		return token;
+	}
+	
+	
 
 }

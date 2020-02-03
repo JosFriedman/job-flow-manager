@@ -1,14 +1,11 @@
 package gov.nyc.doitt.jobstatemanager.security;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Registry of admin security roles
+ * Registry of security roles
  */
 @Component
 class RoleRegistry {
@@ -16,19 +13,19 @@ class RoleRegistry {
 	@Autowired
 	private Encryptor encryptor;
 
-//	@Value("${admin.tokens}")
-	private String[] adminAuthTokens = { "wdxpirpCI0GUP913pciZ6RZrqdpSgH8LxR89ysXxmT0VKrnIu9A4oO3Hhxe0sWJao5PWtSqraPNu0CISh4vMS29VlNpu0KIL+DXa7D3Y6AQ=" };
+	@Value("${admin.auth.token}")
+	private String adminAuthToken;
 
-	private Set<String> adminAuthTokenSet;
+	private String decryptedAdminAuthToken;
 
-	boolean isAdmin(String s) {
-		return getAdminAuthTokenSet().contains(s);
+	public Role getRole(String s) {
+		return getDecryptedAdminAuthToken().equals(s) ? Role.ROLE_ADMIN : Role.ROLE_USER;
 	}
 
-	private synchronized Set<String> getAdminAuthTokenSet() {
-		if (adminAuthTokenSet == null) {
-			adminAuthTokenSet = Arrays.asList(adminAuthTokens).stream().map(p -> encryptor.decrypt(p)).collect(Collectors.toSet());
+	private synchronized String getDecryptedAdminAuthToken() {
+		if (decryptedAdminAuthToken == null) {
+			decryptedAdminAuthToken = encryptor.decrypt(adminAuthToken);
 		}
-		return adminAuthTokenSet;
+		return decryptedAdminAuthToken;
 	}
 }

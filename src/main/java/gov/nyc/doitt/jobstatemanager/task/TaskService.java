@@ -125,7 +125,7 @@ class TaskService {
 
 		if (task.getState() == TaskState.COMPLETED) {
 			if (nextTaskConfig != null) {
-				job.setNextTaskName(taskName);
+				job.setNextTaskName(nextTaskConfig.getName());
 				job.setState(JobState.READY);
 			} else {
 				job.setNextTaskName(null);
