@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import gov.nyc.doitt.jobstatemanager.common.ConflictException;
 import gov.nyc.doitt.jobstatemanager.common.EntityNotFoundException;
@@ -121,19 +122,27 @@ class JobService {
 	}
 
 	/**
-	 * Reset job specified by jobName and jobId
+	 * Reset job specified by jobName and jobId, and optionally, taskName
 	 * 
 	 * @param jobName
 	 * @param jobId
+	 * @param taskName
 	 * @return
 	 */
-	public JobDto resetJob(String jobName, String jobId) {
+	public JobDto resetJob(String jobName, String jobId, String taskName) {
 
 		Job job = jobRepository.findByJobNameAndJobId(jobName, jobId);
 		if (job == null) {
 			throw new EntityNotFoundException(String.format("Can't find Job for jobName=%s, jobId=%s", jobName, jobId));
 		}
-		job.reset();
+
+		JobConfig jobConfig = jobConfigService.getJobConfigDomain(jobName);
+		if (!StringUtils.isEmpty(taskName)) {
+			jobConfig.ensureHasTaskConfig(taskName);
+			job.resetTask(taskName);
+		} else {
+			job.resetAllTasks(jobConfig.getFirstTaskConfig().getName());
+		}
 
 		jobRepository.save(job);
 		return jobDtoMapper.toDto(job);

@@ -53,7 +53,6 @@ class TaskService {
 		// get jobs that are available for this task
 		JobConfig jobConfig = jobConfigService.getJobConfigDomain(jobName);
 		TaskConfig taskConfig = jobConfig.getTaskConfig(taskName);
-
 		PageRequest pageRequest = PageRequest.of(0, taskConfig.getMaxBatchSize(), Sort.by(Sort.Direction.ASC, "createdTimestamp"));
 		List<Job> jobs = jobRepository.findByJobNameAndStateInAndNextTaskName(jobName,
 				Arrays.asList(new JobState[] { JobState.READY }), taskName, pageRequest);

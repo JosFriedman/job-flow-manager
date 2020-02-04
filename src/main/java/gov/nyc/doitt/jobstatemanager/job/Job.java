@@ -126,8 +126,19 @@ public class Job {
 		return tasks.get(tasks.size() - 1);
 	}
 
-	public void reset() {
+	public void resetTask(String taskName) {
 		state = JobState.READY;
+		nextTaskName = taskName;
+		tasks.forEach(p -> {
+			if (p.getName().equals(taskName)) {
+				p.setDeleted(true);
+			}
+		});
+	}
+
+	public void resetAllTasks(String firstTaskName) {
+		state = JobState.READY;
+		nextTaskName = firstTaskName;
 		tasks.forEach(p -> p.setDeleted(true));
 	}
 

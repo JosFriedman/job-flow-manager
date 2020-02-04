@@ -9,13 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,6 +64,7 @@ public class JobController {
 		return jobService.createJob(jobName, jobDto);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping(params = { "jobName" })
 	public List<JobDto> getJobs(@RequestParam String jobName, @RequestParam(required = false) String state,
 			@RequestParam(name = "sort", required = false) String[] sortParams) {
@@ -77,6 +78,7 @@ public class JobController {
 		return jobService.getJobs(jobName, sort);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping
 	public List<JobDto> getJobs(@RequestParam(name = "sort", required = false) String[] sortParams) {
 
@@ -95,14 +97,28 @@ public class JobController {
 		return jobService.getJob(jobName, jobId);
 	}
 
-	@PatchMapping(params = { "jobName", "jobId" })
-	public JobDto resetJob(@RequestParam String jobName, @RequestParam String jobId) throws JobStateManagerException {
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PatchMapping(params = { "jobName", "jobId", "patchOp" })
+	public JobDto patchJob(@RequestParam String jobName, @RequestParam String jobId, @RequestParam String patchOp,
+			@RequestParam(name = "taskName", required = false) String taskName) throws JobStateManagerException {
 
-		logger.debug("resetJob: entering: jobName={}, jobId={}", jobName);
+		logger.debug("patchJob: entering: jobName={}, jobId={}, patchOp={}, taskName={}", jobName, jobId, patchOp, taskName);
 
-		return jobService.resetJob(jobName, jobId);
+		// only Op supported at this time is RESET
+		JobPatchOp jobPatchOp;
+		try {
+			jobPatchOp = JobPatchOp.valueOf(patchOp);
+			if (jobPatchOp != JobPatchOp.RESET) {
+				throw new IllegalArgumentException();
+			}
+
+		} catch (IllegalArgumentException e) {
+			throw new JobStateManagerException("Unsupported patchOp=" + patchOp);
+		} 
+		return jobService.resetJob(jobName, jobId, taskName);
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@DeleteMapping(params = { "jobName", "jobId" })
 	public String deleteJob(@RequestParam String jobName, @RequestParam String jobId) {
 

@@ -9,6 +9,7 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.util.CollectionUtils;
 
 import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
 
@@ -110,9 +111,20 @@ public class JobConfig {
 	}
 
 	public TaskConfig getTaskConfig(String taskName) {
-
 		return taskConfigs.stream().filter(p -> p.getName().equals(taskName)).findFirst()
 				.orElseThrow(() -> new JobStateManagerException("TaskConfig for taskName=" + taskName + " not found"));
+	}
+
+	public void ensureHasTaskConfig(String taskName) {
+		getTaskConfig(taskName);
+	}
+	
+	public TaskConfig getFirstTaskConfig() {
+		
+		if (CollectionUtils.isEmpty(taskConfigs)) {
+			 new JobStateManagerException("TaskConfigs is empty for this JobConfig=" + jobName);
+		}
+		return taskConfigs.get(0);
 	}
 
 	@Override
