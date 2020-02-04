@@ -120,7 +120,7 @@ public class JobControllerTest extends BaseTest {
 	}
 
 	@Test
-	public void testCreate() throws Exception {
+	public void testCreate_succeedAdmin() throws Exception {
 
 		httpHeaders.add("Authorization", "Bearer " + NON_ADMIN_AUTH_TOKEN);
 
@@ -128,14 +128,11 @@ public class JobControllerTest extends BaseTest {
 		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
 
 		when(jobConfigService.existsJobConfig(jobDto.getJobName())).thenReturn(true);
-
 		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
 
-		when(jobConfigService.existsJobConfig(jobDto.getJobName())).thenReturn(true);
-		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
-
-		mockMvc.perform(post(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName()).headers(httpHeaders).contentType(MediaType.APPLICATION_JSON)
-				.contextPath(getContextRoot()).content(asJsonString(jobDto))).andDo(print()).andExpect(status().isOk())
+		mockMvc.perform(post(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName()).headers(httpHeaders)
+				.contentType(MediaType.APPLICATION_JSON).headers(httpHeaders).contextPath(getContextRoot())
+				.content(asJsonString(jobDto))).andDo(print()).andExpect(status().isOk())
 				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
 				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
 				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
@@ -144,7 +141,52 @@ public class JobControllerTest extends BaseTest {
 	}
 
 	@Test
-	public void testGetByJobName() throws Exception {
+	public void testCreate_succeedNonAdminMatchAuthToken() throws Exception {
+
+		httpHeaders.add("Authorization", "Bearer " + NON_ADMIN_AUTH_TOKEN);
+
+		JobDto jobDto = jobDtoMockerUpper.create(2);
+		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
+
+		when(jobConfigService.existsJobConfig(jobDto.getJobName())).thenReturn(true);
+		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
+
+		mockMvc.perform(post(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName()).headers(httpHeaders)
+				.contentType(MediaType.APPLICATION_JSON).headers(httpHeaders).contextPath(getContextRoot())
+				.content(asJsonString(jobDto))).andDo(print()).andExpect(status().isOk())
+				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
+				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
+				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
+
+		verify(jobRepository).save(any(Job.class));
+	}
+
+	@Test
+	public void testCreate_failNonAdminNoMatchAuthToken() throws Exception {
+
+		httpHeaders.add("Authorization", "Bearer " + "wrong_token");
+
+		JobDto jobDto = jobDtoMockerUpper.create(2);
+		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
+
+		when(jobConfigService.existsJobConfig(jobDto.getJobName())).thenReturn(true);
+		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
+
+		ResultActions resultActions = mockMvc
+				.perform(post(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName()).headers(httpHeaders)
+						.contentType(MediaType.APPLICATION_JSON).headers(httpHeaders).contextPath(getContextRoot())
+						.content(asJsonString(jobDto)))
+				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+
+		String s = resultActions.andReturn().getResponse().getContentAsString();
+		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
+
+	}
+
+	@Test
+	public void testGetByJobName_succeedAdmin() throws Exception {
+
+		httpHeaders.add("Authorization", "Bearer " + ADMIN_AUTH_TOKEN);
 
 		List<Job> jobs = jobMockerUpper.createList(5);
 		Job job0 = jobs.get(0);
@@ -153,8 +195,8 @@ public class JobControllerTest extends BaseTest {
 		when(jobRepository.findByJobName(eq(jobName), any(Sort.class))).thenReturn(jobs);
 
 		ResultActions resultActions = mockMvc
-				.perform(get(getContextRoot() + "/jobs" + "?jobName=" + jobName).contextPath(getContextRoot())).andDo(print())
-				.andExpect(status().isOk());
+				.perform(get(getContextRoot() + "/jobs" + "?jobName=" + jobName).headers(httpHeaders).contextPath(getContextRoot()))
+				.andDo(print()).andExpect(status().isOk());
 
 		String content = resultActions.andReturn().getResponse().getContentAsString();
 		List<JobDto> jobDtos = jobDtosJsonAsObject(content);
@@ -171,7 +213,7 @@ public class JobControllerTest extends BaseTest {
 	}
 
 	@Test
-	public void testGetByJobNameAndJobId() throws Exception {
+	public void testGetByJobNameAndJobId_succeedAdmin() throws Exception {
 
 		httpHeaders.add("Authorization", "Bearer " + ADMIN_AUTH_TOKEN);
 
@@ -182,7 +224,7 @@ public class JobControllerTest extends BaseTest {
 		when(jobRepository.findByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(job);
 
 		mockMvc.perform(get(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId())
-				.contextPath(getContextRoot())).andDo(print()).andExpect(status().isOk())
+				.headers(httpHeaders).contextPath(getContextRoot())).andDo(print()).andExpect(status().isOk())
 				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
 				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
 				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
@@ -202,7 +244,6 @@ public class JobControllerTest extends BaseTest {
 		tasks.forEach(p -> p.setState(TaskState.ERROR));
 
 		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
-		when(jobConfigService.existsJobConfig(jobDto.getJobName())).thenReturn(true);
 		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
 
 		when(jobRepository.existsByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(true);
@@ -234,32 +275,49 @@ public class JobControllerTest extends BaseTest {
 		ArrayList<Task> tasks = job.getTasks();
 		tasks.forEach(p -> p.setState(TaskState.ERROR));
 
-//		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
-//		when(jobConfigService.existsJobConfig(jobDto.getJobName())).thenReturn(true);
-//		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
-//
-//		when(jobRepository.existsByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(true);
-//		when(jobRepository.findByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(job);
-
 		ResultActions resultActions = mockMvc
 				.perform(patch(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId()
 						+ "&patchOp=" + JobPatchOp.RESET).headers(httpHeaders).contextPath(getContextRoot()))
 				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
 
 		verify(jobRepository, times(0)).save(eq(job));
+		String s = resultActions.andReturn().getResponse().getContentAsString();
+		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
 	}
 
 	@Test
-	public void testDelete() throws Exception {
+	public void testDelete_succeedAdmin() throws Exception {
+
+		httpHeaders.add("Authorization", "Bearer " + ADMIN_AUTH_TOKEN);
 
 		JobDto jobDto = jobDtoMockerUpper.create();
 
 		when(jobRepository.existsByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(true);
 
 		mockMvc.perform(delete(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId())
-				.contextPath(getContextRoot())).andDo(print()).andExpect(status().isOk());
+				.headers(httpHeaders).contextPath(getContextRoot())).andDo(print()).andExpect(status().isOk());
 
 		verify(jobRepository).deleteByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()));
+	}
+
+	@Test
+	public void testDelete_failNoAdmin() throws Exception {
+
+		httpHeaders.add("Authorization", "Bearer " + NON_ADMIN_AUTH_TOKEN);
+
+		JobDto jobDto = jobDtoMockerUpper.create();
+
+		when(jobRepository.existsByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(true);
+
+		ResultActions resultActions = mockMvc
+				.perform(delete(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId())
+						.headers(httpHeaders).contextPath(getContextRoot()))
+				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+
+		String s = resultActions.andReturn().getResponse().getContentAsString();
+		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
+
+		verify(jobRepository, times(0)).deleteByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()));
 	}
 
 	private List<JobDto> jobDtosJsonAsObject(String json) {
