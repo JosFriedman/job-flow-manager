@@ -64,7 +64,6 @@ public class JobController {
 		return jobService.createJob(jobName, jobDto);
 	}
 
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@GetMapping(params = { "jobName" })
 	public List<JobDto> getJobs(@RequestParam String jobName, @RequestParam(required = false) String state,
 			@RequestParam(name = "sort", required = false) String[] sortParams) {

@@ -146,8 +146,8 @@ public class JobControllerTest extends BaseTest {
 		httpHeaders.add("Authorization", "Bearer " + NON_ADMIN_AUTH_TOKEN);
 
 		JobDto jobDto = jobDtoMockerUpper.create(2);
-		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
 
+		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
 		when(jobConfigService.existsJobConfig(jobDto.getJobName())).thenReturn(true);
 		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
 
@@ -213,12 +213,67 @@ public class JobControllerTest extends BaseTest {
 	}
 
 	@Test
+	public void testGetByJobName_succeedNonAdmin() throws Exception {
+
+		httpHeaders.add("Authorization", "Bearer " + NON_ADMIN_AUTH_TOKEN);
+
+		List<Job> jobs = jobMockerUpper.createList(5);
+		Job job0 = jobs.get(0);
+		String jobName = job0.getJobName();
+
+		JobConfig jobConfig = jobConfigMockerUpper.create(jobName);
+		when(jobConfigService.getJobConfigDomain(jobName)).thenReturn(jobConfig);
+
+		when(jobRepository.findByJobName(eq(jobName), any(Sort.class))).thenReturn(jobs);
+
+		ResultActions resultActions = mockMvc
+				.perform(get(getContextRoot() + "/jobs" + "?jobName=" + jobName).headers(httpHeaders).contextPath(getContextRoot()))
+				.andDo(print()).andExpect(status().isOk());
+
+		String content = resultActions.andReturn().getResponse().getContentAsString();
+		List<JobDto> jobDtos = jobDtosJsonAsObject(content);
+
+		assertEquals(jobs.size(), jobDtos.size());
+		for (int i = 0; i < jobs.size(); i++) {
+			Job job = jobs.get(i);
+			JobDto jobDto = jobDtos.get(i);
+
+			assertEquals(job.getJobId(), jobDto.getJobId());
+		}
+
+		verify(jobRepository).findByJobName(eq(jobName), any(Sort.class));
+	}
+
+	@Test
 	public void testGetByJobNameAndJobId_succeedAdmin() throws Exception {
 
 		httpHeaders.add("Authorization", "Bearer " + ADMIN_AUTH_TOKEN);
 
 		JobDto jobDto = jobDtoMockerUpper.create(1);
 		Job job = jobMockerUpper.create(1);
+
+		when(jobRepository.existsByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(true);
+		when(jobRepository.findByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(job);
+
+		mockMvc.perform(get(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId())
+				.headers(httpHeaders).contextPath(getContextRoot())).andDo(print()).andExpect(status().isOk())
+				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
+				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
+				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
+
+		verify(jobRepository).findByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()));
+	}
+
+	@Test
+	public void testGetByJobNameAndJobId_succeedNonAdmin() throws Exception {
+
+		httpHeaders.add("Authorization", "Bearer " + NON_ADMIN_AUTH_TOKEN);
+
+		JobDto jobDto = jobDtoMockerUpper.create(1);
+		Job job = jobMockerUpper.create(1);
+
+		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
+		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
 
 		when(jobRepository.existsByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(true);
 		when(jobRepository.findByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(job);
@@ -246,7 +301,6 @@ public class JobControllerTest extends BaseTest {
 		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
 		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
 
-		when(jobRepository.existsByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(true);
 		when(jobRepository.findByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(job);
 
 		ResultActions resultActions = mockMvc
