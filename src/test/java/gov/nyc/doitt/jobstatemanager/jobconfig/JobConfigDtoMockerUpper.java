@@ -15,7 +15,7 @@ public class JobConfigDtoMockerUpper {
 
 		List<JobConfigDto> jobs = new ArrayList<>();
 		for (int i = 0; i < listSize; i++) {
-			jobs.add(create(i));
+			jobs.add(create(jobName + i));
 		}
 		return jobs;
 	}
@@ -23,15 +23,15 @@ public class JobConfigDtoMockerUpper {
 	public JobConfigDto create() throws Exception {
 
 		int i = new Random().nextInt(100) * -1;
-		return create(i);
+		return create(jobName + i);
 	}
 
-	public JobConfigDto create(int idx) throws Exception {
+	public JobConfigDto create(String jobName) throws Exception {
 
 		JobConfigDto jobConfigDto = new JobConfigDto();
 
-		jobConfigDto.setJobName(jobName + idx);
-		jobConfigDto.setDescription("description" + idx);
+		jobConfigDto.setJobName(jobName);
+		jobConfigDto.setDescription("description" + jobName);
 		jobConfigDto.setNotifyEmail("josfriedman@doitt.nyc.gov");
 
 		ArrayList<TaskConfigDto> taskConfigDtos = new ArrayList<>();

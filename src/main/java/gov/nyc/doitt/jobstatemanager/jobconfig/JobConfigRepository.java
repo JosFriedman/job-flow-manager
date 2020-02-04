@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-interface JobConfigRepository extends MongoRepository<JobConfig, String> {
+public interface JobConfigRepository extends MongoRepository<JobConfig, String> {
 
 	List<JobConfig> findAllByOrderByJobNameAsc();
 

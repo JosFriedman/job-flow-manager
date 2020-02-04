@@ -11,6 +11,8 @@ public class JobConfigMockerUpper {
 
 	public String jobName = "myJob";
 
+	public static final String NON_ADMIN_AUTH_TOKEN = "d8OwgEKytnEk8e0CttazSTCrAnomX76wyuNl1Ow/ealh/iooQKGpINMIhnAK4vUFCTJCwG8M7ZKhivVbE87DFy7FS2JMewC9Y2CzG74AIK8=";
+
 	public List<JobConfig> createList(int listSize) throws Exception {
 
 		List<JobConfig> jobs = new ArrayList<>();
@@ -33,6 +35,7 @@ public class JobConfigMockerUpper {
 		jobConfig.setJobName(jobName);
 		jobConfig.setDescription("description" + jobName);
 		jobConfig.setNotifyEmail("josfriedman@doitt.nyc.gov");
+		jobConfig.setAuthToken(NON_ADMIN_AUTH_TOKEN);
 
 		ArrayList<TaskConfig> taskConfigs = new ArrayList<>();
 		for (int j = 0; j < 3; j++) {

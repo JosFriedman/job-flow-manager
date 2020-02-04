@@ -48,8 +48,6 @@ public class JobConfigDto {
 	public void setNotifyEmail(String notifyEmail) {
 		this.notifyEmail = notifyEmail;
 	}
-	
-	
 
 	public String getAuthToken() {
 		return authToken;
