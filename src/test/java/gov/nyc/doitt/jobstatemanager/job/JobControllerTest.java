@@ -19,7 +19,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.After;
@@ -30,6 +32,8 @@ import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -83,9 +87,6 @@ public class JobControllerTest extends BaseTest {
 
 	// mocking/unmocking of this bean is done explicitly below
 	private JobRepository jobRepository;
-
-//	// mocking/unmocking of this bean is done explicitly below
-//	private JobConfigRepository jobConfigRepository;
 
 	private MockMvc mockMvc;
 
@@ -181,6 +182,115 @@ public class JobControllerTest extends BaseTest {
 		String s = resultActions.andReturn().getResponse().getContentAsString();
 		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
 
+	}
+
+	@Test
+	public void testGetJobs_succeedAdmin() throws Exception {
+
+		httpHeaders.add("Authorization", "Bearer " + ADMIN_AUTH_TOKEN);
+
+		List<Job> jobs = jobMockerUpper.createList(10);
+		jobs.get(0).setJobName("newName0");
+		jobs.get(5).setJobName("newName5");
+
+		when(jobRepository.findAll(any(Sort.class))).thenReturn(jobs);
+
+		ResultActions resultActions = mockMvc
+				.perform(get(getContextRoot() + "/jobs").headers(httpHeaders).contextPath(getContextRoot())).andDo(print())
+				.andExpect(status().isOk());
+
+		String content = resultActions.andReturn().getResponse().getContentAsString();
+		List<JobDto> jobDtos = jobDtosJsonAsObject(content);
+
+		assertEquals(jobs.size(), jobDtos.size());
+		for (int i = 0; i < jobs.size(); i++) {
+			Job job = jobs.get(i);
+			JobDto jobDto = jobDtos.get(i);
+			assertEquals(job.getJobId(), jobDto.getJobId());
+		}
+
+		verify(jobRepository).findAll(any(Sort.class));
+	}
+
+	@Test
+	public void testGetJobs_succeedAdminWithSort() throws Exception {
+
+		httpHeaders.add("Authorization", "Bearer " + ADMIN_AUTH_TOKEN);
+
+		List<Job> jobs = jobMockerUpper.createList(10);
+		jobs.get(0).setJobName("newName0");
+		jobs.get(5).setJobName("newName5");
+
+		{
+			String[] sortParams = { "jobName", "DESC" };
+			Sort sort = Sort.by(Direction.fromString(sortParams[1]), sortParams[0]);
+
+			when(jobRepository.findAll(eq(sort))).thenReturn(jobs);
+
+			ResultActions resultActions = mockMvc.perform(
+					get(getContextRoot() + "/jobs" + "?sort=jobName,DESC").headers(httpHeaders).contextPath(getContextRoot()))
+					.andDo(print()).andExpect(status().isOk());
+			String content = resultActions.andReturn().getResponse().getContentAsString();
+			List<JobDto> jobDtos = jobDtosJsonAsObject(content);
+
+			assertEquals(jobs.size(), jobDtos.size());
+			for (int i = 0; i < jobs.size(); i++) {
+				Job job = jobs.get(i);
+				JobDto jobDto = jobDtos.get(i);
+				assertEquals(job.getJobId(), jobDto.getJobId());
+			}
+
+			verify(jobRepository).findAll(eq(sort));
+		}
+
+		{
+			String[] sortParams = { "jobName,DESC", "jobId,ASC" };
+			List<Order> orders = Arrays.asList(sortParams).stream().map(p -> {
+				String[] sortPair = p.split(",");
+				return new Order(Direction.fromString(sortPair[1]), sortPair[0]);
+			}).collect(Collectors.toList());
+
+			Sort sort = Sort.by(orders);
+
+			when(jobRepository.findAll(eq(sort))).thenReturn(jobs);
+
+			ResultActions resultActions = mockMvc.perform(
+					get(getContextRoot() + "/jobs" + "?sort=jobName,DESC&sort=jobId,ASC").headers(httpHeaders).contextPath(getContextRoot()))
+					.andDo(print()).andExpect(status().isOk());
+			String content = resultActions.andReturn().getResponse().getContentAsString();
+			List<JobDto> jobDtos = jobDtosJsonAsObject(content);
+
+			assertEquals(jobs.size(), jobDtos.size());
+			for (int i = 0; i < jobs.size(); i++) {
+				Job job = jobs.get(i);
+				JobDto jobDto = jobDtos.get(i);
+				assertEquals(job.getJobId(), jobDto.getJobId());
+			}
+
+			verify(jobRepository).findAll(eq(sort));
+		}
+
+	}
+
+	@Test
+	public void testGetJobs_failNoAdmin() throws Exception {
+
+		httpHeaders.add("Authorization", "Bearer " + NON_ADMIN_AUTH_TOKEN);
+
+		List<Job> jobs = jobMockerUpper.createList(10);
+		jobs.get(0).setJobName("newName0");
+		jobs.get(5).setJobName("newName5");
+
+		when(jobRepository.findAll(any(Sort.class))).thenReturn(jobs);
+
+		ResultActions resultActions = mockMvc
+				.perform(get(getContextRoot() + "/jobs").headers(httpHeaders).contextPath(getContextRoot())).andDo(print())
+				.andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+
+		String s = resultActions.andReturn().getResponse().getContentAsString();
+		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
+
+		verify(jobRepository, times(0)).findAll(any(Sort.class));
 	}
 
 	@Test

@@ -41,6 +41,9 @@ public class JobController {
 	@Autowired
 	private JobDtoListValidator jobDtoListValidator;
 
+	@Autowired
+	private SortParamMapper sortParamMapper;
+	
 	@InitBinder("jobDto")
 	private void initBinder_jobDto(WebDataBinder binder) {
 		binder.addValidators(jobDtoValidator);
@@ -70,7 +73,7 @@ public class JobController {
 
 		logger.debug("getJob: entering: jobName={}, state={}, sortParams={}", jobName, state, sortParams);
 
-		Sort sort = SortParamMapper.getSort(sortParams, "createdTimeStamp", Sort.Direction.DESC);
+		Sort sort = sortParamMapper.getSort(sortParams, "createdTimeStamp", Sort.Direction.DESC);
 		if (!StringUtils.isBlank(state)) {
 			return jobService.getJobs(jobName, JobState.valueOf(state), sort);
 		}
@@ -83,7 +86,7 @@ public class JobController {
 
 		logger.debug("getJob: entering: sortParams={}", (Object[]) sortParams);
 
-		Sort sort = SortParamMapper.getSort(sortParams, "createdTimeStamp", Sort.Direction.DESC);
+		Sort sort = sortParamMapper.getSort(sortParams, "createdTimeStamp", Sort.Direction.DESC);
 
 		return jobService.getJobs(sort);
 	}

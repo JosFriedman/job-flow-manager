@@ -8,10 +8,12 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SortParamMapper {
 
-	public static Sort getSort(String[] sortParams, String defaultProperty, Sort.Direction defaultDirection) {
+	public Sort getSort(String[] sortParams, String defaultProperty, Sort.Direction defaultDirection) {
 
 		if (ArrayUtils.isEmpty(sortParams)) {
 			return Sort.by(new Order(defaultDirection, defaultProperty));
