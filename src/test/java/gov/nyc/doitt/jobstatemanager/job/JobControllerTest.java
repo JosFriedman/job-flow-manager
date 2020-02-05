@@ -1,7 +1,5 @@
 package gov.nyc.doitt.jobstatemanager.job;
 
-import static org.hamcrest.Matchers.comparesEqualTo;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -134,9 +131,8 @@ public class JobControllerTest extends BaseTest {
 		mockMvc.perform(post(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName()).headers(httpHeaders)
 				.contentType(MediaType.APPLICATION_JSON).headers(httpHeaders).contextPath(getContextRoot())
 				.content(asJsonString(jobDto))).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
-				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
-				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
+				.andExpect(jsonPath("$.jobName").value(jobDto.getJobName())).andExpect(jsonPath("$.jobId").value(jobDto.getJobId()))
+				.andExpect(jsonPath("$.state").value(JobState.READY.name()));
 
 		verify(jobRepository).save(any(Job.class));
 	}
@@ -155,9 +151,8 @@ public class JobControllerTest extends BaseTest {
 		mockMvc.perform(post(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName()).headers(httpHeaders)
 				.contentType(MediaType.APPLICATION_JSON).headers(httpHeaders).contextPath(getContextRoot())
 				.content(asJsonString(jobDto))).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
-				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
-				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
+				.andExpect(jsonPath("$.jobName").value(jobDto.getJobName())).andExpect(jsonPath("$.jobId").value(jobDto.getJobId()))
+				.andExpect(jsonPath("$.state").value(JobState.READY.name()));
 
 		verify(jobRepository).save(any(Job.class));
 	}
@@ -177,7 +172,7 @@ public class JobControllerTest extends BaseTest {
 				.perform(post(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName()).headers(httpHeaders)
 						.contentType(MediaType.APPLICATION_JSON).headers(httpHeaders).contextPath(getContextRoot())
 						.content(asJsonString(jobDto)))
-				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors").isNotEmpty());
 
 		String s = resultActions.andReturn().getResponse().getContentAsString();
 		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
@@ -254,9 +249,8 @@ public class JobControllerTest extends BaseTest {
 
 			when(jobRepository.findAll(eq(sort))).thenReturn(jobs);
 
-			ResultActions resultActions = mockMvc.perform(
-					get(getContextRoot() + "/jobs" + "?sort=jobName,DESC&sort=jobId,ASC").headers(httpHeaders).contextPath(getContextRoot()))
-					.andDo(print()).andExpect(status().isOk());
+			ResultActions resultActions = mockMvc.perform(get(getContextRoot() + "/jobs" + "?sort=jobName,DESC&sort=jobId,ASC")
+					.headers(httpHeaders).contextPath(getContextRoot())).andDo(print()).andExpect(status().isOk());
 			String content = resultActions.andReturn().getResponse().getContentAsString();
 			List<JobDto> jobDtos = jobDtosJsonAsObject(content);
 
@@ -285,7 +279,7 @@ public class JobControllerTest extends BaseTest {
 
 		ResultActions resultActions = mockMvc
 				.perform(get(getContextRoot() + "/jobs").headers(httpHeaders).contextPath(getContextRoot())).andDo(print())
-				.andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+				.andExpect(status().isForbidden()).andExpect(jsonPath("$.errors").isNotEmpty());
 
 		String s = resultActions.andReturn().getResponse().getContentAsString();
 		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
@@ -367,9 +361,8 @@ public class JobControllerTest extends BaseTest {
 
 		mockMvc.perform(get(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId())
 				.headers(httpHeaders).contextPath(getContextRoot())).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
-				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
-				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
+				.andExpect(jsonPath("$.jobName").value(jobDto.getJobName())).andExpect(jsonPath("$.jobId").value(jobDto.getJobId()))
+				.andExpect(jsonPath("$.state").value(JobState.READY.name()));
 
 		verify(jobRepository).findByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()));
 	}
@@ -390,9 +383,8 @@ public class JobControllerTest extends BaseTest {
 
 		mockMvc.perform(get(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId())
 				.headers(httpHeaders).contextPath(getContextRoot())).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
-				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
-				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())));
+				.andExpect(jsonPath("$.jobName").value(jobDto.getJobName())).andExpect(jsonPath("$.jobId").value(jobDto.getJobId()))
+				.andExpect(jsonPath("$.state").value(JobState.READY.name()));
 
 		verify(jobRepository).findByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()));
 	}
@@ -405,8 +397,17 @@ public class JobControllerTest extends BaseTest {
 		JobDto jobDto = jobDtoMockerUpper.create(1);
 		Job job = jobMockerUpper.create(1);
 		job.setState(JobState.PROCESSING);
-		ArrayList<Task> tasks = job.getTasks();
-		tasks.forEach(p -> p.setState(TaskState.ERROR));
+
+		ArrayList<Task> tasks = new ArrayList<>();
+		for (int j = 0; j < 3; j++) {
+
+			Task task = new Task();
+			task.setName("nextTaskName" + j);
+			task.setDescription("description" + j);
+			task.setState(TaskState.ERROR);
+			tasks.add(task);
+		}
+		job.setTasks(tasks);
 
 		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
 		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
@@ -417,13 +418,12 @@ public class JobControllerTest extends BaseTest {
 				.perform(patch(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId()
 						+ "&patchOp=" + JobPatchOp.RESET).headers(httpHeaders).contextPath(getContextRoot())
 								.contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobDto)))
-				.andDo(print()).andExpect(status().isOk()).andExpect(jsonPath("$.jobName", comparesEqualTo(jobDto.getJobName())))
-				.andExpect(jsonPath("$.jobId", comparesEqualTo(jobDto.getJobId())))
-				.andExpect(jsonPath("$.state", comparesEqualTo(JobState.READY.name())))
-				.andExpect(jsonPath("$.taskDtos", not(IsEmptyCollection.empty())));
+				.andDo(print()).andExpect(status().isOk()).andExpect(jsonPath("$.jobName").value(jobDto.getJobName()))
+				.andExpect(jsonPath("$.jobId").value(jobDto.getJobId())).andExpect(jsonPath("$.state").value(JobState.READY.name()))
+				.andExpect(jsonPath("$.taskDtos").isNotEmpty());
 
 		for (int i = 0; i < tasks.size(); i++) {
-			resultActions.andExpect(jsonPath("$.taskDtos[" + 0 + "].deleted", comparesEqualTo(true)));
+			resultActions.andExpect(jsonPath("$.taskDtos[" + 0 + "].deleted").value(true));
 		}
 
 		verify(jobRepository).save(eq(job));
@@ -442,7 +442,7 @@ public class JobControllerTest extends BaseTest {
 		ResultActions resultActions = mockMvc
 				.perform(patch(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId()
 						+ "&patchOp=" + JobPatchOp.RESET).headers(httpHeaders).contextPath(getContextRoot()))
-				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors").isNotEmpty());
 
 		verify(jobRepository, times(0)).save(eq(job));
 		String s = resultActions.andReturn().getResponse().getContentAsString();
@@ -476,7 +476,7 @@ public class JobControllerTest extends BaseTest {
 		ResultActions resultActions = mockMvc
 				.perform(delete(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId())
 						.headers(httpHeaders).contextPath(getContextRoot()))
-				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors").isNotEmpty());
 
 		String s = resultActions.andReturn().getResponse().getContentAsString();
 		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);

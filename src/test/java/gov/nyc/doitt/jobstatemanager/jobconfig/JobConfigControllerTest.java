@@ -1,7 +1,5 @@
 package gov.nyc.doitt.jobstatemanager.jobconfig;
 
-import static org.hamcrest.Matchers.comparesEqualTo;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,7 +96,7 @@ public class JobConfigControllerTest extends BaseTest {
 
 		mockMvc.perform(post(getContextRoot() + "/jobConfigs").headers(httpHeaders).contextPath(getContextRoot())
 				.contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobConfigDto))).andDo(print())
-				.andExpect(status().isOk()).andExpect(jsonPath("$.jobName", comparesEqualTo(jobConfigDto.getJobName())));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.jobName").value(jobConfigDto.getJobName()));
 
 		verify(jobConfigRepository).save(any(JobConfig.class));
 	}
@@ -116,7 +113,7 @@ public class JobConfigControllerTest extends BaseTest {
 		ResultActions resultActions = mockMvc
 				.perform(post(getContextRoot() + "/jobConfigs").headers(httpHeaders).contextPath(getContextRoot())
 						.contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobConfigDto)))
-				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors").isNotEmpty());
 
 		String s = resultActions.andReturn().getResponse().getContentAsString();
 		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
@@ -162,7 +159,7 @@ public class JobConfigControllerTest extends BaseTest {
 
 		ResultActions resultActions = mockMvc
 				.perform(get(getContextRoot() + "/jobConfigs").headers(httpHeaders).contextPath(getContextRoot())).andDo(print())
-				.andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+				.andExpect(status().isForbidden()).andExpect(jsonPath("$.errors").isNotEmpty());
 
 		String s = resultActions.andReturn().getResponse().getContentAsString();
 		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
@@ -204,7 +201,7 @@ public class JobConfigControllerTest extends BaseTest {
 
 		ResultActions resultActions = mockMvc
 				.perform(get(getContextRoot() + "/jobConfigs/" + jobName).headers(httpHeaders).contextPath(getContextRoot()))
-				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors").isNotEmpty());
 
 		String s = resultActions.andReturn().getResponse().getContentAsString();
 		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
@@ -225,8 +222,7 @@ public class JobConfigControllerTest extends BaseTest {
 
 		mockMvc.perform(put(getContextRoot() + "/jobConfigs/" + jobConfigDto.getJobName()).headers(httpHeaders)
 				.contextPath(getContextRoot()).contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobConfigDto)))
-				.andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.jobName", comparesEqualTo(jobConfigDto.getJobName())));
+				.andDo(print()).andExpect(status().isOk()).andExpect(jsonPath("$.jobName").value(jobConfigDto.getJobName()));
 
 		verify(jobConfigRepository).save(any(JobConfig.class));
 	}
@@ -245,7 +241,7 @@ public class JobConfigControllerTest extends BaseTest {
 		ResultActions resultActions = mockMvc
 				.perform(put(getContextRoot() + "/jobConfigs/" + jobConfigDto.getJobName()).headers(httpHeaders)
 						.contextPath(getContextRoot()).contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobConfigDto)))
-				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors").isNotEmpty());
 
 		String s = resultActions.andReturn().getResponse().getContentAsString();
 		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);
@@ -280,7 +276,7 @@ public class JobConfigControllerTest extends BaseTest {
 		ResultActions resultActions = mockMvc
 				.perform(delete(getContextRoot() + "/jobConfigs/" + jobConfigDto.getJobName()).headers(httpHeaders)
 						.contextPath(getContextRoot()))
-				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors", not(IsEmptyCollection.empty())));
+				.andDo(print()).andExpect(status().isForbidden()).andExpect(jsonPath("$.errors").isNotEmpty());
 
 		String s = resultActions.andReturn().getResponse().getContentAsString();
 		assertEquals("{\"errors\":{\"accessDenied\":\"Access is denied\"}}", s);

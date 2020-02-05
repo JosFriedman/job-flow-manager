@@ -8,8 +8,6 @@ import java.util.Random;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.stereotype.Component;
 
-import gov.nyc.doitt.jobstatemanager.task.Task;
-
 @Component
 public class JobMockerUpper {
 
@@ -41,16 +39,6 @@ public class JobMockerUpper {
 
 		// make very old so it is found first
 		FieldUtils.writeField(job, "createdTimestamp", new Timestamp(System.currentTimeMillis() - 9000000000000L + idx), true);
-
-		ArrayList<Task> tasks = new ArrayList<>();
-		for (int j = 0; j < 3; j++) {
-
-			Task task = new Task();
-			task.setName("nextTaskName" + j);
-			task.setDescription("description" + j);
-			tasks.add(task);
-		}
-		job.setTasks(tasks);
 
 		return job;
 	}
