@@ -14,7 +14,7 @@ public class Task {
 	@Enumerated(EnumType.STRING)
 	private TaskState state;
 	private String errorReason;
-	private boolean deleted;
+	private Boolean archived;
 
 	public Task() {
 	}
@@ -73,12 +73,13 @@ public class Task {
 		this.errorReason = errorReason;
 	}
 
-	public boolean isDeleted() {
-		return deleted;
+
+	public Boolean getArchived() {
+		return archived == null ? false : archived;
 	}
 
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
+	public void setArchived(Boolean archived) {
+		this.archived = archived;
 	}
 
 	public void endWithSuccess() {
@@ -96,7 +97,7 @@ public class Task {
 	@Override
 	public String toString() {
 		return "Task [name=" + name + ", description=" + description + ", startTimestamp=" + startTimestamp + ", endTimestamp="
-				+ endTimestamp + ", state=" + state + ", errorReason=" + errorReason + ", deleted=" + deleted + "]";
+				+ endTimestamp + ", state=" + state + ", errorReason=" + errorReason + ", archived=" + archived + "]";
 	}
 
 }

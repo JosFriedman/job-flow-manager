@@ -15,7 +15,7 @@ public class TaskDto {
 	private String state;
 	private String errorReason;
 	private long errorCount;
-	private boolean deleted;
+	private Boolean archived;
 	
 	public String getJobId() {
 		return jobId;
@@ -73,19 +73,20 @@ public class TaskDto {
 		this.errorCount = errorCount;
 	}
 
-	public boolean isDeleted() {
-		return deleted;
+	public Boolean getArchived() {
+		return archived;
 	}
 
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
+	public void setArchived(Boolean archived) {
+		this.archived = archived;
 	}
 
 	@Override
 	public String toString() {
 		return "TaskDto [jobId=" + jobId + ", name=" + name + ", startTimestamp=" + startTimestamp + ", endTimestamp="
-				+ endTimestamp + ", state=" + state + ", errorReason=" + errorReason + ", errorCount=" + errorCount + ", deleted="
-				+ deleted + "]";
+				+ endTimestamp + ", state=" + state + ", errorReason=" + errorReason + ", errorCount=" + errorCount + ", archived="
+				+ archived + "]";
 	}
+
 
 }

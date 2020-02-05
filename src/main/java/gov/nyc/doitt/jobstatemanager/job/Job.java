@@ -100,7 +100,7 @@ public class Job {
 	}
 
 	public long getTotalErrorCountForTask(String taskName) {
-		return tasks.stream().filter(p -> !p.isDeleted() && p.getName().equals(taskName)).count();
+		return tasks.stream().filter(p -> !p.getArchived() && p.getName().equals(taskName)).count();
 	}
 
 	public Task getLastTask(String taskName) {
@@ -131,7 +131,7 @@ public class Job {
 		nextTaskName = taskName;
 		tasks.forEach(p -> {
 			if (p.getName().equals(taskName)) {
-				p.setDeleted(true);
+				p.setArchived(true);
 			}
 		});
 	}
@@ -139,7 +139,7 @@ public class Job {
 	public void resetAllTasks(String firstTaskName) {
 		state = JobState.READY;
 		nextTaskName = firstTaskName;
-		tasks.forEach(p -> p.setDeleted(true));
+		tasks.forEach(p -> p.setArchived(true));
 	}
 
 	@Override
