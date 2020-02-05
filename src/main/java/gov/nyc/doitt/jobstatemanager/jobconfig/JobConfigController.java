@@ -2,8 +2,6 @@ package gov.nyc.doitt.jobstatemanager.jobconfig;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +34,18 @@ public class JobConfigController {
 	@Autowired
 	private JobConfigDtoValidator jobConfigDtoValidator;
 
-//	@InitBinder("jobConfigDto")
-	@InitBinder
+	@InitBinder("jobConfigDto")
 	private void initBinder_jobConfigDto(WebDataBinder binder) {
 		binder.addValidators(jobConfigDtoValidator);
 	}
 
 	@PostMapping
-	public JobConfigDto createJobConfig(@Valid @RequestBody JobConfigDto jobConfigDto, BindingResult result)
+	public JobConfigDto createJobConfig(@RequestBody JobConfigDto jobConfigDto, BindingResult result)
 			throws JobStateManagerException {
 
 		logger.debug("createJobConfig: entering: {}", jobConfigDto);
 
+		jobConfigDtoValidator.validate(jobConfigDto, result);
 		if (result.hasErrors()) {
 			throw new ValidationException(result.getFieldErrors());
 		}
@@ -71,10 +69,15 @@ public class JobConfigController {
 	}
 
 	@PutMapping("/{jobName}")
-	public JobConfigDto updateJobConfig(@PathVariable String jobName, @Valid @RequestBody JobConfigDto jobConfigDto) {
+	public JobConfigDto updateJobConfig(@PathVariable String jobName, @RequestBody JobConfigDto jobConfigDto,
+			BindingResult result) {
 
 		logger.debug("updateJob: updateJobConfig: jobName={}, jobConfigDto={}", jobName, jobConfigDto);
-
+		
+		jobConfigDtoValidator.validate(jobConfigDto, result);
+		if (result.hasErrors()) {
+			throw new ValidationException(result.getFieldErrors());
+		}
 		return jobConfigService.updateJobConfig(jobName, jobConfigDto);
 	}
 

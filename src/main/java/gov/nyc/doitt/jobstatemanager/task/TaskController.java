@@ -60,6 +60,7 @@ public class TaskController {
 			taskDtos.forEach(p -> logger.debug("taskDto: {}", p));
 		}
 
+		taskDtoListValidator.validate(taskDtos, result);
 		if (result.hasErrors()) {
 			throw new ValidationException(result.getFieldErrors());
 		}

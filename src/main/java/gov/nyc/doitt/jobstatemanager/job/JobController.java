@@ -55,11 +55,12 @@ public class JobController {
 	}
 
 	@PostMapping(params = { "jobName" })
-	public JobDto createJob(@RequestParam String jobName, @Valid @RequestBody JobDto jobDto, BindingResult result)
+	public JobDto createJob(@RequestParam String jobName, @RequestBody JobDto jobDto, BindingResult result)
 			throws JobStateManagerException {
 
 		logger.debug("createJob: entering: jobName={}, jobDto={}", jobName, jobDto);
 
+		jobDtoValidator.validate(jobDto, result);
 		if (result.hasErrors()) {
 			throw new ValidationException(result.getFieldErrors());
 		}
@@ -121,11 +122,12 @@ public class JobController {
 	}
 
 	@PatchMapping(params = { "jobName", "jobId" })
-	public JobDto patchJob(@RequestParam String jobName, @RequestParam String jobId, @Valid @RequestBody JobDto jobDto, BindingResult result)
+	public JobDto patchJob(@RequestParam String jobName, @RequestParam String jobId, @RequestBody JobDto jobDto, BindingResult result)
 			throws JobStateManagerException {
 
 		logger.debug("createJob: entering: jobName={}, jobId={}, jobDto={}", jobName, jobId, jobDto);
 
+		jobDtoValidator.validate(jobDto, result);
 		if (result.hasErrors()) {
 			throw new ValidationException(result.getFieldErrors());
 		}
