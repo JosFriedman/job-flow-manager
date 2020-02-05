@@ -36,12 +36,13 @@ public class JobConfigController {
 	@Autowired
 	private JobConfigDtoValidator jobConfigDtoValidator;
 
-	@InitBinder("jobConfigDto")
+//	@InitBinder("jobConfigDto")
+	@InitBinder
 	private void initBinder_jobConfigDto(WebDataBinder binder) {
 		binder.addValidators(jobConfigDtoValidator);
 	}
 
-	@PostMapping("")
+	@PostMapping
 	public JobConfigDto createJobConfig(@Valid @RequestBody JobConfigDto jobConfigDto, BindingResult result)
 			throws JobStateManagerException {
 

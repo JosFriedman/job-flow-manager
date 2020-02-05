@@ -423,7 +423,7 @@ public class JobControllerTest extends BaseTest {
 				.andExpect(jsonPath("$.taskDtos").isNotEmpty());
 
 		for (int i = 0; i < tasks.size(); i++) {
-			resultActions.andExpect(jsonPath("$.taskDtos[" + 0 + "].deleted").value(true));
+			resultActions.andExpect(jsonPath("$.taskDtos[" + 0 + "].archived").value(true));
 		}
 
 		verify(jobRepository).save(eq(job));

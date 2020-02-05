@@ -2,6 +2,7 @@ package gov.nyc.doitt.jobstatemanager.job;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -140,6 +141,17 @@ public class Job {
 		state = JobState.READY;
 		nextTaskName = firstTaskName;
 		tasks.forEach(p -> p.setArchived(true));
+	}
+
+	public void reset(List<String> taskNames) {
+		state = JobState.READY;
+		nextTaskName = taskNames.get(0);
+		tasks.forEach(p -> {
+			if (taskNames.contains(p.getName())) {
+				p.setArchived(true);
+			}
+		});
+
 	}
 
 	@Override

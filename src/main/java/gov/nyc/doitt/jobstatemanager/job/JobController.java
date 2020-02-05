@@ -43,7 +43,7 @@ public class JobController {
 
 	@Autowired
 	private SortParamMapper sortParamMapper;
-	
+
 	@InitBinder("jobDto")
 	private void initBinder_jobDto(WebDataBinder binder) {
 		binder.addValidators(jobDtoValidator);
@@ -116,8 +116,21 @@ public class JobController {
 
 		} catch (IllegalArgumentException e) {
 			throw new JobStateManagerException("Unsupported patchOp=" + patchOp);
-		} 
+		}
 		return jobService.resetJob(jobName, jobId, taskName);
+	}
+
+	@PatchMapping(params = { "jobName", "jobId" })
+	public JobDto patchJob(@RequestParam String jobName, @RequestParam String jobId, @Valid @RequestBody JobDto jobDto, BindingResult result)
+			throws JobStateManagerException {
+
+		logger.debug("createJob: entering: jobName={}, jobId={}, jobDto={}", jobName, jobId, jobDto);
+
+		if (result.hasErrors()) {
+			throw new ValidationException(result.getFieldErrors());
+		}
+
+		return jobService.patchJob(jobName, jobId, jobDto);
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")

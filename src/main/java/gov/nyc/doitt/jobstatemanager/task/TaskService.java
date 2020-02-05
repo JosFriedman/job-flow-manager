@@ -18,6 +18,7 @@ import gov.nyc.doitt.jobstatemanager.common.EntityNotFoundException;
 import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
 import gov.nyc.doitt.jobstatemanager.job.Job;
 import gov.nyc.doitt.jobstatemanager.job.JobRepository;
+import gov.nyc.doitt.jobstatemanager.job.JobService;
 import gov.nyc.doitt.jobstatemanager.job.JobState;
 import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfig;
 import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigService;
@@ -30,6 +31,9 @@ class TaskService {
 
 	@Autowired
 	private JobConfigService jobConfigService;
+
+	@Autowired
+	private JobService jobService;
 
 	@Autowired
 	private JobRepository jobRepository;
@@ -65,6 +69,14 @@ class TaskService {
 		return jobs.stream().map(p -> taskDtoMapper.toDto(p, p.getLastTask())).collect(Collectors.toList());
 	}
 
+	/**
+	 * Record result (ERROR or COMPLETED) in all taskName tasks in taskDtos; set Job ready for next task
+	 * 
+	 * @param jobName
+	 * @param taskName
+	 * @param taskDtos
+	 * @return
+	 */
 	public List<TaskDto> endTasks(String jobName, String taskName, List<TaskDto> taskDtos) {
 
 		if (!jobConfigService.existsJobConfig(jobName)) {
@@ -138,4 +150,5 @@ class TaskService {
 
 		jobRepository.save(job);
 	}
+
 }
