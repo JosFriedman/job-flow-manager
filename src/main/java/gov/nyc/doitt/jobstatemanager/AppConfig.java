@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
+import org.springframework.data.mongodb.SessionSynchronization;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
@@ -31,6 +33,9 @@ public class AppConfig {
 	@Bean
 	public MongoTemplate mongoTemplate() throws Exception {
 		MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory, getDefaultMongoConverter());
+		
+		mongoTemplate.setSessionSynchronization(SessionSynchronization.ALWAYS); 
+		
 		return mongoTemplate;
 	}
 
@@ -42,6 +47,11 @@ public class AppConfig {
 		converter.setCustomConversions(new CustomConversions(Collections.singletonList(DateToTimestampConverter.INSTANCE)));
 		return converter;
 	}
+	
+    @Bean
+    public MongoTransactionManager transactionManager(MongoDbFactory dbFactory) {
+        return new MongoTransactionManager(dbFactory);
+    }
 }
 
 enum TimestampToDateConverter implements Converter<java.sql.Timestamp, Date> {

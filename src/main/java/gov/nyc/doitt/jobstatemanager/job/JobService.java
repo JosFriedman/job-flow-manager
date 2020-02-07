@@ -2,12 +2,13 @@ package gov.nyc.doitt.jobstatemanager.job;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.nyc.doitt.jobstatemanager.common.ConflictException;
 import gov.nyc.doitt.jobstatemanager.common.EntityNotFoundException;
@@ -37,6 +38,7 @@ public class JobService {
 	 * @param jobDto
 	 * @return
 	 */
+	@Transactional
 	public JobDto createJob(String jobName, JobDto jobDto) {
 
 		if (!jobConfigService.existsJobConfig(jobName)) {
@@ -133,6 +135,7 @@ public class JobService {
 		return job;
 	}
 
+	@Transactional
 	public JobDto patchJob(String jobName, String jobId, JobDto jobDto) {
 
 		Job job = getJobDomain(jobName, jobId);

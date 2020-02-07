@@ -2,6 +2,8 @@ package gov.nyc.doitt.jobstatemanager.jobconfig;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ public class JobConfigService {
 	 * @param jobConfigDto
 	 * @return
 	 */
+	@Transactional
 	public JobConfigDto createJobConfig(JobConfigDto jobConfigDto) {
 
 		String jobName = jobConfigDto.getJobName();
@@ -78,6 +81,7 @@ public class JobConfigService {
 	 * @param jobConfigDto
 	 * @return
 	 */
+	@Transactional
 	public JobConfigDto updateJobConfig(String jobName, JobConfigDto jobConfigDto) {
 
 		if (!jobConfigRepository.existsByJobName(jobName)) {
@@ -96,6 +100,7 @@ public class JobConfigService {
 	 * @param jobName
 	 * @return
 	 */
+	@Transactional
 	public String deleteJobConfig(String jobName) {
 
 		if (!jobConfigRepository.existsByJobName(jobName)) {

@@ -6,12 +6,15 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.stereotype.Component;
 
 import gov.nyc.doitt.jobstatemanager.common.EntityNotFoundException;
@@ -41,6 +44,9 @@ class TaskService {
 	@Autowired
 	private TaskDtoMapper taskDtoMapper;
 
+	@Autowired
+	private MongoTransactionManager mongoTransactionManager;
+
 	/**
 	 * Start taskName tasks for all qualifying jobs for jobName
 	 * 
@@ -48,6 +54,7 @@ class TaskService {
 	 * @param jobName
 	 * @return
 	 */
+	@Transactional
 	public List<TaskDto> startTasks(String jobName, String taskName) {
 
 		if (!jobConfigService.existsJobConfig(jobName)) {
@@ -69,6 +76,41 @@ class TaskService {
 		return jobs.stream().map(p -> taskDtoMapper.toDto(p, p.getLastTask())).collect(Collectors.toList());
 	}
 
+//	public List<TaskDto> startTasks(String jobName, String taskName) {
+//
+//		TransactionTemplate transactionTemplate = new TransactionTemplate(mongoTransactionManager);
+//		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+//			@Override
+//			protected void doInTransactionWithoutResult(TransactionStatus status) {
+//
+//				doStartTasks(jobName, taskName);
+//			};
+//		});
+//
+//		return Collections.emptyList();
+//	}
+//
+//	private List<TaskDto> doStartTasks(String jobName, String taskName) {
+//
+//		if (!jobConfigService.existsJobConfig(jobName)) {
+//			throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
+//		}
+//
+//		// get jobs that are available for this task
+//		JobConfig jobConfig = jobConfigService.getJobConfigDomain(jobName);
+//		TaskConfig taskConfig = jobConfig.getTaskConfig(taskName);
+//		PageRequest pageRequest = PageRequest.of(0, taskConfig.getMaxBatchSize(), Sort.by(Sort.Direction.ASC, "createdTimestamp"));
+//		List<Job> jobs = jobRepository.findByJobNameAndStateInAndNextTaskName(jobName,
+//				Arrays.asList(new JobState[] { JobState.READY }), taskName, pageRequest);
+//		logger.info("startTasks: number of jobs found: {}", jobs.size());
+//
+//		// create tasks and update jobs
+//		jobs.forEach(p -> startTask(taskName, p));
+//
+//		// return last task for each job in list of TaskDtos
+//		return jobs.stream().map(p -> taskDtoMapper.toDto(p, p.getLastTask())).collect(Collectors.toList());
+//	}
+
 	/**
 	 * Record result (ERROR or COMPLETED) in all taskName tasks in taskDtos; set Job ready for next task
 	 * 
@@ -77,6 +119,7 @@ class TaskService {
 	 * @param taskDtos
 	 * @return
 	 */
+	@Transactional
 	public List<TaskDto> endTasks(String jobName, String taskName, List<TaskDto> taskDtos) {
 
 		if (!jobConfigService.existsJobConfig(jobName)) {
