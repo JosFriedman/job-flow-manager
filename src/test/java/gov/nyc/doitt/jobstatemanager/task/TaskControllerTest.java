@@ -1,8 +1,8 @@
 package gov.nyc.doitt.jobstatemanager.task;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,6 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 import org.junit.After;
 import org.junit.Before;
@@ -95,7 +97,9 @@ public class TaskControllerTest extends BaseTest {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(getWac()).apply(springSecurity()).build();
 
 		jobRepository = mock(JobRepository.class);
+		ReflectionTestUtils.setField(taskService, "jobRepository", jobRepository);
 		jobConfigService = mock(JobConfigService.class);
+		ReflectionTestUtils.setField(taskService, "jobConfigService", jobConfigService);
 
 		MockitoAnnotations.initMocks(this);
 
