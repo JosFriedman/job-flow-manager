@@ -1,7 +1,6 @@
 package gov.nyc.doitt.jobstatemanager.job;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,6 @@ import gov.nyc.doitt.jobstatemanager.common.ValidationException;
 import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfig;
 import gov.nyc.doitt.jobstatemanager.jobconfig.JobConfigService;
 import gov.nyc.doitt.jobstatemanager.jobconfig.TaskConfig;
-import gov.nyc.doitt.jobstatemanager.task.TaskDto;
 
 @Component
 public class JobService {
@@ -135,57 +133,18 @@ public class JobService {
 		return job;
 	}
 
-	/**
-	 * Reset job specified by jobName and jobId, and optionally, taskName
-	 * 
-	 * @param jobName
-	 * @param jobId
-	 * @param taskName
-	 * @return
-	 */
-	public JobDto resetJob(String jobName, String jobId, String taskName) {
-
-		Job job = jobRepository.findByJobNameAndJobId(jobName, jobId);
-		if (job == null) {
-			throw new EntityNotFoundException(String.format("Can't find Job for jobName=%s, jobId=%s", jobName, jobId));
-		}
-
-		JobConfig jobConfig = jobConfigService.getJobConfigDomain(jobName);
-		if (!StringUtils.isEmpty(taskName)) {
-			jobConfig.ensureHasTaskConfig(taskName);
-			job.resetTask(taskName);
-		} else {
-			job.resetAllTasks(jobConfig.getFirstTaskConfig().getName());
-		}
-
-		jobRepository.save(job);
-		return jobDtoMapper.toDto(job);
-	}
-
 	public JobDto patchJob(String jobName, String jobId, JobDto jobDto) {
-
-		if (!jobConfigService.existsJobConfig(jobName)) {
-			throw new EntityNotFoundException(String.format("Can't find JobConfig for jobName=%s", jobName));
-		}
 
 		Job job = getJobDomain(jobName, jobId);
 
-		if (jobDto.getState() != null) {
-			if (JobState.valueOf(jobDto.getState()) != JobState.COMPLETED) {
-				throw new ValidationException(String.format("Unsupported JobState=%s for patching jobName=%s, jobId=%s",
-						jobDto.getState(), jobName, jobId));
-			}
-			job.setState(JobState.COMPLETED);
-		} else {
-			List<TaskDto> resetTaskDtos = jobDto.getTaskDtos().stream().filter(p -> {
-				return p.getArchived() == null ? false : true;
-			}).collect(Collectors.toList());
-			if (resetTaskDtos.size() != jobDto.getTaskDtos().size()) {
-				throw new ValidationException(String.format(
-						"When archiving tasks, all taskDtos must have archived property set to true for patching jobName=%s, jobId=%s", jobName, jobId));
-			}
-			job.reset(resetTaskDtos.stream().map(p -> p.getName()).collect(Collectors.toList()));
+		JobState jobState;
+		try {
+			jobState = JobState.valueOf(jobDto.getState());
+		} catch (IllegalArgumentException | NullPointerException e) {
+			throw new ValidationException(
+					String.format("Unsupported JobState=%s for patching jobName=%s, jobId=%s", jobDto.getState(), jobName, jobId));
 		}
+		job.setState(jobState);
 		jobRepository.save(job);
 		return jobDtoMapper.toDto(job);
 	}

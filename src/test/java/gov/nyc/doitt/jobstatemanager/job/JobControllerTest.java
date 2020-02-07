@@ -390,41 +390,25 @@ public class JobControllerTest extends BaseTest {
 	}
 
 	@Test
-	public void testResetAllTasks_succeedAdmin() throws Exception {
+	public void testPatch_succeedAdmin() throws Exception {
 
 		httpHeaders.add("Authorization", "Bearer " + ADMIN_AUTH_TOKEN);
 
 		JobDto jobDto = jobDtoMockerUpper.create(1);
+		jobDto.setState(JobState.COMPLETED.toString());
 		Job job = jobMockerUpper.create(1);
 		job.setState(JobState.PROCESSING);
 
-		ArrayList<Task> tasks = new ArrayList<>();
-		for (int j = 0; j < 3; j++) {
-
-			Task task = new Task();
-			task.setName("nextTaskName" + j);
-			task.setDescription("description" + j);
-			task.setState(TaskState.ERROR);
-			tasks.add(task);
-		}
-		job.setTasks(tasks);
-
 		JobConfig jobConfig = jobConfigMockerUpper.create(jobDto.getJobName());
-		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
+//		when(jobConfigService.getJobConfigDomain(jobDto.getJobName())).thenReturn(jobConfig);
 
 		when(jobRepository.findByJobNameAndJobId(eq(jobDto.getJobName()), eq(jobDto.getJobId()))).thenReturn(job);
 
 		ResultActions resultActions = mockMvc
-				.perform(patch(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId()
-						+ "&patchOp=" + JobPatchOp.RESET).headers(httpHeaders).contextPath(getContextRoot())
+				.perform(patch(getContextRoot() + "/jobs" + "?jobName=" + jobDto.getJobName() + "&jobId=" + jobDto.getJobId()).headers(httpHeaders).contextPath(getContextRoot())
 								.contentType(MediaType.APPLICATION_JSON).content(asJsonString(jobDto)))
 				.andDo(print()).andExpect(status().isOk()).andExpect(jsonPath("$.jobName").value(jobDto.getJobName()))
-				.andExpect(jsonPath("$.jobId").value(jobDto.getJobId())).andExpect(jsonPath("$.state").value(JobState.READY.name()))
-				.andExpect(jsonPath("$.taskDtos").isNotEmpty());
-
-		for (int i = 0; i < tasks.size(); i++) {
-			resultActions.andExpect(jsonPath("$.taskDtos[" + 0 + "].archived").value(true));
-		}
+				.andExpect(jsonPath("$.jobId").value(jobDto.getJobId())).andExpect(jsonPath("$.state").value(JobState.COMPLETED.name()));
 
 		verify(jobRepository).save(eq(job));
 	}

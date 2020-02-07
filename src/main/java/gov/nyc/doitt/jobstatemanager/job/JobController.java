@@ -101,31 +101,11 @@ public class JobController {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@PatchMapping(params = { "jobName", "jobId", "patchOp" })
-	public JobDto patchJob(@RequestParam String jobName, @RequestParam String jobId, @RequestParam String patchOp,
-			@RequestParam(name = "taskName", required = false) String taskName) throws JobStateManagerException {
-
-		logger.debug("patchJob: entering: jobName={}, jobId={}, patchOp={}, taskName={}", jobName, jobId, patchOp, taskName);
-
-		// only Op supported at this time is RESET
-		JobPatchOp jobPatchOp;
-		try {
-			jobPatchOp = JobPatchOp.valueOf(patchOp);
-			if (jobPatchOp != JobPatchOp.RESET) {
-				throw new IllegalArgumentException();
-			}
-
-		} catch (IllegalArgumentException e) {
-			throw new JobStateManagerException("Unsupported patchOp=" + patchOp);
-		}
-		return jobService.resetJob(jobName, jobId, taskName);
-	}
-
 	@PatchMapping(params = { "jobName", "jobId" })
 	public JobDto patchJob(@RequestParam String jobName, @RequestParam String jobId, @RequestBody JobDto jobDto, BindingResult result)
 			throws JobStateManagerException {
 
-		logger.debug("createJob: entering: jobName={}, jobId={}, jobDto={}", jobName, jobId, jobDto);
+		logger.debug("patchJob: entering: jobName={}, jobId={}, jobDto={}", jobName, jobId, jobDto);
 
 		jobDtoValidator.validate(jobDto, result);
 		if (result.hasErrors()) {

@@ -39,8 +39,6 @@ public class JobDtoMockerUpper {
 		// make very old so it is found first
 		FieldUtils.writeField(jobDto, "createdTimestamp", new Timestamp(System.currentTimeMillis() - 9000000000000L), true);
 
-		FieldUtils.writeField(jobDto, "description", "description" + idx, true);
-
 		return jobDto;
 	}
 }
