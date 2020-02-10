@@ -2,8 +2,6 @@ package gov.nyc.doitt.jobstatemanager.job;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

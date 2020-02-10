@@ -12,8 +12,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import gov.nyc.doitt.jobstatemanager.common.ValidationException;
-
 /**
  * Custom AuthenticationManager that gets authentication params and validates them
  */

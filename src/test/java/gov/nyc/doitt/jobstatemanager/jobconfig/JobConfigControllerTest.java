@@ -36,6 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.nyc.doitt.jobstatemanager.job.JobRepository;
 import gov.nyc.doitt.jobstatemanager.security.JobAuthorizer;
 import gov.nyc.doitt.jobstatemanager.test.BaseTest;
 
@@ -72,6 +73,8 @@ public class JobConfigControllerTest extends BaseTest {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(getWac()).apply(springSecurity()).build();
 
 		jobConfigRepository = mock(JobConfigRepository.class);
+		ReflectionTestUtils.setField(jobConfigService, "jobConfigRepository", jobConfigRepository);
+
 		MockitoAnnotations.initMocks(this);
 
 		httpHeaders = new HttpHeaders();

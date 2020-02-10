@@ -38,6 +38,14 @@ class JobConfigDtoMapper {
 		}
 	};
 
+	private Converter<String, String> decryptingConverter = new AbstractConverter<String, String>() {
+
+		@Override
+		protected String convert(String source) {
+			return encryptor.decrypt(source);
+		}
+	};
+
 	private PropertyMap<JobConfigDto, JobConfig> jobConfigDtoPropertyMap = new PropertyMap<JobConfigDto, JobConfig>() {
 
 		protected void configure() {
@@ -47,24 +55,34 @@ class JobConfigDtoMapper {
 		}
 	};
 
+	private PropertyMap<JobConfig, JobConfigDto> jobConfigPropertyMap = new PropertyMap<JobConfig, JobConfigDto>() {
+
+		protected void configure() {
+			using(decryptingConverter).map().setAuthToken(source.getAuthToken());
+		}
+	};
+
 	public JobConfigDtoMapper() {
 
 		modelMapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(AccessLevel.PRIVATE);
 		modelMapper.addMappings(jobConfigDtoPropertyMap);
+		modelMapper.addMappings(jobConfigPropertyMap);
 	}
 
 	public JobConfig fromDto(JobConfigDto jobConfigDto) {
 
 		JobConfig jobConfig = modelMapper.map(jobConfigDto, JobConfig.class);
 
-		ArrayList<TaskConfig> taskConfigs = taskConfigDtoMapper.fromDto(jobConfigDto.getTaskConfigDtos());
-		jobConfig.setTaskConfigs(taskConfigs);
-		return jobConfig;
+		return fromDto(jobConfigDto, jobConfig);
 	}
 
 	public JobConfig fromDto(JobConfigDto jobConfigDto, JobConfig jobConfig) {
 
 		modelMapper.map(jobConfigDto, jobConfig);
+
+		ArrayList<TaskConfig> taskConfigs = taskConfigDtoMapper.fromDto(jobConfigDto.getTaskConfigDtos());
+		jobConfig.setTaskConfigs(taskConfigs);
+
 		return jobConfig;
 	}
 

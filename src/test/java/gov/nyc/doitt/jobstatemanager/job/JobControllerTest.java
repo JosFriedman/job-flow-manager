@@ -98,7 +98,9 @@ public class JobControllerTest extends BaseTest {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(getWac()).apply(springSecurity()).build();
 
 		jobRepository = mock(JobRepository.class);
+		ReflectionTestUtils.setField(jobService, "jobRepository", jobRepository);
 		jobConfigService = mock(JobConfigService.class);
+		ReflectionTestUtils.setField(jobService, "jobConfigService", jobConfigService);
 
 		MockitoAnnotations.initMocks(this);
 
