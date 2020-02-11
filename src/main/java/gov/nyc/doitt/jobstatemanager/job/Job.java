@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 
 import gov.nyc.doitt.jobstatemanager.common.JobStateManagerException;
 import gov.nyc.doitt.jobstatemanager.task.Task;
+import gov.nyc.doitt.jobstatemanager.task.TaskState;
 
 @Document
 public class Job {
@@ -101,7 +102,7 @@ public class Job {
 	}
 
 	public long getTotalErrorCountForTask(String taskName) {
-		return tasks.stream().filter(p -> !p.getArchived() && p.getName().equals(taskName)).count();
+		return tasks.stream().filter(p -> !p.getArchived() && p.getState() == TaskState.ERROR && p.getName().equals(taskName)).count();
 	}
 
 	public Task getLastTask(String taskName) {
